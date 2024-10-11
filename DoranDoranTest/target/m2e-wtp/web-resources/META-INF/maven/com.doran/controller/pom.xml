@@ -191,6 +191,22 @@
 			<version>09May2002</version>
 		</dependency>
 
+		<!-- jsch(cmd창 원격조종) 허재혁 -->
+		<dependency>
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>0.1.55</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<!-- json 데이터 파싱용 허재혁 -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20231013</version>
+		</dependency>
+
+
 
 	</dependencies>
 	<build>
