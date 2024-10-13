@@ -1,64 +1,55 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>배경 패럴랙스 및 흐림 효과</title>
+    <title>Vue.js with Google Maps</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script> 
     <style>
-        body {
-            margin: 0;
-            height: 2000vh; /* 스크롤 길이를 매우 길게 설정 */
-            background: url('resources/img/pexels-pixelcop-1556991.jpg') repeat-y center top/cover;
-            transition: filter 0.3s ease, background 0.3s ease;
-            background-attachment: fixed; /* 패럴랙스 효과 */
+        /* 지도 위에 버튼을 위치시키기 위한 스타일 */
+        #map {
+            width: 100%;
+            height: 500px;
         }
-
-        .content {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .section {
-            height: 100vh;
+        .map-button {
+            position: absolute;
+            top: 20px;
+            left: 200px;
+            z-index: 1;  /* 지도 위에 버튼이 표시되도록 z-index 설정 */
+            background-color: white;
+            border: 2px solid #007bff;
+            padding: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="section">
-        <div class="content">
-            배경 패럴랙스 및 흐림 효과 테스트 1
-        </div>
-    </div>
+    <div id="app">
+        <!-- 지도 영역 -->
+        <div id="map"></div>
 
-    <div class="section">
-        <div class="content">
-            배경 패럴랙스 및 흐림 효과 테스트 2
-        </div>
+        <!-- 지도 위에 오버레이할 버튼 -->
+        <div class="map-button" @click="handleButtonClick">Click Me</div>
     </div>
 
     <script>
-        window.addEventListener('scroll', function() {
-            const scrollPosition = window.scrollY;
-            const fadeOutStart = 500;  // 흐림 효과가 시작되는 스크롤 위치
-            const fadeOutEnd = 5000;   // 흐림 효과가 끝나는 스크롤 위치
-
-            // 스크롤 위치에 따라 blur 및 투명도(Opacity) 값 계산
-            let blurAmount = Math.min((scrollPosition - fadeOutStart) / (fadeOutEnd - fadeOutStart) * 20, 20);
-            blurAmount = Math.max(blurAmount, 0); // 최소 blur 값은 0으로 유지
-
-            let opacityAmount = 1 - Math.min((scrollPosition - fadeOutStart) / (fadeOutEnd - fadeOutStart), 1);
-            opacityAmount = Math.max(opacityAmount, 0); // 최소 투명도는 0으로 유지
-
-            // blur 및 투명도 조절하여 자연스럽게 배경 흐려짐과 그라데이션 적용
-            document.body.style.filter = `blur(${blurAmount}px)`;
+        new Vue({
+            el: '#app',
+            mounted() {
+                this.initMap();
+            },
+            methods: {
+                initMap() {
+                    var map = new google.maps.Map(document.getElementById('map'), {
+                        center: { lat: 37.5665, lng: 126.9780 },  // 서울 좌표
+                        zoom: 10
+                    });
+                },
+                handleButtonClick() {
+                    alert('Button clicked!');
+                }
+            }
         });
     </script>
 </body>
