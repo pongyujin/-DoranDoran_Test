@@ -107,8 +107,7 @@ public class JavaSocketServer {
 
 	            // 클래스 ID를 이름으로 변환
 	            classMap cm = new classMap();
-	            String className = classM
-	            String className = classHashMap.get(classId);
+	            String className = cm.className(classId);
 
 	            // 결과 출력
 	            System.out.println("Class: " + className);
