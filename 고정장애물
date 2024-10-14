@@ -1,0 +1,55 @@
+import pandas as pd
+from IPython.display import display
+from geopy.distance import distance
+import re
+
+# 현재 선박의 위치
+ship_location = (34.5, 128.73)
+
+# DMS 형식을 소수점 형식으로 변환하는 함수
+def dms_to_decimal(dms_str):
+    try:
+        match = re.match(r"(\d+)-(\d+)-([\d.]+)([NSEW])", dms_str.strip())
+        if match:
+            degrees = int(match.group(1))
+            minutes = int(match.group(2))
+            seconds = float(match.group(3))
+            direction = match.group(4)
+
+            decimal = degrees + (minutes / 60) + (seconds / 3600)
+            if direction in ['S', 'W']:  # S 또는 W는 부호 반전
+                decimal = -decimal
+            return round(decimal, 2) # 소숫점 처리
+        else:
+            return None
+    except Exception as e:
+        print(f"Error processing '{dms_str}': {e}")
+        return None
+
+# CSV 파일에서 고정 장애물 데이터 읽기
+def load_fixed_obstacles(file_path):
+    df = pd.read_csv(file_path, encoding='euc-kr')
+    df['lat'] = df['도분초위도(dms_la)'].apply(dms_to_decimal)  # 위도 변환
+    df['lon'] = df['도분초경도(dms_lo)'].apply(dms_to_decimal)  # 경도 변환
+    df = df.dropna(subset=['lat', 'lon'])  # 위도와 경도가 모두 있는 행만 선택
+    display(df.head())
+    return list(zip(df['lat'], df['lon']))
+
+# 반경 10km 이내의 고정 장애물 필터링
+# def get_nearby_fixed_obstacles(ship_location, fixed_obstacles, radius_km=10):
+#     nearby_obstacles = []
+#     for obs in fixed_obstacles:
+#         if distance(ship_location, obs).km <= radius_km:
+#             nearby_obstacles.append(obs)
+#     return nearby_obstacles
+
+# 파일 경로 설정
+file_path = '/content/drive/MyDrive/KDT_ML/obstacleData/obstacleSouth_20240419.csv'
+
+# 고정 장애물 데이터 로드
+fixed_obstacles = load_fixed_obstacles(file_path)
+
+# 반경 10km 이내의 장애물 찾기
+# nearby_fixed_obstacles = get_nearby_fixed_obstacles(ship_location, fixed_obstacles)
+
+print("고정 장애물:", fixed_obstacles[:5])
