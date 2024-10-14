@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
                 	
     
@@ -45,3 +46,95 @@
 
 
 </project-modules>
+=======
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+<<<<<<< HEAD
+                	
+=======
+                    	
+    
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+    
+    
+    
+    <wb-module deploy-name="controller-1.0.0-BUILD-SNAPSHOT">
+<<<<<<< HEAD
+                                        
+=======
+                                                
+        
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+        
+        
+        
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+<<<<<<< HEAD
+                                		
+=======
+                                        		
+        
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+        
+        
+        
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+<<<<<<< HEAD
+                                		
+        
+        
+        
+=======
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+<<<<<<< HEAD
+                                		
+        
+        
+        
+=======
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+<<<<<<< HEAD
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
+                                		
+=======
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
+                                        		
+        
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+        
+        
+        
+        <property name="java-output-path" value="target/classes"/>
+<<<<<<< HEAD
+                                        
+=======
+                                                
+        
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+        
+        
+        
+        <property name="context-root" value="controller"/>
+<<<<<<< HEAD
+                                	
+=======
+                                        	
+    
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+    
+    
+    
+    </wb-module>
+<<<<<<< HEAD
+                
+=======
+                    
+
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
+
+
+
+</project-modules>
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
