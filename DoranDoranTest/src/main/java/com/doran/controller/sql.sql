@@ -1,1 +1,1 @@
-select * from member;
+select * from tbl_member;
