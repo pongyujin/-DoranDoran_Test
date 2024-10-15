@@ -1,7 +1,7 @@
 package com.doran.hardware;
 import java.util.HashMap;
 
-public class classMap {
+public class YoloClassMap {
     public String className(int num) {
         // 클래스 ID와 이름을 매핑할 HashMap
         HashMap<Integer, String> classMap = new HashMap<>();
