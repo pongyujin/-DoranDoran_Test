@@ -212,7 +212,7 @@
             initMap() {
                 this.map = new google.maps.Map(document.getElementById('map'), {
                     center: { lat: 37.5665, lng: 126.9780 },  // 서울 좌표
-                    zoom: 10
+                    zoom: 15
                 });
             },
             async updateLocation() {
@@ -226,7 +226,15 @@
                             this.marker = new google.maps.Marker({
                                 position: { lat: latitude, lng: longitude },
                                 map: this.map,
+                                icon: {
+                                	url: '<%=request.getContextPath()%>/resources/img/icon.png',
+                                	scaledSize: new google.maps.Size(100, 100)
+                                }
                             });
+                            
+                            // 마커의 위치로 지도의 중심 이동
+                            this.map.setCenter({ lat: latitude, lng: longitude });
+                            
                         } else {
                             this.marker.setPosition({ lat: latitude, lng: longitude });
                         }
@@ -247,6 +255,7 @@
                 // 2초 간격으로 위치 갱신
                 setInterval(updatePosition, 2000);
             },
+            
             showInfo(title, content) {
                 const infoPanel = document.getElementById('infoPanel');
                 const infoTitle = document.getElementById('infoTitle');
