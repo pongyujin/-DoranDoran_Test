@@ -15,5 +15,6 @@ public class test2 {
 		rp.cmdRemote(user, host, port, password, command);
 
 	}
-
+		//
+		//tasklist /FI "IMAGENAME eq python.exe"
 }

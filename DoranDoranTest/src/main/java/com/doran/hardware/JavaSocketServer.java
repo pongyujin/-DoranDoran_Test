@@ -12,11 +12,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JavaSocketServer {
 	private JFrame frame;
 	private JLabel label;
+	private Map<Integer, Integer> classIdCount = new HashMap<>();
 
 	// 윈도우창 설정
 	public void createUI() {
@@ -43,6 +46,7 @@ public class JavaSocketServer {
 
 	// 클라이언트 연결 후 데이터 받음
 	public void ClientConnection(Socket clientSocket) {
+		
 		try {
 			InputStream inputStream = clientSocket.getInputStream();
 			System.out.println("입력 스트림을 받았습니다.");
@@ -98,22 +102,34 @@ public class JavaSocketServer {
 
 			// 배열 안의 각 객체를 처리
 			for (int i = 0; i < jsonArray.length(); i++) {
-	            JSONObject obj = jsonArray.getJSONObject(i);
+				JSONObject obj = jsonArray.getJSONObject(i);
 
-	            // 각 필드를 추출
-	            int classId = obj.getInt("class");
-	            double confidence = obj.getDouble("confidence");
-	            JSONArray bbox = obj.getJSONArray("bbox");
+				// 각 필드를 추출
+				int classId = obj.getInt("class");
+				double confidence = obj.getDouble("confidence");
+				JSONArray bbox = obj.getJSONArray("bbox");
 
-	            // 클래스 ID를 이름으로 변환
-	            classMap cm = new classMap();
-	            String className = cm.className(classId);
+				// classId 발생 횟수 기록
+				classIdCount.put(classId, classIdCount.getOrDefault(classId, 0) + 1);
 
-	            // 결과 출력
-	            System.out.println("Class: " + className);
-	            System.out.println("Confidence: " + confidence);
-	            System.out.println("BBox: " + bbox);
-	        }
+				// 같은객체가 3번 발견된 경우
+				if (classIdCount.get(classId) == 3) {
+					// 클래스 ID를 이름으로 변환
+					YoloClassMap cm = new YoloClassMap();
+					String className = cm.className(classId);
+
+					// 결과 출력
+					System.out.println("Class: " + className);
+					System.out.println("Confidence: " + confidence);
+					System.out.println("BBox: " + bbox);
+					
+					// DB저장
+					
+
+					// 카운트 초기화
+					classIdCount.put(classId, 0);
+				}
+			}
 
 		} catch (IOException e) {
 			System.out.println("데이터 처리 중 오류 발생: " + e.getMessage());
