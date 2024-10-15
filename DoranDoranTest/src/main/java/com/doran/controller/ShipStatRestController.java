@@ -9,17 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.doran.entity.tbl_shipstat;
 import com.doran.mapper.tbl_shipstatMapper;
 
+@RequestMapping("/statistics")
 @RestController
-@RequestMapping("/ship")
 public class ShipStatRestController {
 
-   @Autowired
-   private tbl_shipstatMapper shipstatMapper;
+	@Autowired
+	private tbl_shipstatMapper shipstatMapper;
 
-   // 특정 선박 통계 조회
-   @GetMapping("/{siNum}")
-   public tbl_shipstat getShipStat(@PathVariable("siNum") int siNum) {
-      return shipstatMapper.getShipStat(siNum);
-   }
-
+	// siNum이 없을 경우 기본값 1을 사용하도록 설정
+	@GetMapping("/{siNum}")
+	public tbl_shipstat getShipStat(@PathVariable("siNum") int siNum) {
+		System.out.println("넘어오긴함");
+		System.out.println("번호 전송됨!!!!!!!!" + siNum);
+		
+		tbl_shipstat stat = shipstatMapper.getShipStat(siNum);
+		return stat; // 받은 siNum 값으로 데이터 조회
+	}
 }
