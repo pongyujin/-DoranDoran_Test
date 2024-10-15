@@ -3,6 +3,6 @@
 <mapper namespace="com.doran.mapper.tbl_shipstatMapper">
 
     <select id="getShipStat" resultType="com.doran.entity.tbl_shipstat">
-        SELECT * FROM tbl_shipstat WHERE siNum = #{siNum}
+        SELECT * FROM tbl_shipstat WHERE siNum=#{siNum};
     </select>
 </mapper>
