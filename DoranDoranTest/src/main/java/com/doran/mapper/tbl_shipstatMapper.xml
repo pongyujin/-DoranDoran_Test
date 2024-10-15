@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.doran.mapper.tbl_shipstatMapper">
 
-    <select id="shipstatSelect" resultType="com.doran.entity.tbl_shipstat">
+    <select id="getShipStat" resultType="com.doran.entity.tbl_shipstat">
         SELECT * FROM tbl_shipstat WHERE siNum = #{siNum}
     </select>
 </mapper>

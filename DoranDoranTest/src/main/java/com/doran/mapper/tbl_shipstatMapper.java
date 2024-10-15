@@ -6,7 +6,7 @@ import com.doran.entity.tbl_shipstat;
 
 @Mapper
 public interface tbl_shipstatMapper {
-	
-	public tbl_shipstat shipstatSelect(tbl_shipstat shipstat);
+
+	public tbl_shipstat getShipStat(int siNum);
 
 }
