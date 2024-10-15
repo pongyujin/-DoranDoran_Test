@@ -8,8 +8,7 @@ public class MapController {
 
 	@GetMapping("/map")
 	public String showMap(Model model) {
-		model.addAttribute("location", "Seoul");
-		return "home"; // home.jsp로 이동
+		return "map"; // home.jsp로 이동
 	}
 
 }
