@@ -195,6 +195,40 @@
 		src="<%=request.getContextPath()%>/resources/img/stop.png"
 		alt="멈추기 아이콘" width="40" height="40">
 
+	<script>
+	
+	function initMap() {
+		const map = new google.maps.Map(document.getElementById("map"), {
+			zoom: 3,
+			center: { lat: 0, lng: -180 },
+			mapTypeId: "terrain",
+		});
+
+		// AJAX를 이용하여 서버에서 좌표 데이터를 받아옴
+		fetch('/course')
+			.then(response => response.json())  // JSON 형태로 변환
+			.then(data => {
+				// flightPlanCoordinates에 서버에서 받은 데이터를 할당
+				const flightPlanCoordinates = data.map(coord => ({ lat: coord.lat, lng: coord.lng }));
+
+				// Google Maps Polyline 생성
+				const flightPath = new google.maps.Polyline({
+					path: flightPlanCoordinates,
+					geodesic: true,
+					strokeColor: "#FF0000",
+					strokeOpacity: 1.0,
+					strokeWeight: 2,
+				});
+
+				// 경로를 지도에 추가
+				flightPath.setMap(map);
+			})
+			.catch(error => console.error('Error fetching coordinates:', error));
+	}
+
+	window.initMap = initMap;
+
+	</script>
 	<script src="../../resources/js/map.js"></script>
 </body>
 </html>
