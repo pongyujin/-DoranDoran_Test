@@ -2,8 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.doran.mapper.AuthMapper">
 
+	<select id="groupList" parameterType="String" resultType="com.doran.entity.tbl_group">
+		select * from tbl_group
+		where siCode=#{siCode}
+	</select>
+	
+	<insert id="invite" parameterType="com.doran.entity.tbl_group">
+		INSERT INTO tbl_group (siCode, memId, createdAT, authNum, comment) 
+		VALUES (#{siCode}, #{memId}, NOW(), #{authNum}, #{comment});
+	</insert>
 
+	<update id="update" parameterType="com.doran.entity.tbl_group">
+		update tbl_group set
+		authNum=#{authNum}
+		where siCode=#{siCode} and memId=#{memId}
+	</update>
 
-
-
+	<select id="topAuth" parameterType="com.doran.entity.tbl_ship" resultType="com.doran.entity.tbl_ship">
+		select * from tbl_ship
+		where siCode=#{siCode} and memId=#{memId}
+	</select>
+	
+	<delete id="delete" parameterType="com.doran.entity.tbl_group">
+		delete from tbl_group
+		where siCode=#{siCode} and memId=#{memId}
+	</delete>
+	
 </mapper>
