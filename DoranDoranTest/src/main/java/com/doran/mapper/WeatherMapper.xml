@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doran.mapper.WeatherMapper">
+
+	<insert id="insertWeather" parameterType="com.doran.entity.tbl_weather">
+		INSERT INTO tbl_weather (wDate, wTime, wTemp, wWindSpeed, wWaveHeight, wSeaTemp, wRegion, sailNum, siCode) 
+		VALUES (#{WDate}, #{WTime}, #{WTemp}, #{wWindSpeed}, #{wWaveHeight}, #{wSeaTemp}, #{wRegion}, #{sailNum}, #{siCode});
+	</insert>
+
+</mapper>

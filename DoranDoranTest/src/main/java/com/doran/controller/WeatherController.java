@@ -1,168 +1,157 @@
 package com.doran.controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.doran.entity.tbl_weather;
+import com.doran.mapper.WeatherMapper;
+
 @RestController
 public class WeatherController {
 
-	private final RestTemplate restTemplate;
+	@Autowired
+	private WeatherMapper weatherMapper;
+	@Autowired
+	private RestTemplate restTemplate;
 
-	public WeatherController(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-	}
+	private String serviceKey = "bvd0WcsuRPzcUhhu82GPw==";
 
-	// 1. 해양 수산부 api 요청 메서드
+	// 현재 날짜 불러오기
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+	String currentDate = LocalDate.now().format(formatter);
+	
+	// 현재 시간 가져오기
+	DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	String currentTime = LocalTime.now().format(timeFormatter);
+	
+	// 0. 전체 정보
 	@GetMapping("/weather")
-	public ResponseEntity<WeatherResponse> getWeatherData() throws ExecutionException, InterruptedException {
-		String serviceKey = "bvd0WcsuRPzcUhhu82GPw==";
-
-		// 현재 날짜 불러오기
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		String currentDate = LocalDate.now().format(formatter);
-		System.out.println(currentDate);
-		List<CompletableFuture<Object>> futures = new ArrayList<>();
-
-		futures.add(fetchData("tideObs", serviceKey, "DT_0007", currentDate));
-		futures.add(fetchData("obsWaveHight", serviceKey, "TW_0062", currentDate));
-		futures.add(fetchData("fcTidalCurrent", serviceKey, "16LTC05", currentDate));
-		futures.add(fetchData("tidalHfRadar", serviceKey, "HF_0074", currentDate));
-		futures.add(fetchData("tideObsTemp", serviceKey, "DT_0007", currentDate));
-		futures.add(fetchData("tideObsAirTemp", serviceKey, "DT_0007", currentDate));
-		futures.add(fetchData("tideObsAirPres", serviceKey, "DT_0007", currentDate));
-		futures.add(fetchData("tideObsWind", serviceKey, "DT_0007", currentDate));
-		futures.add(fetchData("seafogReal", serviceKey, "SF_0007", currentDate));
-
-		// 모든 CompletableFuture가 완료될 때까지 기다림
-		CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-		allFutures.get(); // Blocking until all are done
-
-		// 결과를 수집
-		WeatherResponse response = new WeatherResponse();
-		response.setTideObs(futures.get(0).get());
-		response.setObsWaveHight(futures.get(1).get());
-		response.setFcTidalCurrent(futures.get(2).get());
-		response.setTidalHfRadar(futures.get(3).get());
-		response.setTideObsTemp(futures.get(4).get());
-		response.setTideObsAirTemp(futures.get(5).get());
-		response.setTideObsAirPres(futures.get(6).get());
-		response.setTideObsWind(futures.get(7).get());
-		response.setSeafogReal(futures.get(8).get());
-		System.out.println(response.getTideObs());
-
-		return ResponseEntity.ok(response);
+	public tbl_weather weather() {
+		
+		tbl_weather weather = null;
+		
+		weather.setWDate(currentDate);
+		weather.setWTime(currentTime);
+		weather.setWTemp(0);
+		weather.setWWindSpeed(0);
+		weather.setWWaveHeight(0);
+		weather.setWSeaTemp(0);
+		weather.setWRegion("DT_0007");
+		weather.setSailNum(0);
+		weather.setSiCode(currentDate);
+		weatherMapper.insertWeather(weather);
+		
+		return weather;
 	}
 
-	// 2.
-	private CompletableFuture<Object> fetchData(String type, String serviceKey, String obsCode, String date) {
+	// 1. 조위
+	@GetMapping("/tideObs")
+	public String tideObs() {
+
 		String url = String.format(
-				"http://www.khoa.go.kr/api/oceangrid/%s/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
-				type, serviceKey, obsCode, date);
-		return CompletableFuture.supplyAsync(() -> restTemplate.getForObject(url, Object.class));
+				"http://www.khoa.go.kr/api/oceangrid/tideObs/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "DT_0007", this.currentDate);
+
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
 	}
 
-	// JSON 데이터에서 정보 추출 함수 (예시로 특정 필드 반환)
-	private Object extractInfo(Object jsonData, String fieldName) {
-		// JSON 데이터에서 정보를 추출하는 로직을 구현하세요.
-		// 예시: JsonNode를 사용하여 특정 필드 값을 가져오는 방식
-		// (Jackson 라이브러리 사용 시)
-		return null; // 수정 필요
+	// 2. 파고
+	@GetMapping("/obsWaveHight")
+	public String obsWaveHight() {
+
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/obsWaveHight/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "DT_0042", this.currentDate);
+
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
 	}
 
-	// 4. Response 클래스
-	public static class WeatherResponse {
-		private Object tideObs;
-		private Object obsWaveHight;
-		private Object fcTidalCurrent;
-		private Object tidalHfRadar;
-		private Object tideObsTemp;
-		private Object tideObsAirTemp;
-		private Object tideObsAirPres;
-		private Object tideObsWind;
-		private Object seafogReal;
+	// 3. 조류
+	@GetMapping("/fcTidalCurrent")
+	public String fcTidalCurrent() {
 
-		// Getters and Setters
-		public Object getTideObs() {
-			return tideObs;
-		}
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/fcTidalCurrent/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "01MP-2", this.currentDate);
 
-		public void setTideObs(Object tideObs) {
-			this.tideObs = tideObs;
-		}
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
+	}
 
-		public Object getObsWaveHight() {
-			return obsWaveHight;
-		}
+	// 4. 수온
+	@GetMapping("/tideObsTemp")
+	public String tideObsTemp() {
 
-		public void setObsWaveHight(Object obsWaveHight) {
-			this.obsWaveHight = obsWaveHight;
-		}
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/tideObsTemp/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "DT_0007", this.currentDate);
 
-		public Object getFcTidalCurrent() {
-			return fcTidalCurrent;
-		}
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
+	}
 
-		public void setFcTidalCurrent(Object fcTidalCurrent) {
-			this.fcTidalCurrent = fcTidalCurrent;
-		}
+	// 5. 기온
+	@GetMapping("/tideObsAirTemp")
+	public String tideObsAirTemp() {
 
-		public Object getTidalHfRadar() {
-			return tidalHfRadar;
-		}
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/tideObsAirTemp/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "DT_0007", this.currentDate);
 
-		public void setTidalHfRadar(Object tidalHfRadar) {
-			this.tidalHfRadar = tidalHfRadar;
-		}
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
+	}
 
-		public Object getTideObsTemp() {
-			return tideObsTemp;
-		}
+	// 6. 기압
+	@GetMapping("/tideObsAirPres")
+	public String tideObsAirPres() {
 
-		public void setTideObsTemp(Object tideObsTemp) {
-			this.tideObsTemp = tideObsTemp;
-		}
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/tideObsAirPres/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "DT_0007", this.currentDate);
 
-		public Object getTideObsAirTemp() {
-			return tideObsAirTemp;
-		}
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
+	}
 
-		public void setTideObsAirTemp(Object tideObsAirTemp) {
-			this.tideObsAirTemp = tideObsAirTemp;
-		}
+	// 7. 풍향/풍속
+	@GetMapping("/tideObsWind")
+	public String tideObsWind() {
 
-		public Object getTideObsAirPres() {
-			return tideObsAirPres;
-		}
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/tideObsWind/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "DT_0007", this.currentDate);
 
-		public void setTideObsAirPres(Object tideObsAirPres) {
-			this.tideObsAirPres = tideObsAirPres;
-		}
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
+	}
 
-		public Object getTideObsWind() {
-			return tideObsWind;
-		}
+	// 8. 해무
+	@GetMapping("/seafogReal")
+	public String seafogReal() {
 
-		public void setTideObsWind(Object tideObsWind) {
-			this.tideObsWind = tideObsWind;
-		}
+		String url = String.format(
+				"http://www.khoa.go.kr/api/oceangrid/seafogReal/search.do?ServiceKey=%s&ObsCode=%s&Date=%s&ResultType=json",
+				this.serviceKey, "SF_0007", this.currentDate);
 
-		public Object getSeafogReal() {
-			return seafogReal;
-		}
-
-		public void setSeafogReal(Object seafogReal) {
-			this.seafogReal = seafogReal;
-		}
-
+		// API 요청
+		String response = restTemplate.getForObject(url, String.class);
+		return response;
 	}
 
 }
