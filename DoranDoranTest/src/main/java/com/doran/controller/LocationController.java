@@ -11,6 +11,7 @@ public class LocationController {
 	@GetMapping("/location")
 	public String getLocationInfo(@RequestParam double latitude, @RequestParam double longitude) {
 		RestTemplate restTemplate = new RestTemplate();
+		
 		String apiKey = "AIzaSyAW9QwdMPgIykOFaLdCX5ZJTQOED8FVLfg"; // API 키를 설정하세요.
 		String url = String.format("https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&language=ko&key=%s",
 				latitude, longitude, apiKey);
