@@ -183,94 +183,18 @@
 		<div class="arrow-buttons">
 			<img src="<%=request.getContextPath()%>/resources/img/left.png"
 				alt="left" class="arrow-icon"> <img
-				src="<%=request.getContextPath()%>/resources/img/top.png"
-				alt="top" class="arrow-icon"> <img
+				src="<%=request.getContextPath()%>/resources/img/top.png" alt="top"
+				class="arrow-icon"> <img
 				src="<%=request.getContextPath()%>/resources/img/right.png"
 				alt="right" class="arrow-icon">
 		</div>
 
 	</div>
-	
+
 	<img class="stop-icon"
 		src="<%=request.getContextPath()%>/resources/img/stop.png"
 		alt="멈추기 아이콘" width="40" height="40">
 
-	<script>
-	new Vue({
-        el: '#app',
-        data() {
-            return {
-                map: null,
-                marker: null,
-            };
-        },
-        mounted() {
-            this.initMap();
-            this.updateLocation();
-        },
-        methods: {
-            initMap() {
-                this.map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: 37.5665, lng: 126.9780 },  // 서울 좌표
-                    zoom: 15
-                });
-            },
-            async updateLocation() {
-                const updatePosition = () => {
-                    navigator.geolocation.getCurrentPosition(async (position) => {
-                        const { latitude, longitude } = position.coords;
-                        console.log(`위도: ${latitude}, 경도: ${longitude}`);
-                        
-                        // Google Maps에 마커 표시
-                        if (!this.marker) {
-                            this.marker = new google.maps.Marker({
-                                position: { lat: latitude, lng: longitude },
-                                map: this.map,
-                                icon: {
-                                	url: '<%=request.getContextPath()%>/resources/img/icon.png',
-                                	scaledSize: new google.maps.Size(100, 100)
-                                }
-                            });
-                            
-                            // 마커의 위치로 지도의 중심 이동
-                            this.map.setCenter({ lat: latitude, lng: longitude });
-                            
-                        } else {
-                            this.marker.setPosition({ lat: latitude, lng: longitude });
-                        }
-
-                        // 서버에 위치 정보 요청
-                        try {
-                            const response = await fetch(`/api/location?latitude=${latitude}&longitude=${longitude}`);
-                            const data = await response.json();
-                            console.log(data);
-                        } catch (error) {
-                            console.error('Error fetching location info:', error);
-                        }
-                    }, (error) => {
-                        console.error('Geolocation error:', error);
-                    });
-                };
-
-                // 2초 간격으로 위치 갱신
-                setInterval(updatePosition, 2000);
-            },
-            
-            showInfo(title, content) {
-                const infoPanel = document.getElementById('infoPanel');
-                const infoTitle = document.getElementById('infoTitle');
-                const infoContent = document.getElementById('infoContent');
-                
-                infoTitle.textContent = title;
-                infoContent.textContent = content;
-                infoPanel.classList.add('active');  // 패널 표시
-            },
-            closeInfoPanel() {
-                const infoPanel = document.getElementById('infoPanel');
-                infoPanel.classList.remove('active');  // 패널 숨김
-            }
-        }
-    });
-    </script>
+	<script src="../../resources/js/map.js"></script>
 </body>
 </html>
