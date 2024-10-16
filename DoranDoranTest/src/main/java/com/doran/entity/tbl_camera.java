@@ -12,9 +12,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class tbl_camera {
+	
     private int imgNum; // 이미지 번호
-    private int siNum; // 선박 번호
+    private String siCode; // 선박 코드
     private String obsName; // 장애물 이름
     private String obsImg; // 장애물 이미지
     private String createdAt; // 등록 시간
+    private int sailNum; // 항해 번호
 }

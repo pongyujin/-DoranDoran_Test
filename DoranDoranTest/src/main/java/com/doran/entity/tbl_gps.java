@@ -12,11 +12,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class tbl_gps {
+	
     private int gpsNum; // GPS 번호
-    private int siNum; // 선박 번호
+    private String siCode; // 선박 코드
     private double gpsLat; // 위도
     private double gpsLng; // 경도
     private double gpsSpeed; // 속도
     private String gpsDir; // 방향
     private String gpsTime; // 등록 시간
+    private int sailNum; // 항해 번호
 }
