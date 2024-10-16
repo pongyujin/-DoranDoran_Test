@@ -12,9 +12,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class tbl_ship {
-    private int siNum; // 선박 번호
-    private String siName; // 선박 이름
-    private String siDoes; // 선박 설명
-    private char siCert; // 인증 여부
+	
     private String siCode; // 선박 코드
+    private String memId; // 회원 아이디
+    private String siName; // 선박 이름
+    private String siDocs; // 선박 증빙서류
+    private char siCert; // 인증 여부
+    private char sailStatus; // 운항 상태
 }

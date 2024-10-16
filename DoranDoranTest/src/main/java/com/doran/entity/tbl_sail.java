@@ -11,9 +11,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_member_auth {
-    private int userAuthNum; // 사용자 권한 번호
-    private int memId; // 회원 아이디
-    private int authNum; // 권한 번호
+public class tbl_sail {
+	
+    private int sailNum; // 사용자 권한 번호
+    private String siCode; // 회원 아이디
     private String createdAt; // 등록 날짜
+    private double startLat;
+    private double startLng;
+    private double endLat;
+    private double endLng;
+    private String comment;
 }

@@ -12,6 +12,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class tbl_authority {
+	
     private int authNum; // 권한 번호
     private String authName; // 권한 이름
     private String authDesc; // 권한 설명

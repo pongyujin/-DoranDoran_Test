@@ -11,15 +11,16 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_shipstat {
+public class tbl_waypoint {
 
 	private int statNum; // 상태 번호
-	private int siNum; // 선박 번호
-	private String statDest; // 목적지 명
-	private double statLat; // 목적지 위도
-	private double statLng; // 목적지 경도
+	private String siCode; // 선박 코드
+	private int wayPoint; // 경유지 번호	
+	private String statDest; // 지점 명
+	private double statLat; // 지점 위도
+	private double statLng; // 지점 경도
 	private String statRoute; // 이동 경로
-	private String statStatus; // 운항 상태
 	private String statBattery;// 배터리 상태
 	private String createdAt; // 등록 시간
+	private int sailNum; // 항해 번호
 }

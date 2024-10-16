@@ -12,7 +12,8 @@ import lombok.ToString;
 @Setter
 @ToString
 public class tbl_member {
-    private int memId; // 회원 아이디
+	
+    private String memId; // 회원 아이디
     private String memPw; // 회원 비밀번호
     private String memNick; // 회원 닉네임
     private String memEmail; // 회원 이메일

@@ -12,8 +12,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class tbl_group {
+	
     private int grpNum; // 그룹 번호
-    private String grpName; // 그룹 이름
-    private int memId; // 회원 아이디
+    private String siCode; // 선박 코드
+    private int memId; // 초대인 아이디
     private String createdAt; // 등록 날짜
+    private int authNum; // 권한 번호
+    private String comment; // 코멘트
 }
