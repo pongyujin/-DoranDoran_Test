@@ -130,7 +130,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.11</version>
+			<version>8.0.26</version>
 		</dependency>
 
 		<!-- Spring에서 JDBC를 사용하기 위한 API -->

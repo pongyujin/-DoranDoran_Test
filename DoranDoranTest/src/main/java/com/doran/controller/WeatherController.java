@@ -25,12 +25,12 @@ public class WeatherController {
 	// 현재 날짜 불러오기
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	String currentDate = LocalDate.now().format(formatter);
-	
 	// 현재 시간 가져오기
 	DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 	String currentTime = LocalTime.now().format(timeFormatter);
 	
-	// 0. 전체 정보
+	// 0. 전체 정보 조회
+	@SuppressWarnings("null")
 	@GetMapping("/weather")
 	public tbl_weather weather() {
 		
