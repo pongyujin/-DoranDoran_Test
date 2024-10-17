@@ -195,6 +195,26 @@
 		src="<%=request.getContextPath()%>/resources/img/stop.png"
 		alt="멈추기 아이콘" width="40" height="40">
 
+	<div class="container">
+		<form action="geocode" method="post">
+			<table class="table table-bordered"
+				style="text-align: center; border: 1px solid #dddddd;">
+				<tr>
+					<td style="vertical-align: middle; width: 110px;">주소</td>
+					<td><input type="text" name="address" id="address"
+						placeholder="주소를 입력해주세요" class="form-control"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="submit"
+						class="btn btn-danger btn-sm pull-right" value="주소찾기"> <input
+						type="reset" class="btn btn-warning btn-sm pull-right"
+						value="새로고침"></td>
+				</tr>
+			</table>
+		</form>
+
+	</div>
+
 	<script>
 	
 	new Vue({
@@ -214,7 +234,7 @@
 	            // Google Maps 초기화
 	            this.map = new google.maps.Map(document.getElementById('map'), {
 	                center: { lat: 37.267409, lng: 127.033628 }, // 초기 중심 좌표 (서울)
-	                zoom: 15, // 초기 줌 레벨
+	                zoom: 13, // 초기 줌 레벨
 	                mapTypeId: "terrain", // 지도 유형 설정
 	            });
 
