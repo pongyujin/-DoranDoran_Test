@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_authority {
+public class Authority {
 	
     private int authNum; // 권한 번호
     private String authName; // 권한 이름

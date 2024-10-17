@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_member {
+public class Member {
 	
     private String memId; // 회원 아이디
     private String memPw; // 회원 비밀번호

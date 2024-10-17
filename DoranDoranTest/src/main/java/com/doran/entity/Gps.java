@@ -11,12 +11,14 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_camera {
+public class Gps {
 	
-    private int imgNum; // 이미지 번호
+    private int gpsNum; // GPS 번호
     private String siCode; // 선박 코드
-    private String obsName; // 장애물 이름
-    private String obsImg; // 장애물 이미지
-    private String createdAt; // 등록 시간
+    private double gpsLat; // 위도
+    private double gpsLng; // 경도
+    private double gpsSpeed; // 속도
+    private String gpsDir; // 방향
+    private String gpsTime; // 등록 시간
     private int sailNum; // 항해 번호
 }

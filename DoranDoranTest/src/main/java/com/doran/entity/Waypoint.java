@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_waypoint {
+public class Waypoint {
 
 	private int statNum; // 상태 번호
 	private String siCode; // 선박 코드
