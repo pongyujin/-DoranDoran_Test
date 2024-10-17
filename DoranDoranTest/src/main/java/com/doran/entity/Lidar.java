@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_lidar {
+public class Lidar {
 	
 	private int lidNum; // 라이다 번호
 	private String siCode; // 선박 코드

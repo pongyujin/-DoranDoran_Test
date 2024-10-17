@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.doran.entity.tbl_group;
-import com.doran.entity.tbl_ship;
+import com.doran.entity.ShipGroup;
+import com.doran.entity.Ship;
 import com.doran.mapper.AuthMapper;
 
 @RequestMapping("/group")
@@ -27,15 +27,15 @@ public class AuthController {
 
 	// 1. 선박번호로 그룹 멤버 리스트 가져오기
 	@GetMapping("/list")
-	public List<tbl_group> groupList(String siCode) {
+	public List<ShipGroup> groupList(String siCode) {
 
-		List<tbl_group> groupList = authMapper.groupList(siCode);
+		List<ShipGroup> groupList = authMapper.groupList(siCode);
 		return groupList;
 	}
 
 	// 2. 그룹 초대
 	@PostMapping("/invite")
-	public void invite(@RequestBody tbl_group tbl_group) {
+	public void invite(@RequestBody ShipGroup tbl_group) {
 
 		tbl_group.setAuthNum(0);
 		authMapper.invite(tbl_group);
@@ -43,7 +43,7 @@ public class AuthController {
 
 	// 3. 그룹 권한 수정(권한 부여)
 	@PutMapping("/update")
-	public String update(@RequestBody tbl_group tbl_group, tbl_ship tbl_ship, RedirectAttributes rttr) {
+	public String update(@RequestBody ShipGroup tbl_group, Ship tbl_ship, RedirectAttributes rttr) {
 
 		if (topAuth(tbl_ship)) {
 
@@ -57,9 +57,9 @@ public class AuthController {
 	}
 
 	// 4. 관리자 확인(로그인한 아이디가 선박 등록인과 일치하는지)
-	public boolean topAuth(tbl_ship tbl_ship) {
+	public boolean topAuth(Ship tbl_ship) {
 
-		tbl_ship check = authMapper.topAuth(tbl_ship);
+		Ship check = authMapper.topAuth(tbl_ship);
 
 		if (check != null) {
 			return true;
@@ -69,7 +69,7 @@ public class AuthController {
 
 	// 5. 회원 삭제
 	@DeleteMapping("/delete")
-	public void delete(@RequestBody tbl_group tbl_group, tbl_ship tbl_ship, RedirectAttributes rttr) {
+	public void delete(@RequestBody ShipGroup tbl_group, Ship tbl_ship, RedirectAttributes rttr) {
 
 		if (topAuth(tbl_ship)) {
 

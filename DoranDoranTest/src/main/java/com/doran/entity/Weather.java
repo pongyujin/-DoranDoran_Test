@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class tbl_weather {
+public class Weather {
 	
     private int wNum; // 기상 번호
     private String wDate; // 기상일
