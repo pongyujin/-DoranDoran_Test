@@ -13,11 +13,6 @@ import com.doran.entity.Coordinate;
 @RestController
 public class LocationController {
 
-	// map.jsp 이동
-	@GetMapping("/map")
-	public String showMap() {
-		return "map";
-	}
 
 	// 1. 구글 마커 표시 api
 	@GetMapping("/marker")
