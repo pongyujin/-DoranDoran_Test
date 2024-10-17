@@ -32,7 +32,7 @@ public class LocationController {
 		return response; // JSON 응답을 반환합니다.
 	}
 	
-	// 2. a* 경로 좌표리스트 반환
+	// 2. a* 경로 지도에 표시하도록 좌표리스트 반환
 	@GetMapping("/course")
     public List<Coordinate> getFlightPlanCoordinates() {
 		

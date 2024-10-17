@@ -7,6 +7,9 @@
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
+<script
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg&callback=initMap&v=weekly"
+	defer></script>
 <style>
 
 /* 지도 및 버튼 스타일 */
