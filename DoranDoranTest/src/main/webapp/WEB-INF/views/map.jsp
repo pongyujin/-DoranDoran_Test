@@ -2,14 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Vue.js with Google Maps</title>
+<title>map1</title>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
-<script
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg&callback=initMap&v=weekly"
-	defer></script>
 <style>
 
 /* 지도 및 버튼 스타일 */
@@ -200,38 +197,111 @@
 
 	<script>
 	
-	function initMap() {
-		const map = new google.maps.Map(document.getElementById("map"), {
-			zoom: 3,
-			center: { lat: 0, lng: -180 },
-			mapTypeId: "terrain",
-		});
+	new Vue({
+	    el: '#app',
+	    data() {
+	        return {
+	            map: null,    // Google Maps 객체를 저장할 변수
+	            marker: null, // 사용자 마커 객체를 저장할 변수
+	        };
+	    },
+	    mounted() {
+	        this.initMap(); // 컴포넌트가 마운트될 때 지도 초기화
+	        this.updateLocation(); // 위치 업데이트 시작
+	    },
+	    methods: {
+	        initMap() {
+	            // Google Maps 초기화
+	            this.map = new google.maps.Map(document.getElementById('map'), {
+	                center: { lat: 37.267409, lng: 127.033628 }, // 초기 중심 좌표 (서울)
+	                zoom: 15, // 초기 줌 레벨
+	                mapTypeId: "terrain", // 지도 유형 설정
+	            });
 
-		// AJAX를 이용하여 서버에서 좌표 데이터를 받아옴
-		fetch('/course')
-			.then(response => response.json())  // JSON 형태로 변환
-			.then(data => {
-				// flightPlanCoordinates에 서버에서 받은 데이터를 할당
-				const flightPlanCoordinates = data.map(coord => ({ lat: coord.lat, lng: coord.lng }));
+	            // 경로 좌표 리스트 (예시 데이터)
+	            const flightPlanCoordinates = [
+	                { lat: 37.267409, lng: 127.033628 },
+	                { lat: 37.288332, lng: 127.012152 },
+	                { lat: 37.314092, lng: 126.949152 },
+	                { lat: 37.275035, lng: 126.942629 },
+	                { lat: 37.253723, lng: 126.916879 }
+	            ];
 
-				// Google Maps Polyline 생성
-				const flightPath = new google.maps.Polyline({
-					path: flightPlanCoordinates,
-					geodesic: true,
-					strokeColor: "#FF0000",
-					strokeOpacity: 1.0,
-					strokeWeight: 2,
-				});
+	            // Polyline 객체 생성
+	            const flightPath = new google.maps.Polyline({
+	                path: flightPlanCoordinates, // Polyline에 사용할 좌표 경로
+	                geodesic: true, // 곡선을 그리기 위해 지구 곡선 사용
+	                strokeColor: "#FF0000", // 선 색상
+	                strokeOpacity: 1.0, // 선 투명도
+	                strokeWeight: 3, // 선 두께
+	            });
 
-				// 경로를 지도에 추가
-				flightPath.setMap(map);
-			})
-			.catch(error => console.error('Error fetching coordinates:', error));
-	}
+	            // 생성한 Polyline을 지도에 추가
+	            flightPath.setMap(this.map);
+	        },
+	        async updateLocation() {
+	            // 위치 업데이트를 위한 함수
+	            const updatePosition = () => {
+	                // Geolocation API를 사용하여 현재 위치 가져오기
+	                navigator.geolocation.getCurrentPosition(async (position) => {
+	                    const { latitude, longitude } = position.coords; // 위도, 경도 추출
+	                    console.log(`위도: ${latitude}, 경도: ${longitude}`);
 
-	window.initMap = initMap;
+	                    // Google Maps에 사용자 마커 표시
+	                    if (!this.marker) {
+	                        // 마커가 없는 경우 새로 생성
+	                        this.marker = new google.maps.Marker({
+	                            position: { lat: latitude, lng: longitude }, // 마커 위치
+	                            map: this.map, // 표시할 지도
+	                            icon: {
+	                                url: '<%=request.getContextPath()%>/resources/img/icon.png', // 마커 아이콘 경로
+	                                scaledSize: new google.maps.Size(100, 100) // 아이콘 크기 조정
+	                            }
+	                        });
+
+	                        // 마커의 위치로 지도의 중심 이동
+	                        this.map.setCenter({ lat: latitude, lng: longitude });
+	                    } else {
+	                        // 마커가 이미 있는 경우 위치 업데이트
+	                        this.marker.setPosition({ lat: latitude, lng: longitude });
+	                    }
+
+	                    // 서버에 위치 정보 요청
+	                    try {
+	                        const response = await fetch(`/api/location?latitude=${latitude}&longitude=${longitude}`);
+	                        const data = await response.json();
+	                        console.log(data);
+	                    } catch (error) {
+	                        console.error('Error fetching location info:', error);
+	                    }
+	                }, (error) => {
+	                    console.error('Geolocation error:', error); // 오류 처리
+	                });
+	            };
+
+	            // 2초 간격으로 위치 갱신
+	            setInterval(updatePosition, 10000);
+	        },
+
+	        showInfo(title, content) {
+	            // 정보 패널 표시
+	            const infoPanel = document.getElementById('infoPanel');
+	            const infoTitle = document.getElementById('infoTitle');
+	            const infoContent = document.getElementById('infoContent');
+
+	            infoTitle.textContent = title; // 패널 제목 설정
+	            infoContent.textContent = content; // 패널 내용 설정
+	            infoPanel.classList.add('active'); // 패널 표시
+	        },
+	        closeInfoPanel() {
+	            // 정보 패널 숨김
+	            const infoPanel = document.getElementById('infoPanel');
+	            infoPanel.classList.remove('active'); // 패널 숨김
+	        }
+	    }
+	});
+
 
 	</script>
-	<script src="../../resources/js/map.js"></script>
 </body>
 </html>
