@@ -1,8 +1,16 @@
 package com.doran.hardware;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
+import javax.imageio.ImageIO;
+
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 public class test {
 
@@ -11,7 +19,7 @@ public class test {
 		// 1. 라즈베리파이와 연결
 		RaspberrypiConnect rp = new RaspberrypiConnect();
 		String user = "xo";
-		String host = "192.168.219.47";
+		String host = "192.168.219.42";
 		int port = 22;
 		String password = "xo";
 		String command = "cd projects && cd Yolo5 && python3 finala_server_boat_up1.py";
@@ -24,22 +32,39 @@ public class test {
 		jss.createUI();
 		ServerSocket serverSocket = jss.createServer(jPort); // 소켓 생성
 
-		// 3. Python 파일 실행을 비동기 처리 (별도의 스레드)
-		new Thread(() -> {
-			// py파일 연결
-			PythonConnect py = new PythonConnect();
-			py.python(); // Python 스크립트 실행
-		}).start();
+		
 
 		// 4. 클라이언트 연결을 처리
 		if (serverSocket != null) {
 			while (true) { // 클라이언트 연결 대기
 				try {
-					System.out.println("클라이언트 연결 대기 중...");
 					Socket clientSocket = serverSocket.accept(); // 클라이언트 연결 수락
 					System.out.println("클라이언트가 연결되었습니다.");
-					// 클라이언트 연결 처리
-					jss.ClientConnection(clientSocket);
+					// 클라이언트 연결 처리 후 반환된 데이터를 받음 (객체 이름, 객체 이미지)
+					Map<String, Object> resultCam = jss.camConnection(clientSocket);
+
+					// resultCam에서 obsName와 image값을 추출
+					if (resultCam.get("obsName") != null) {
+						String obsName = (String) resultCam.get("obsName");
+						BufferedImage image = (BufferedImage) resultCam.get("image");
+
+						// 프로젝트 실행 경로를 기준으로 파일을 저장
+						String projectPath = System.getProperty("user.dir"); // 현재 프로젝트 경로 가져오기
+						String relativePath = projectPath + "/src/main/resources/cameraImage/" + obsName + ".png"; // 상대
+																													// 경로
+																													// 설정
+
+						// BufferedImage를 PNG 파일로 저장
+						File outputfile = new File(relativePath);
+						try {
+							ImageIO.write(image, "png", outputfile); // "png"를 "jpg"로 변경하여 JPG로 저장 가능
+							System.out.println("이미지가 파일로 저장되었습니다: " + outputfile.getAbsolutePath());
+
+						} catch (IOException e) {
+							System.out.println("이미지 파일 저장 중 오류 발생");
+							e.printStackTrace();
+						}
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -47,4 +72,5 @@ public class test {
 		}
 
 	}
+
 }
