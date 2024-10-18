@@ -17,7 +17,7 @@ public interface AuthMapper {
 	// 3. 권한 수정
 	public void update(ShipGroup shipGroup);
 	// 4. 권한 확인
-	public Ship authCheck(Ship ship);
+	public ShipGroup authCheck(ShipGroup shipGroup);
 	// 5. 회원 삭제
 	public void delete(ShipGroup shipGroup);
 	
