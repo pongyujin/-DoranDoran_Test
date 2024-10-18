@@ -1,106 +1,102 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="modal.jsp" %> <!-- modal.jsp 파일을 포함 -->
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ include file="modal.jsp"%>
+<!-- modal.jsp 파일을 포함 -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>선박 메인 화면</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
+<title>선박 메인 화면</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+	href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap"
+	rel="stylesheet">
 
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow-x: hidden;
-            font-family: 'Roboto Slab', serif;
-        }
+<style>
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	overflow-x: hidden;
+	font-family: 'Roboto Slab', serif;
+}
 
-        .background-image {
-            position: relative;
-            width: 100vw;
-            height: 200vh;
-            background-image: linear-gradient(
-                to bottom,
-                rgba(4, 27, 35, 0) 0%,
-                rgba(4, 27, 35, 0.5) 50%,
-                rgba(4, 27, 35, 1) 100%
-            ), url('<%=request.getContextPath()%>/resources/img/선박.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
+.background-image {
+	position: relative;
+	width: 100vw;
+	height: 200vh;
+	background-image: linear-gradient(to bottom, rgba(4, 27, 35, 0) 0%,
+		rgba(4, 27, 35, 0.5) 50%, rgba(4, 27, 35, 1) 100%),
+		url('<%=request.getContextPath()%>/resources/img/선박.jpg');
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
 
-        .header {
-            position: fixed;
-            top: 0;
-            right: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            z-index: 1000;
-        }
+.header {
+	position: fixed;
+	top: 0;
+	right: 50px;
+	height: 50px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	z-index: 1000;
+}
 
-        .header a {
-            color: white;
-            margin-left: 20px;
-            text-decoration: none;
-            font-size: 18px;
-            padding: 0 10px;
-            position: relative;
-            padding-top: 10px;
-        }
+.header a {
+	color: white;
+	margin-left: 20px;
+	text-decoration: none;
+	font-size: 18px;
+	padding: 0 10px;
+	position: relative;
+	padding-top: 10px;
+}
 
-        .header a:not(:first-child)::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 10px;
-            bottom: 0;
-            width: 1px;
-            background-color: white;
-        }
+.header a:not(:first-child)::before {
+	content: '';
+	position: absolute;
+	left: -10px;
+	top: 10px;
+	bottom: 0;
+	width: 1px;
+	background-color: white;
+}
 
-        .header a:first-child {
-            border-left: none;
-        }
+.header a:first-child {
+	border-left: none;
+}
 
-        .header a:hover {
-            text-decoration: underline;
-        }
+.header a:hover {
+	text-decoration: underline;
+}
 
-        .scroll-section {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(
-                to bottom,
-                rgba(4, 27, 35, 1) 0%,
-                rgba(4, 27, 35, 0.98) 15%,
-                rgba(4, 27, 35, 0.95) 30%,
-                rgba(4, 27, 35, 0.9) 50%,
-                rgba(4, 27, 35, 0.85) 70%,
-                rgba(4, 27, 35, 0.8) 100%
-            );
-            color: white;
-            font-size: 24px;
-        }
-    </style>
+.scroll-section {
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: linear-gradient(to bottom, rgba(4, 27, 35, 1) 0%,
+		rgba(4, 27, 35, 0.98) 15%, rgba(4, 27, 35, 0.95) 30%,
+		rgba(4, 27, 35, 0.9) 50%, rgba(4, 27, 35, 0.85) 70%,
+		rgba(4, 27, 35, 0.8) 100%);
+	color: white;
+	font-size: 24px;
+}
+</style>
+
 </head>
 <body>
 
-    <div class="header">
-        <a href="#" id="openJoinModal">Join</a>
-        <a href="#" id="openLoginModal">Login</a>
-    </div>
+	<div class="header">
+		<a href="#" id="openJoinModal">Join</a> <a href="#"
+			id="openLoginModal">Login</a>
+	</div>
 
-    <div class="background-image"></div>
-    <div class="scroll-section"></div>
+	<div class="background-image"></div>
+	<div class="scroll-section"></div>
 
-    <script>
+	<script>
         // Join 모달 열기
         document.getElementById("openJoinModal").addEventListener("click", function(e) {
             e.preventDefault();
@@ -132,6 +128,24 @@
             document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
             document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
         });
+        
     </script>
+    
+    <%
+    Boolean openLoginModal = (Boolean) session.getAttribute("openLoginModal");
+    if (openLoginModal != null && openLoginModal) {
+        // 세션에서 로그인 모달을 열라는 신호가 있으면
+        session.removeAttribute("openLoginModal"); // 신호 제거
+	%>
+        <script>
+            document.getElementById("loginModal").style.display = "block"; // Login 모달 열기
+            document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
+            document.getElementById("openLoginModal").style.display = "none"; // Login 버튼 숨기기
+            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
+        </script>
+	<%
+    }
+	%>
+    
 </body>
 </html>

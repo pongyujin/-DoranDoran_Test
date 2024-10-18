@@ -28,7 +28,7 @@ public class ShipController {
 	@RequestMapping("/all")
 	public List<Ship> shipList(HttpSession session) {
 
-		Member login = (Member) session.getAttribute("login");
+		Member login = (Member) session.getAttribute("user");
 
 		List<Ship> shipList = shipMapper.shipList(login.getMemId());
 		return shipList;
@@ -60,5 +60,4 @@ public class ShipController {
 		ship.setSiCert('1'); // 승인
 		shipMapper.approveShip(ship);
 	}
-
 }
