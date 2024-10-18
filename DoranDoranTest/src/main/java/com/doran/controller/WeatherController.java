@@ -8,9 +8,8 @@ import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,6 +38,24 @@ public class WeatherController {
 	// 현재 시간 가져오기
 	DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:00");
 	String currentTime = LocalTime.now().minusMinutes(10).format(timeFormatter);
+
+	// 0. 현재 기상 정보 db 저장
+	@PostMapping("/weather")
+	public Weather weather(Weather weather) {
+
+		System.out.println(weather);
+		weather.setWDate(currentDate);
+		weather.setWTime(currentTime);
+		weather.setWTemp(tideObsAirTemp());
+		weather.setWWindSpeed(tideObsWind());
+		weather.setWWaveHeight(obsWaveHight());
+		weather.setWSeaTemp(tideObsTemp());
+		weather.setWRegion("DT_0007");
+		System.out.println(weather);
+
+		weatherMapper.insertWeather(weather);
+		return weather;
+	}
 
 	// 0. json 파싱 포맷(차이가 작은 시간)
 	public String weatherParsing2(String response, String what) {
@@ -88,25 +105,7 @@ public class WeatherController {
 		}
 	}
 
-	// 0. 전체 정보 조회
-	@PostMapping("/weather")
-	public Weather weather(@ModelAttribute Weather weather) {
-		
-		System.out.println(weather);
-		weather.setWDate(currentDate);
-		weather.setWTime(currentTime);
-		weather.setWTemp(tideObsAirTemp());
-		weather.setWWindSpeed(tideObsWind());
-		weather.setWWaveHeight(obsWaveHight());
-		weather.setWSeaTemp(tideObsTemp());
-		weather.setWRegion("DT_0007");
-		System.out.println(weather);
-
-		weatherMapper.insertWeather(weather);
-
-		return weather;
-	}
-
+	// --------------------------------------------------------------------------------------------------
 	// 1. 조위 (완)
 	@GetMapping("/tideObs")
 	public String tideObs() {
@@ -122,7 +121,7 @@ public class WeatherController {
 		return result;
 	}
 
-	// 2. 파고 (보류 - 형식다름)
+	// 2. 파고 (완 - 형식다름)
 	@GetMapping("/obsWaveHight")
 	public String obsWaveHight() {
 
@@ -158,7 +157,7 @@ public class WeatherController {
 				String recordTimeString = node.path("record_time").asText();
 				LocalDateTime recordTime = LocalDateTime.parse(recordTimeString, recordTimeFormatter);
 				LocalDateTime CurrentTime = LocalDateTime.parse(formattedCurrentTime, recordTimeFormatter);
-				
+
 				// 현재 시간과 record_time 간의 차이 계산
 				long difference = Math.abs(Duration.between(CurrentTime, recordTime).toMinutes());
 
@@ -227,7 +226,7 @@ public class WeatherController {
 		return result;
 	}
 
-	// 6. 기압 (완, 이긴한데 변수있음 00:01분 부터 3분 단위인것같아)
+	// 6. 기압 (완 - 3분 단위)
 	@GetMapping("/tideObsAirPres")
 	public String tideObsAirPres() {
 

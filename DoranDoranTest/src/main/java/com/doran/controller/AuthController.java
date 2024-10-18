@@ -18,6 +18,7 @@ import com.doran.entity.ShipGroup;
 import com.doran.entity.Ship;
 import com.doran.mapper.AuthMapper;
 
+// 그룹의 권한을 관리하고 수정/삭제하는 controller
 @RequestMapping("/group")
 @Controller
 public class AuthController {

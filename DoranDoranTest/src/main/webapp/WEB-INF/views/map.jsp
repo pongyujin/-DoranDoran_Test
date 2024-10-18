@@ -196,17 +196,27 @@
 		alt="멈추기 아이콘" width="40" height="40">
 
 	<div class="container">
-		<form action="geocode" method="post">
+		<form action="sail/insert" method="post">
 			<table class="table table-bordered"
 				style="text-align: center; border: 1px solid #dddddd;">
 				<tr>
-					<td style="vertical-align: middle; width: 110px;">주소</td>
-					<td><input type="text" name="address" id="address"
-						placeholder="주소를 입력해주세요" class="form-control"></td>
+					<td style="vertical-align: middle; width: 110px;">선박 코드</td>
+					<td><input type="text" name="siCode" id="siCode"
+						placeholder="선박 코드를 입력해주세요" class="form-control"></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; width: 110px;">출발지</td>
+					<td><input type="text" name="startSail" id="startSail"
+						placeholder="출발지를 입력해주세요" class="form-control"></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; width: 110px;">목적지</td>
+					<td><input type="text" name="endSail" id="endSail"
+						placeholder="목적지를 입력해주세요" class="form-control"></td>
 				</tr>
 				<tr>
 					<td colspan="2"><input type="submit"
-						class="btn btn-danger btn-sm pull-right" value="주소찾기"> <input
+						class="btn btn-danger btn-sm pull-right" value="항해 시작"> <input
 						type="reset" class="btn btn-warning btn-sm pull-right"
 						value="새로고침"></td>
 				</tr>
@@ -254,19 +264,127 @@
 	        initMap() {
 	            // Google Maps 초기화
 	            this.map = new google.maps.Map(document.getElementById('map'), {
-	                center: { lat: 37.267409, lng: 127.033628 }, // 초기 중심 좌표 (서울)
+	                center: { lat: 34.500000, lng: 128.730000 }, // 초기 중심 좌표 (서울)
 	                zoom: 13, // 초기 줌 레벨
 	                mapTypeId: "terrain", // 지도 유형 설정
 	            });
 
 	            // 경로 좌표 리스트 (예시 데이터)
 	            const flightPlanCoordinates = [
-	                { lat: 37.267409, lng: 127.033628 },
-	                { lat: 37.288332, lng: 127.012152 },
-	                { lat: 37.314092, lng: 126.949152 },
-	                { lat: 37.275035, lng: 126.942629 },
-	                { lat: 37.253723, lng: 126.916879 }
-	            ];
+    { lat: 34.500000, lng: 128.730000 },
+    { lat: 34.503015, lng: 128.722764 },
+    { lat: 34.508543, lng: 128.717588 },
+    { lat: 34.514070, lng: 128.712412 },
+    { lat: 34.519598, lng: 128.707236 },
+    { lat: 34.525126, lng: 128.702060 },
+    { lat: 34.530653, lng: 128.702060 },
+    { lat: 34.536181, lng: 128.702060 },
+    { lat: 34.541709, lng: 128.702060 },
+    { lat: 34.547236, lng: 128.702060 },
+    { lat: 34.552764, lng: 128.702060 },
+    { lat: 34.558291, lng: 128.702060 },
+    { lat: 34.563819, lng: 128.702060 },
+    { lat: 34.569347, lng: 128.702060 },
+    { lat: 34.574874, lng: 128.702060 },
+    { lat: 34.580402, lng: 128.702060 },
+    { lat: 34.585930, lng: 128.702060 },
+    { lat: 34.591457, lng: 128.702060 },
+    { lat: 34.596985, lng: 128.702060 },
+    { lat: 34.602513, lng: 128.702060 },
+    { lat: 34.607985, lng: 128.710016 },
+    { lat: 34.614002, lng: 128.716287 },
+    { lat: 34.620020, lng: 128.722558 },
+    { lat: 34.626037, lng: 128.728829 },
+    { lat: 34.632055, lng: 128.735100 },
+    { lat: 34.638072, lng: 128.741371 },
+    { lat: 34.644090, lng: 128.747642 },
+    { lat: 34.650107, lng: 128.753913 },
+    { lat: 34.656125, lng: 128.760184 },
+    { lat: 34.662142, lng: 128.766455 },
+    { lat: 34.668160, lng: 128.772726 },
+    { lat: 34.674177, lng: 128.778997 },
+    { lat: 34.680195, lng: 128.785268 },
+    { lat: 34.686212, lng: 128.791539 },
+    { lat: 34.692230, lng: 128.797810 },
+    { lat: 34.698248, lng: 128.804081 },
+    { lat: 34.704265, lng: 128.810353 },
+    { lat: 34.710283, lng: 128.816624 },
+    { lat: 34.716300, lng: 128.822895 },
+    { lat: 34.722318, lng: 128.829166 },
+    { lat: 34.728335, lng: 128.835437 },
+    { lat: 34.734353, lng: 128.841708 },
+    { lat: 34.740370, lng: 128.847979 },
+    { lat: 34.746388, lng: 128.854250 },
+    { lat: 34.752405, lng: 128.860521 },
+    { lat: 34.758423, lng: 128.866792 },
+    { lat: 34.764440, lng: 128.873063 },
+    { lat: 34.770458, lng: 128.879334 },
+    { lat: 34.776475, lng: 128.885605 },
+    { lat: 34.782493, lng: 128.891876 },
+    { lat: 34.788510, lng: 128.898147 },
+    { lat: 34.794528, lng: 128.904418 },
+    { lat: 34.800545, lng: 128.910689 },
+    { lat: 34.800545, lng: 128.916960 },
+    { lat: 34.800545, lng: 128.923231 },
+    { lat: 34.800545, lng: 128.929503 },
+    { lat: 34.800545, lng: 128.935774 },
+    { lat: 34.800545, lng: 128.942045 },
+    { lat: 34.800545, lng: 128.948316 },
+    { lat: 34.806984, lng: 128.942596 },
+    { lat: 34.814117, lng: 128.937328 },
+    { lat: 34.821250, lng: 128.932060 },
+    { lat: 34.828383, lng: 128.926792 },
+    { lat: 34.835516, lng: 128.921524 },
+    { lat: 34.842649, lng: 128.916256 },
+    { lat: 34.849782, lng: 128.910988 },
+    { lat: 34.856915, lng: 128.905720 },
+    { lat: 34.864048, lng: 128.900452 },
+    { lat: 34.871180, lng: 128.895184 },
+    { lat: 34.878313, lng: 128.889916 },
+    { lat: 34.885446, lng: 128.884648 },
+    { lat: 34.892579, lng: 128.879381 },
+    { lat: 34.899712, lng: 128.874113 },
+    { lat: 34.906845, lng: 128.879381 },
+    { lat: 34.913978, lng: 128.884648 },
+    { lat: 34.921111, lng: 128.889916 },
+    { lat: 34.928244, lng: 128.895184 },
+    { lat: 34.935377, lng: 128.900452 },
+    { lat: 34.942510, lng: 128.900452 },
+    { lat: 34.949643, lng: 128.900452 },
+    { lat: 34.956776, lng: 128.900452 },
+    { lat: 34.963909, lng: 128.900452 },
+    { lat: 34.971042, lng: 128.900452 },
+    { lat: 34.978175, lng: 128.900452 },
+    { lat: 34.985307, lng: 128.900452 },
+    { lat: 34.992440, lng: 128.900452 },
+    { lat: 34.999573, lng: 128.900452 },
+    { lat: 35.006706, lng: 128.900452 },
+    { lat: 35.013839, lng: 128.900452 },
+    { lat: 35.020972, lng: 128.900452 },
+    { lat: 35.028105, lng: 128.900452 },
+    { lat: 35.035238, lng: 128.900452 },
+    { lat: 35.042371, lng: 128.900452 },
+    { lat: 35.049504, lng: 128.900452 },
+    { lat: 35.056637, lng: 128.900452 },
+    { lat: 35.063770, lng: 128.900452 },
+    { lat: 35.070903, lng: 128.900452 },
+    { lat: 35.078036, lng: 128.900452 },
+    { lat: 35.085169, lng: 128.900452 },
+    { lat: 35.092302, lng: 128.900452 },
+    { lat: 35.099434, lng: 128.900452 },
+    { lat: 35.106567, lng: 128.900452 },
+    { lat: 35.113700, lng: 128.900452 },
+    { lat: 35.120833, lng: 128.900452 },
+    { lat: 35.127966, lng: 128.900452 },
+    { lat: 35.135099, lng: 128.900452 },
+    { lat: 35.142232, lng: 128.900452 },
+    { lat: 35.149365, lng: 128.900452 },
+    { lat: 35.156498, lng: 128.900452 },
+    { lat: 35.163631, lng: 128.900452 },
+    { lat: 35.170764, lng: 128.900452 },
+    { lat: 35.177897, lng: 128.900452 }
+    ];
+
 
 	            // Polyline 객체 생성
 	            const flightPath = new google.maps.Polyline({
