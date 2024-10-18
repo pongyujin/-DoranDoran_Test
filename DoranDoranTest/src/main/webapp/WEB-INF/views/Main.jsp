@@ -53,9 +53,14 @@
             padding-top: 10px;
         }
 
-        /* 세로 막대 제거 */
         .header a:not(:first-child)::before {
-            content: none;
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            bottom: 0;
+            width: 1px;
+            background-color: white;
         }
 
         .header a:first-child {
@@ -99,29 +104,33 @@
         // Join 모달 열기
         document.getElementById("openJoinModal").addEventListener("click", function(e) {
             e.preventDefault();
-            document.getElementById("joinModal").style.display = "block";
-            document.getElementById("openLoginModal").style.display = "none"; // Login 버튼 숨기기
-            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
+            document.getElementById("joinModal").style.display = "block"; // Join 모달 열기
+            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
+            document.getElementById("openJoinModal").style.display = "none"; // Join 버튼 숨기기
+            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 보이기
         });
 
         // Login 모달 열기
         document.getElementById("openLoginModal").addEventListener("click", function(e) {
             e.preventDefault();
-            document.getElementById("loginModal").style.display = "block";
-            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
+            document.getElementById("loginModal").style.display = "block"; // Login 모달 열기
+            document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
             document.getElementById("openLoginModal").style.display = "none"; // Login 버튼 숨기기
+            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
         });
 
         // Join 모달 닫기
         document.getElementById("closeJoinModal").addEventListener("click", function() {
-            document.getElementById("joinModal").style.display = "none";
+            document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
+            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
             document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
         });
 
         // Login 모달 닫기
         document.getElementById("closeLoginModal").addEventListener("click", function() {
-            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
             document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
+            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
         });
     </script>
 </body>
