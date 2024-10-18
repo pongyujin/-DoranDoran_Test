@@ -2,6 +2,8 @@ package com.doran.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.doran.entity.Ship;
+import com.doran.entity.Member;
 import com.doran.entity.ShipGroup;
 import com.doran.mapper.AuthMapper;
 
@@ -23,12 +25,17 @@ public class AuthController {
 
 	@Autowired
 	private AuthMapper authMapper;
-	private int authNum = 1;
 
 	// 0. 권한 확인(세션의 로그인 아이디 정보와 선박코드로 권한 번호 확인)
-	public void authCheck(Ship ship) {
+    @PostMapping("/authCheck")
+	public int authCheck(ShipGroup shipGroup, HttpSession session) {
 
-		Ship check = authMapper.authCheck(ship);
+    	Member login = (Member) session.getAttribute("login");
+    	shipGroup.setMemId(login.getMemId());
+    	
+		ShipGroup check = authMapper.authCheck(shipGroup);
+		int authNum = check.getAuthNum();
+		return authNum;
 	}
 
 	// 1. 선박번호로 그룹 멤버 리스트 가져오기
@@ -41,17 +48,20 @@ public class AuthController {
 
 	// 2. 그룹 초대
 	@PostMapping("/invite")
-	public void invite(@RequestBody ShipGroup shipGroup) {
+	public void invite(@RequestBody ShipGroup shipGroup, HttpSession session) {
 
-		shipGroup.setAuthNum(0);
-		authMapper.invite(shipGroup);
+		if(authCheck(shipGroup, session) == 0) {
+
+			shipGroup.setAuthNum(0);
+			authMapper.invite(shipGroup);
+		}
 	}
 
 	// 3. 그룹 권한 수정(권한 부여)
 	@PutMapping("/update")
-	public String update(@RequestBody ShipGroup shipGroup, Ship ship, RedirectAttributes rttr) {
+	public String update(@RequestBody ShipGroup shipGroup, RedirectAttributes rttr, HttpSession session) {
 
-		if(1>0) {
+		if(authCheck(shipGroup, session) == 0) {
 
 			authMapper.update(shipGroup);
 		} else {
@@ -64,9 +74,9 @@ public class AuthController {
 
 	// 4. 회원 삭제
 	@DeleteMapping("/delete")
-	public void delete(@RequestBody ShipGroup shipGroup, Ship ship, RedirectAttributes rttr) {
+	public void delete(@RequestBody ShipGroup shipGroup, RedirectAttributes rttr, HttpSession session) {
 
-		if (1>0) {
+		if (authCheck(shipGroup, session) == 0) {
 
 			authMapper.delete(shipGroup);
 		} else {

@@ -18,8 +18,8 @@
 		where siCode=#{siCode} and memId=#{memId}
 	</update>
 
-	<select id="topAuth" parameterType="com.doran.entity.Ship" resultType="com.doran.entity.Ship">
-		select * from ship
+	<select id="authCheck" parameterType="com.doran.entity.ShipGroup" resultType="com.doran.entity.ShipGroup">
+		select * from shipGroup
 		where siCode=#{siCode} and memId=#{memId}
 	</select>
 	
