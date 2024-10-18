@@ -1,0 +1,132 @@
+@charset "UTF-8";
+
+/* 지도 및 버튼 스타일 */
+#map {
+	width: 100%; /* 너비를 100%로 설정 */
+	height: 900px; /* 높이를 800px로 늘림 */
+}
+
+.map-button {
+	position: absolute;
+	top: 20px;
+	left: 200px;
+	z-index: 1; /* 지도 위에 버튼이 표시되도록 z-index 설정 */
+	background-color: white;
+	border: 2px solid #007bff;
+	padding: 10px;
+	cursor: pointer;
+}
+/* 아이콘 패널 스타일 */
+.icon-panel {
+	position: absolute;
+	top: 100px;
+	right: 10px;
+	background-color: rgba(0, 0, 0, 0.7);
+	border-radius: 10px;
+	padding: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 1; /* 지도 위에 표시되도록 설정 */
+}
+
+.icon {
+	width: 50px; /* 아이콘의 너비를 증가 */
+	height: 50px; /* 아이콘의 높이를 증가 */
+	background-color: rgba(255, 255, 255, 0.1);
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.3s ease;
+	font-size: 27px; /* 아이콘 자체의 크기를 키움 */
+}
+
+.icon:hover {
+	background-color: rgba(255, 255, 255, 0.3);
+	transform: scale(1.1);
+}
+/* 정보 패널 스타일 */
+.info-panel {
+	position: absolute;
+	top: 100px;
+	right: 70px; /* 아이콘 옆에 표시되도록 */
+	background-color: rgba(0, 0, 0, 0.9);
+	border-radius: 10px;
+	padding: 20px;
+	width: 250px;
+	color: white;
+	display: none; /* 기본적으로 숨김 */
+	z-index: 2;
+}
+
+.info-panel.active {
+	display: block; /* 아이콘 클릭 시 나타나도록 설정 */
+}
+
+.info-panel h3 {
+	margin-top: 0;
+	font-size: 18px;
+	text-align: center;
+}
+
+.info-panel p {
+	font-size: 14px;
+	text-align: center;
+}
+/* 닫기 버튼 */
+.close-btn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	cursor: pointer;
+	font-size: 20px;
+	color: white;
+	background-color: transparent;
+	border: none;
+}
+
+/* stop 아이콘의 스타일 정의 */
+.stop-icon {
+	width: 150px; /* 이미지 너비 */
+	height: 150px; /* 이미지 높이 */
+	display: block; /* 이미지가 독립적인 블록으로 표시되도록 */
+	margin: 0 auto; /* 이미지 가운데 정렬 */
+	border-radius: 5px; /* 모서리를 둥글게 */
+	/* 추가된 위치 조정 속성 */
+	position: relative; /* 현재 위치 기준으로 이동 */
+	top: 10px; /* 밑으로 10px 이동 */
+	bottom: 20px;
+	left: 270px; /* 오른쪽으로 10px 이동 */
+}
+
+.control-panel {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 50px;
+}
+
+.arrow-buttons {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.arrow-buttons img {
+	width: 50px;
+	height: 50px;
+	margin: 5px;
+	cursor: pointer;
+}
+
+.stop-btn {
+	background-color: red;
+	color: white;
+	padding: 10px 30px;
+	border-radius: 50%;
+	font-size: 18px;
+	border: none;
+	cursor: pointer;
+}

@@ -2,11 +2,11 @@ package com.doran.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.doran.entity.tbl_shipstat;
+import com.doran.entity.Waypoint;
 
 @Mapper
 public interface tbl_shipstatMapper {
-	
-	public tbl_shipstat shipstatSelect(tbl_shipstat shipstat);
+
+	public Waypoint getShipStat(int siNum);
 
 }

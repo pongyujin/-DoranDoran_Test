@@ -1,23 +1,22 @@
 package com.doran.hardware;
 
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.doran.mapper.tbl_cameraMapper;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.awt.image.*;
-import javax.imageio.ImageIO;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class JavaSocketServer {
 	private JFrame frame;
