@@ -12,4 +12,10 @@ public class GoMapController {
 	public String showMap() {
 		return "map";
 	}
+
+	// map2.jsp 이동
+	@RequestMapping("/map2")
+	public String showMap2() {
+		return "map2";
+	}
 }

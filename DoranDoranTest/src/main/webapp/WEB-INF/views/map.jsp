@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>map1</title>
+<title>map</title>
 <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
 <script
@@ -439,7 +439,7 @@
 	            };
 
 	            // 2초 간격으로 위치 갱신
-	            setInterval(updatePosition, 10000);
+	            setInterval(updatePosition, 10000000000);
 	        },
 
 	        showInfo(title, content) {
@@ -459,7 +459,6 @@
 	        }
 	    }
 	});
-
 
 	</script>
 </body>
