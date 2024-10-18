@@ -20,6 +20,7 @@ public class Weather {
     private String wWindSpeed; // 풍속
     private String wWaveHeight; // 파고
     private String wSeaTemp; // 해수 온도
+    private String statBattery; //배터리상태
     private String wRegion; // 기상 지역
     private int sailNum;
     private String siCode;
