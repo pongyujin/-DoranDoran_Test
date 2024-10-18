@@ -243,14 +243,15 @@
         position: absolute;
         top: 170px; /* 화면의 위쪽에서 80px (이전보다 10px 더 아래) */
         left: 170px; /* 화면의 왼쪽에서 80px (이전보다 20px 더 오른쪽) */
-        color: black; /* 기본 모드에서는 검은색 */
+        color: black !important;
+ /* 기본 모드에서는 검은색 */
         z-index: 1000;
         padding: 10px;
         border-radius: 5px;
     }
 
     .dark-mode .speed-display {
-        color: white;
+        color: white !important;
     }
 
     </style>
