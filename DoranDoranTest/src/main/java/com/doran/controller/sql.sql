@@ -1,6 +1,11 @@
+select * from weather;
+INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
+VALUES ('sohui', '1234', 'olivia', 'sohui@gmail.com', '010-1234-5678');
+INSERT INTO ship (siCode, memId, siName, siDocs, siCert, sailStatus)
+VALUES ('oliviaship01', 'sohui', 'olivia Voyager', 'Registration', '1', '0');
+INSERT INTO sail (siCode, startLat, startLng, endLat, endLng, comment)
+VALUES ('oliviaship01', 34.56123456789101, 126.12345678901234, 35.12345678901234, 127.56789012345678, 'First voyage to Busan.');
 
-
-select * from SHIPGROUP;
 
 
 ---------------------------------------------------------------------------------
