@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doran.mapper.AuthMapper">
+
+	<select id="groupList" parameterType="String" resultType="com.doran.entity.ShipGroup">
+		select * from shipGroup
+		where siCode=#{siCode}
+	</select>
+	
+	<insert id="invite" parameterType="com.doran.entity.ShipGroup">
+		INSERT INTO shipGroup (siCode, memId, createdAT, authNum, comment) 
+		VALUES (#{siCode}, #{memId}, NOW(), #{authNum}, #{comment});
+	</insert>
+
+	<update id="update" parameterType="com.doran.entity.ShipGroup">
+		update shipGroup set
+		authNum=#{authNum}
+		where siCode=#{siCode} and memId=#{memId}
+	</update>
+
+	<select id="topAuth" parameterType="com.doran.entity.Ship" resultType="com.doran.entity.Ship">
+		select * from ship
+		where siCode=#{siCode} and memId=#{memId}
+	</select>
+	
+	<delete id="delete" parameterType="com.doran.entity.ShipGroup">
+		delete from shipGroup
+		where siCode=#{siCode} and memId=#{memId}
+	</delete>
+	
+</mapper>
