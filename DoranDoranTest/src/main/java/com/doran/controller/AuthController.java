@@ -25,6 +25,13 @@ public class AuthController {
 
 	@Autowired
 	private AuthMapper authMapper;
+	private int authNum = 1;
+
+	// 0. 권한 확인(세션의 로그인 아이디 정보와 선박코드로 권한 번호 확인)
+	public void authCheck(Ship ship) {
+
+		Ship check = authMapper.authCheck(ship);
+	}
 
 	// 1. 선박번호로 그룹 멤버 리스트 가져오기
 	@GetMapping("/list")
@@ -46,7 +53,7 @@ public class AuthController {
 	@PutMapping("/update")
 	public String update(@RequestBody ShipGroup shipGroup, Ship ship, RedirectAttributes rttr) {
 
-		if (topAuth(ship)) {
+		if(1>0) {
 
 			authMapper.update(shipGroup);
 		} else {
@@ -57,22 +64,11 @@ public class AuthController {
 		return "redirect:/";
 	}
 
-	// 4. 권한 확인(로그인한 아이디가 선박 등록인과 일치하는지)
-	public boolean topAuth(Ship ship) {
-
-		Ship check = authMapper.topAuth(ship);
-
-		if (check != null) {
-			return true;
-		} else
-			return false;
-	}
-
-	// 5. 회원 삭제
+	// 4. 회원 삭제
 	@DeleteMapping("/delete")
 	public void delete(@RequestBody ShipGroup shipGroup, Ship ship, RedirectAttributes rttr) {
 
-		if (topAuth(ship)) {
+		if (1>0) {
 
 			authMapper.delete(shipGroup);
 		} else {
