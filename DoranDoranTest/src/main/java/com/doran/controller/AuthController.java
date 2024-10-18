@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping("/authCheck")
 	public int authCheck(ShipGroup shipGroup, HttpSession session) {
 
-    	Member login = (Member) session.getAttribute("login");
+    	Member login = (Member) session.getAttribute("user");
     	shipGroup.setMemId(login.getMemId());
     	
 		ShipGroup check = authMapper.authCheck(shipGroup);
