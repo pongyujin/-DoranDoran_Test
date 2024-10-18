@@ -1,6 +1,7 @@
 # 빌드 결과물 및 컴파일된 파일들 제외
 target/
 bin/
+DoranDoranTest/target/m2e-wtp/web-resources/META-INF/maven/com.doran/controller/pom.properties
 
 # 이클립스 설정 파일 제외
 .classpath
