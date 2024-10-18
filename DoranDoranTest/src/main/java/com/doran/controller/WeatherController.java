@@ -1,11 +1,16 @@
 package com.doran.controller;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,31 +38,13 @@ public class WeatherController {
 
 	// 현재 시간 가져오기
 	DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:00");
-	String currentTime = LocalTime.now().minusMinutes(10).format(timeFormatter); // 5분 빼기
+	String currentTime = LocalTime.now().minusMinutes(10).format(timeFormatter);
 
-	// 0. 전체 정보 조회
-	@SuppressWarnings("null")
-	@GetMapping("/weather")
-	public Weather weather() {
+	// 0. json 파싱 포맷(차이가 작은 시간)
+	public String weatherParsing2(String response, String what) {
 
-		Weather weather = null;
-
-		weather.setWDate(currentDate);
-		weather.setWTime(currentTime);
-		weather.setWTemp(0);
-		weather.setWWindSpeed(0);
-		weather.setWWaveHeight(0);
-		weather.setWSeaTemp(0);
-		weather.setWRegion("DT_0007");
-		weather.setSailNum(0);
-		weather.setSiCode(currentDate);
-		weatherMapper.insertWeather(weather);
-
-		return weather;
-	}
-
-	// 0. json 파싱
-	public String weatherParsing(String response, String what) {
+		// 현재 시간 가져오기
+		LocalDateTime currentTime = LocalDateTime.now().withSecond(0); // 초는 00으로 맞춤
 
 		// JSON 파싱
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -67,28 +54,57 @@ public class WeatherController {
 
 			String whatResult = null;
 			String RecordTime = null;
-			System.out.println(this.barcurrentDate + " " + this.currentTime);
+			long smallestDifference = Long.MAX_VALUE;
+
+			// 날짜 포맷터 설정
+			DateTimeFormatter recordTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 			for (JsonNode node : dataNode) {
-				String recordTime = node.path("record_time").asText();
-				if (recordTime.equals(this.barcurrentDate + " " + this.currentTime)) {
+				// record_time을 LocalDateTime으로 변환
+				String recordTimeString = node.path("record_time").asText();
+				LocalDateTime recordTime = LocalDateTime.parse(recordTimeString, recordTimeFormatter);
+
+				// 현재 시간과 record_time 간의 차이 계산
+				long difference = Math.abs(Duration.between(currentTime, recordTime).toMinutes());
+
+				// 차이가 더 작으면 해당 데이터를 저장
+				if (difference < smallestDifference) {
+					smallestDifference = difference;
 					whatResult = node.path(what).asText();
-					RecordTime = recordTime;
-					break; // 일치하는 데이터 찾으면 종료
+					RecordTime = recordTimeString;
 				}
 			}
 
+			// 결과 반환
 			if (whatResult != null && RecordTime != null) {
-
-				return String.format(what + ": %s, record_time: %s", whatResult, RecordTime);
+				return whatResult;
 			} else {
-				System.out.println("No matching data found.");
+				return "No matching data found.";
 			}
-			return "";
+
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "Error while parsing the response.";
 		}
-		return "";
+	}
+
+	// 0. 전체 정보 조회
+	@PostMapping("/weather")
+	public Weather weather(@ModelAttribute Weather weather) {
+		
+		System.out.println(weather);
+		weather.setWDate(currentDate);
+		weather.setWTime(currentTime);
+		weather.setWTemp(tideObsAirTemp());
+		weather.setWWindSpeed(tideObsWind());
+		weather.setWWaveHeight(obsWaveHight());
+		weather.setWSeaTemp(tideObsTemp());
+		weather.setWRegion("DT_0007");
+		System.out.println(weather);
+
+		weatherMapper.insertWeather(weather);
+
+		return weather;
 	}
 
 	// 1. 조위 (완)
@@ -101,7 +117,7 @@ public class WeatherController {
 
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
-		String result = weatherParsing(response, "tide_level");
+		String result = weatherParsing2(response, "tide_level");
 
 		return result;
 	}
@@ -116,7 +132,55 @@ public class WeatherController {
 
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
-		return response;
+
+		// 현재 시간 가져오기
+		LocalDateTime currentTime = LocalDateTime.now().withSecond(0); // 초는 00으로 맞춤
+
+		// 원하는 형식으로 현재 시간을 포맷
+		DateTimeFormatter currentFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		String formattedCurrentTime = currentTime.format(currentFormatter);
+
+		// JSON 파싱
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			JsonNode jsonNode = objectMapper.readTree(response);
+			JsonNode dataNode = jsonNode.path("result").path("data");
+
+			String waveHeight = null;
+			String RecordTime = null;
+			long smallestDifference = Long.MAX_VALUE;
+
+			// 날짜 포맷터 설정
+			DateTimeFormatter recordTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+			for (JsonNode node : dataNode) {
+				// record_time을 LocalDateTime으로 변환
+				String recordTimeString = node.path("record_time").asText();
+				LocalDateTime recordTime = LocalDateTime.parse(recordTimeString, recordTimeFormatter);
+				LocalDateTime CurrentTime = LocalDateTime.parse(formattedCurrentTime, recordTimeFormatter);
+				
+				// 현재 시간과 record_time 간의 차이 계산
+				long difference = Math.abs(Duration.between(CurrentTime, recordTime).toMinutes());
+
+				// 차이가 더 작으면 해당 데이터를 저장
+				if (difference < smallestDifference) {
+					smallestDifference = difference;
+					waveHeight = node.path("wave_height").asText();
+					RecordTime = recordTimeString;
+				}
+			}
+
+			// 결과 반환
+			if (waveHeight != null && RecordTime != null) {
+				return waveHeight;
+			} else {
+				return "No matching data found.";
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error while parsing the response.";
+		}
 	}
 
 	// 3. 조류 (보류 - 형식다름)(dto에 없음)
@@ -129,6 +193,7 @@ public class WeatherController {
 
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
+
 		return response;
 	}
 
@@ -142,7 +207,7 @@ public class WeatherController {
 
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
-		String result = weatherParsing(response, "water_temp");
+		String result = weatherParsing2(response, "water_temp");
 
 		return result;
 	}
@@ -157,7 +222,7 @@ public class WeatherController {
 
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
-		String result = weatherParsing(response, "air_temp");
+		String result = weatherParsing2(response, "air_temp");
 
 		return result;
 	}
@@ -172,9 +237,9 @@ public class WeatherController {
 
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
-		String result = weatherParsing(response, "air_pres");
+		String result = weatherParsing2(response, "air_pres");
 
-		return response;
+		return result;
 	}
 
 	// 7. 풍향/풍속 (완 - 형식다름)
@@ -196,22 +261,34 @@ public class WeatherController {
 
 			String windDir = null;
 			String windSpeed = null;
-			String RecordTime = null;
-			System.out.println(this.barcurrentDate + " " + this.currentTime);
+			String recordTimeResult = null;
+			long smallestDifference = Long.MAX_VALUE;
+
+			// 현재 시간 가져오기
+			LocalDateTime currentTime = LocalDateTime.now().withSecond(0); // 초는 0으로 맞춤
+
+			// 날짜 포맷터 설정
+			DateTimeFormatter recordTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 			for (JsonNode node : dataNode) {
-				String recordTime = node.path("record_time").asText();
-				if (recordTime.equals(this.barcurrentDate + " " + this.currentTime)) {
+				// record_time을 LocalDateTime으로 변환
+				String recordTimeString = node.path("record_time").asText();
+				LocalDateTime recordTime = LocalDateTime.parse(recordTimeString, recordTimeFormatter);
+
+				// 현재 시간과 record_time 간의 차이 계산
+				long difference = Math.abs(Duration.between(currentTime, recordTime).toMinutes());
+
+				// 차이가 더 작으면 해당 데이터를 저장
+				if (difference < smallestDifference) {
+					smallestDifference = difference;
 					windDir = node.path("wind_dir").asText();
 					windSpeed = node.path("wind_speed").asText();
-					RecordTime = recordTime;
-					break; // 일치하는 데이터 찾으면 종료
+					recordTimeResult = recordTimeString;
 				}
 			}
 
-			if (windDir != null && windSpeed != null && RecordTime != null) {
-
-				return String.format("wind_dir : %s, wind_speed : %s, record_time: %s", windDir, windSpeed, RecordTime);
+			if (windDir != null && windSpeed != null && recordTimeResult != null) {
+				return windSpeed;
 			} else {
 				return "No matching data found.";
 			}
@@ -222,7 +299,7 @@ public class WeatherController {
 		return response;
 	}
 
-	// 8. 해무
+	// 8. 해무 (미완 - 필요가 잇나)
 	@GetMapping("/seafogReal")
 	public String seafogReal() {
 

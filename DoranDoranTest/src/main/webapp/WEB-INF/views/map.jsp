@@ -212,6 +212,27 @@
 				</tr>
 			</table>
 		</form>
+		<form action="weather" method="post">
+			<table class="table table-bordered"
+				style="text-align: center; border: 1px solid #dddddd;">
+				<tr>
+					<td style="vertical-align: middle; width: 110px;">선박 코드</td>
+					<td><input type="text" name="siCode" id="siCode"
+						placeholder="선박 코드를 입력해주세요" class="form-control"></td>
+				</tr>
+				<tr>
+					<td style="vertical-align: middle; width: 110px;">항해 번호</td>
+					<td><input type="number" name="sailNum" id="sailNum"
+						placeholder="항해번호 입력해주세요" class="form-control"></td>
+				</tr>
+				<tr>
+					<td colspan="2"><input type="submit"
+						class="btn btn-danger btn-sm pull-right" value="기상데이터"> <input
+						type="reset" class="btn btn-warning btn-sm pull-right"
+						value="새로고침"></td>
+				</tr>
+			</table>
+		</form>
 
 	</div>
 
