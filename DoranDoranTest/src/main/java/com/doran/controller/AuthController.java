@@ -36,19 +36,19 @@ public class AuthController {
 
 	// 2. 그룹 초대
 	@PostMapping("/invite")
-	public void invite(@RequestBody ShipGroup tbl_group) {
+	public void invite(@RequestBody ShipGroup shipGroup) {
 
-		tbl_group.setAuthNum(0);
-		authMapper.invite(tbl_group);
+		shipGroup.setAuthNum(0);
+		authMapper.invite(shipGroup);
 	}
 
 	// 3. 그룹 권한 수정(권한 부여)
 	@PutMapping("/update")
-	public String update(@RequestBody ShipGroup tbl_group, Ship tbl_ship, RedirectAttributes rttr) {
+	public String update(@RequestBody ShipGroup shipGroup, Ship ship, RedirectAttributes rttr) {
 
-		if (topAuth(tbl_ship)) {
+		if (topAuth(ship)) {
 
-			authMapper.update(tbl_group);
+			authMapper.update(shipGroup);
 		} else {
 
 			rttr.addFlashAttribute("msgType", "실패");
@@ -57,10 +57,10 @@ public class AuthController {
 		return "redirect:/";
 	}
 
-	// 4. 관리자 확인(로그인한 아이디가 선박 등록인과 일치하는지)
-	public boolean topAuth(Ship tbl_ship) {
+	// 4. 권한 확인(로그인한 아이디가 선박 등록인과 일치하는지)
+	public boolean topAuth(Ship ship) {
 
-		Ship check = authMapper.topAuth(tbl_ship);
+		Ship check = authMapper.topAuth(ship);
 
 		if (check != null) {
 			return true;
@@ -70,11 +70,11 @@ public class AuthController {
 
 	// 5. 회원 삭제
 	@DeleteMapping("/delete")
-	public void delete(@RequestBody ShipGroup tbl_group, Ship tbl_ship, RedirectAttributes rttr) {
+	public void delete(@RequestBody ShipGroup shipGroup, Ship ship, RedirectAttributes rttr) {
 
-		if (topAuth(tbl_ship)) {
+		if (topAuth(ship)) {
 
-			authMapper.delete(tbl_group);
+			authMapper.delete(shipGroup);
 		} else {
 
 			rttr.addFlashAttribute("msgType", "실패");

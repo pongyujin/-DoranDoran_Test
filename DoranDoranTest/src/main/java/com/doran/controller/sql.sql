@@ -1,9 +1,5 @@
 
-select * from tbl_member;
-
-
-select * from tbl_camera;
-
+select * from sail;
 select * from sail;
 INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
 VALUES ('sohui', '1234', 'olivia', 'sohui@gmail.com', '010-1234-5678');
