@@ -18,4 +18,10 @@
 		where siCode=#{siCode} and memId=#{memId}
 	</update>
 	
+	<update id="sailStatus" parameterType="com.doran.entity.Ship">
+		update ship set
+		sailStatus=#{sailStatus}
+		where memId=#{memId} and siCode=#{siCode}
+	</update>
+	
 </mapper>

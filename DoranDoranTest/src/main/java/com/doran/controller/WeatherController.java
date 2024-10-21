@@ -6,10 +6,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
+@EnableScheduling // 스케줄링 기능 활성화
 public class WeatherController {
 
 	@Autowired
@@ -37,27 +42,82 @@ public class WeatherController {
 
 	// 현재 시간 가져오기
 	DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:00");
-	String currentTime = LocalTime.now().minusMinutes(10).format(timeFormatter);
+	String currentTime = LocalTime.now().format(timeFormatter);
 
-	// 0. 현재 기상 정보 db 저장
-	@PostMapping("/weather")
-	public Weather weather(Weather weather) {
-
-		System.out.println(weather);
-		weather.setWDate(currentDate);
-		weather.setWTime(currentTime);
-		weather.setWTemp(tideObsAirTemp());
-		weather.setWWindSpeed(tideObsWind());
-		weather.setWWaveHeight(obsWaveHight());
-		weather.setWSeaTemp(tideObsTemp());
-		weather.setWRegion("DT_0007");
-		System.out.println(weather);
-
-		weatherMapper.insertWeather(weather);
-		return weather;
+	// 메서드 실행 시 초기값 세팅
+    @PostConstruct
+    public void init() {
+        updateDateTime(); // 초기화 시에도 현재 날짜와 시간 세팅
+    }
+	
+	// 날짜와 시간 갱신 메서드
+	private void updateDateTime() {
+		currentDate = LocalDate.now().format(formatter);
+		barcurrentDate = LocalDate.now().format(barformatter);
+		currentTime = LocalTime.now().format(timeFormatter);
 	}
 
-	// 0. json 파싱 포맷(차이가 작은 시간)
+	// Weather 객체를 필드로 추가
+	private Weather currentWeather;
+
+	// main. 현재 기상 정보 db 저장----------------------------------------------------
+	@PostMapping("/weather")
+	@Async
+	public void weather(Weather weather) {
+		
+		this.currentWeather = weather;
+
+		currentWeather.setWDate(currentDate);
+		currentWeather.setWTime(currentTime);
+		currentWeather.setWTemp(tideObsAirTemp());
+		currentWeather.setStatBattery("80");
+		currentWeather.setWWindSpeed(tideObsWind());
+		currentWeather.setWWaveHeight(obsWaveHight());
+		currentWeather.setWSeaTemp(tideObsTemp());
+		currentWeather.setWRegion("DT_0007");
+		System.out.println(weather);
+
+		weatherMapper.insertWeather(currentWeather);
+	}
+
+	private boolean sailingStarted = false; // 항해 시작 여부를 저장하는 변수
+	
+	// main-1. 항해 시작 메서드
+	public void startSail() {
+
+		sailingStarted = true;
+		if (sailingStarted) {
+			System.out.println("항해가 시작되었습니다.");
+		} else {
+			System.out.println("항해가 중단되었습니다.");
+		}
+	}
+
+	// main-2. 항해 종료 메서드
+	public void endSail() {
+
+		sailingStarted = false;
+		if (sailingStarted) {
+			System.out.println("항해가 시작되었습니다.");
+		} else {
+			System.out.println("항해가 중단되었습니다.");
+		}
+	}
+
+	// main-3. 스케줄링 메서드(weather 메서드가 1분에 한번씩 실행되도록 설정)
+	@Scheduled(fixedRate = 60000)
+	public void scheduleWeatherUpdate() {
+
+		if (sailingStarted) {
+			updateDateTime(); // 현재 날짜와 시간 갱신
+			if (currentWeather != null) { 
+				// currentWeather가 null이 아닐 경우에만 실행
+                weather(currentWeather);
+            }
+		}
+	}
+
+	// 0. json 파싱 포맷(차이가 작은 시간)------------------------------------------------
 	public String weatherParsing2(String response, String what) {
 
 		// 현재 시간 가져오기
@@ -222,7 +282,7 @@ public class WeatherController {
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
 		String result = weatherParsing2(response, "air_temp");
-
+		
 		return result;
 	}
 
