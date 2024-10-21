@@ -10,7 +10,7 @@ import os
 
 
 # video_url = 'http://192.168.0.14:5001/video'
-video_url = 'http://192.168.219.42:5001/video'
+video_url = 'http://192.168.219.47:5001/video'
 
 
 def send_data_to_java_server(frame, detections):
