@@ -146,6 +146,22 @@ body, html {
 	<%
     }
 	%>
+	
+	<%
+    Boolean openJoinModal = (Boolean) session.getAttribute("openJoinModal");
+    if (openJoinModal != null && openJoinModal) {
+        // 세션에서 회원가입 모달을 열라는 신호가 있으면
+        session.removeAttribute("openJoinModal"); // 신호 제거
+	%>
+        <script>
+            document.getElementById("joinModal").style.display = "block"; // Join 모달 열기
+            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
+            document.getElementById("openJoinModal").style.display = "none"; // Join 버튼 숨기기
+            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 보이기
+        </script>
+	<%
+    }
+	%>
     
 </body>
 </html>
