@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.doran.entity.Sail;
+import com.doran.entity.Weather;
 import com.doran.mapper.SailMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,31 +35,42 @@ public class SailController {
 
 	private final String apiKey = "AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg";
 	private final String placeKey = "AIzaSyAW9QwdMPgIykOFaLdCX5ZJTQOED8FVLfg";
+	
+	@Autowired
+	private WeatherController weatherController;
 
 	// 0. 항해 정보 최초 생성 (Db 저장)
 	@PostMapping("/insert")
-	public Sail sailInsert(Sail sail) {
+	public void sailInsert(Sail sail) {
 
-		// 선박 코드와 출발지 목적지 주소를 Sail로 받음
 		try {
 
 			sail = coordinates(sail);
+			System.out.println(sail);
 			sailMapper.insert(sail);
-
+			System.out.println(sail);
+			
+			// 항해 시작 메서드(WeatherController)
+			weatherController.toggleWeather(); 			
+			// Weather 데이터를 설정하여 weather 메서드 호출
+			Weather weather = new Weather();
+			weather.setSailNum(sail.getSailNum());
+			weather.setSiCode(sail.getSiCode());
+	        weatherController.weather(weather);
+			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return sail;
 	}
-
-	// 0-1. 항해 코멘트 수정
+	
+	// 1. 항해 코멘트 수정
 	@PutMapping("/comment")
 	public void comment(Sail sail) {
 
 		sailMapper.comment(sail);
 	}
 
-	// 0-2. 항해 상세내용 보기
+	// 2. 항해 상세내용 보기
 	@GetMapping("/content")
 	public Sail sailContent(Sail sail) {
 
@@ -65,14 +78,14 @@ public class SailController {
 		return result;
 	}
 
-	// 0-3. 항해 삭제하기
+	// 3. 항해 삭제하기
 	@DeleteMapping("/delete")
 	public void sailDelete(Sail sail) {
 
 		sailMapper.delete(sail);
 	}
 
-	// 0-4 전체 항해 리스트 불러오기(선박코드로 전체 항해 정보 불러오기)
+	// 4. 전체 항해 리스트 불러오기(선박코드로 전체 항해 정보 불러오기)
 	@RequestMapping("/all")
 	public List<Sail> sailList(Sail sail) {
 
