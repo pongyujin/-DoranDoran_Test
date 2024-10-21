@@ -46,7 +46,6 @@ public class SailController {
 		try {
 
 			sail = coordinates(sail);
-			System.out.println(sail);
 			sailMapper.insert(sail);
 			System.out.println(sail);
 			
