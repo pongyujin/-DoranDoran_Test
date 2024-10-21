@@ -60,9 +60,8 @@ public class MemberController {
 	@PostMapping("/memberLogin")
 	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
 
-		System.out.println(member);
 		Member mvo = memberMapper.memberLogin(member);
-		System.out.println(mvo);
+		
 		if (mvo == null) {
 
 			rttr.addFlashAttribute("msgType", "실패");
@@ -84,10 +83,10 @@ public class MemberController {
 
 	// 3. 아이디 중복 확인
 	@RequestMapping("/registerCheck")
-	public int registerCheck(@RequestParam("memID") String memID) {
+	public @ResponseBody int registerCheck(@RequestParam("memId") String memId) {
 
-		Member member = memberMapper.registerCheck(memID);
-		if (member != null || memID.equals("")) {
+		Member member = memberMapper.registerCheck(memId);
+		if (member != null || memId.equals("")) {
 			return 0;
 		} else {
 			return 1;
