@@ -58,29 +58,28 @@ public class MemberController {
 	// 2. 로그인
 	@PostMapping("/memberLogin")
 	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
+	    Member mvo = memberMapper.memberLogin(member);
 
-		System.out.println(member);
-		Member mvo = memberMapper.memberLogin(member);
-		System.out.println(mvo);
-		if (mvo == null) {
+	    if (mvo == null) {
+	        System.out.println("세션에 저장할 사용자 정보: " + mvo);  // mvo 객체의 전체 값 확인
+	        rttr.addFlashAttribute("msgType", "실패");
+	        rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
+	        session.setAttribute("openLoginModal", true);
+	        return "redirect:/main";
+	    } else {
+	        // 로그인 성공 시 세션에 Member 객체 저장
+	        session.setAttribute("user", mvo);
+	        rttr.addFlashAttribute("msgType", "성공");
+	        rttr.addFlashAttribute("msg", "로그인에 성공했습니다");
 
-			rttr.addFlashAttribute("msgType", "실패");
-			rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
-			session.setAttribute("openLoginModal", true);
-			System.out.println("실패");
+	        // 세션에 저장된 Member 객체가 모든 값을 가지고 있는지 확인하는 로그 출력
+	        System.out.println("세션에 저장된 사용자 정보: " + session.getAttribute("user"));
+	        System.out.println("닉네임: " + mvo.getMemNick());
+	        System.out.println("이메일: " + mvo.getMemEmail());
+	        System.out.println("전화번호: " + mvo.getMemPhone());
 
-			return "redirect:/main";
-		} else {
-
-			// 로그인 성공
-			rttr.addFlashAttribute("msgType", "성공");
-			rttr.addFlashAttribute("msg", "로그인을 성공했습니다");
-			System.out.println("성공");
-			// 로그인 정보 세션 저장
-			session.setAttribute("user", member);
-
-			return "redirect:/main";
-		}
+	        return "redirect:/main";  // main으로 이동
+	    }
 	}
 
 	// 3. 아이디 중복 확인
@@ -101,5 +100,6 @@ public class MemberController {
 
 		session.invalidate();
 		return "redirect:/main";
+		
 	}
 }
