@@ -6,7 +6,77 @@
 	rel="stylesheet">
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+  	
+  // 1. 아이디 중복 체크
+  	function registerCheck(){
+  	
+  		// 아이디 중복 확인
+  		var memId = $("#memId").val();
+  		
+  		$.ajax({
+  			url : "registerCheck",
+  			type : "get",
+  			data : {"memId" : memId},
+  			success : function(data){
+  				if(data==0){
+  					$("#checkMessage").text("사용 불가능한 아이디 입니다.");
+  					$("#messageType").attr("class","modal-content panel-danger")
+  				}else{
+  					$("#checkMessage").text("사용 가능한 아이디 입니다.");
+  					$("#messageType").attr("class","modal-content panel-success")
+  				}
+  			},
+  			error : function(){
+  				console.log("error");
+  			}
+  		});
 	
+  		// 모달창 띄우기
+  		$("#myModal").modal("show");
+  	}
+  	
+  	// 2. 비밀번호 확인
+  	function passwordCheck(){
+  		
+  		var pw1 = $("#memPw1").val();
+  		var pw2 = $("#memPw2").val();
+  		
+  		if(pw1==pw2){
+  			$("#passMessage").attr("style", "color:green; vertical-align:middle;");
+  			$("#memPw").attr("value", pw1)
+  			$("#passMessage").text("비밀 번호가 일치합니다");
+  		}else{
+  			$("#passMessage").attr("style", "color:red; vertical-align:middle;");
+  			$("#passMessage").text("비밀 번호가 일치하지 않습니다");
+  		}
+  	}
+  	
+  	// 3-1. 회원가입 실패 모달창 띄우기
+  	$(document).ready(
+  		function(){
+  			if(${not empty msgType}){
+  				if(${msgType eq "실패"}){
+  					$("#messageType2").attr("class", "modal-content panel-warning");
+  				}
+  				$("#myMessage").modal("show");
+  			}
+  		}
+  	);
+  	
+ 	// 3-2. 로그인 실패 모달창 띄우기
+	$(document).ready(
+		function(){
+			if(${not empty msgType}){
+				if(${msgType eq "실패"}){
+					$("#messageType").attr("class", "modal-content panel-danger");
+				}
+				$("#myMessage").modal("show");
+			}
+		}
+	);
+  	
+  </script>
 
 <!-- Join 모달 -->
 <div id="joinModal" class="modal">
@@ -15,10 +85,10 @@
 	<div class="modal-content">
 		<form action="memberJoin" method="post">
 			<!--  비밀번호가 일치할 경우에만 데이터 넘겨주기  -->
-			<input type="hidden" id="memPw" name="memPw" value=""> <input
+			<input type="hidden" id="memPw1" name="memPw1" value=""> <input
 				type="text" id="memId" name="memId" placeholder="ID">
 			<button type="button" id="checkDuplicate" class="duplicate-btn" onclick="registerCheck()">중복체크</button>
-			<input type="password" id="memPw1" name="memPw1"
+			<input type="password" id="memPw" name="memPw"
 				placeholder="Password"> <input type="password" id="memPw2"
 				name="memPw2" placeholder="Password Check"> <input
 				type="text" id="memNick" name="memNick" placeholder="Nickname">
@@ -36,9 +106,12 @@
 	<h2>Login</h2>
 	<div class="modal-content">
 		<form action="memberLogin" method="post">
-		
-		<input type="text" id="memId" name="memId" placeholder="ID"> <input
-			type="password" id="memPw" name="memPw" placeholder="Password">
+
+			<input type="text" id="memId" name="memId" placeholder="ID">
+			<input type="password" id="memPw" name="memPw" placeholder="Password">
+			<button type="submit" class="join-button">Login</button>
+
+		</form>
 		<!-- 소셜 로그인 버튼 -->
 		<div class="social-login">
 			<a href="https://accounts.google.com/signin/oauth"
@@ -55,8 +128,7 @@
 				alt="Kakao" />
 			</a>
 		</div>
-		<button type="submit" class="join-button">Login</button>
-		</form>
+
 	</div>
 </div>
 
@@ -226,74 +298,3 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 	margin-top: -12px; /* 살짝 위로 이동 */
 }
 </style>
-<script type="text/javascript">
-  	
-  // 1. 아이디 중복 체크
-  	function registerCheck(){
-  	
-  		// 아이디 중복 확인
-  		var memId = $("#memId").val();
-  		
-  		$.ajax({
-  			url : "registerCheck",
-  			type : "get",
-  			data : {"memId" : memId},
-  			success : function(data){
-  				if(data==0){
-  					$("#checkMessage").text("사용 불가능한 아이디 입니다.");
-  					$("#messageType").attr("class","modal-content panel-danger")
-  				}else{
-  					$("#checkMessage").text("사용 가능한 아이디 입니다.");
-  					$("#messageType").attr("class","modal-content panel-success")
-  				}
-  			},
-  			error : function(){
-  				console.log("error");
-  			}
-  		});
-	
-  		// 모달창 띄우기
-  		$("#myModal").modal("show");
-  	}
-  	
-  	// 2. 비밀번호 확인
-  	function passwordCheck(){
-  		
-  		var pw1 = $("#memPw1").val();
-  		var pw2 = $("#memPw2").val();
-  		
-  		if(pw1==pw2){
-  			$("#passMessage").attr("style", "color:green; vertical-align:middle;");
-  			$("#memPw").attr("value", pw1)
-  			$("#passMessage").text("비밀 번호가 일치합니다");
-  		}else{
-  			$("#passMessage").attr("style", "color:red; vertical-align:middle;");
-  			$("#passMessage").text("비밀 번호가 일치하지 않습니다");
-  		}
-  	}
-  	
-  	// 3-1. 회원가입 실패 모달창 띄우기
-  	$(document).ready(
-  		function(){
-  			if(${not empty msgType}){
-  				if(${msgType eq "실패"}){
-  					$("#messageType2").attr("class", "modal-content panel-warning");
-  				}
-  				$("#myMessage").modal("show");
-  			}
-  		}
-  	);
-  	
- 	// 3-2. 로그인 실패 모달창 띄우기
-	$(document).ready(
-		function(){
-			if(${not empty msgType}){
-				if(${msgType eq "실패"}){
-					$("#messageType").attr("class", "modal-content panel-danger");
-				}
-				$("#myMessage").modal("show");
-			}
-		}
-	);
-  	
-  </script>
