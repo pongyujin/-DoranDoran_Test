@@ -3,8 +3,8 @@
 <mapper namespace="com.doran.mapper.WeatherMapper">
 
 	<insert id="insertWeather" parameterType="com.doran.entity.Weather">
-		INSERT INTO weather (wDate, wTime, wTemp, wWindSpeed, wWaveHeight, wSeaTemp, wRegion, sailNum, siCode) 
-		VALUES (#{WDate}, #{WTime}, #{WTemp}, #{wWindSpeed}, #{wWaveHeight}, #{wSeaTemp}, #{wRegion}, #{sailNum}, #{siCode});
+		INSERT INTO weather (wDate, wTime, wTemp, wWindSpeed, wWaveHeight, wSeaTemp, statBattery, wRegion, sailNum, siCode) 
+		VALUES (#{WDate}, #{WTime}, #{WTemp}, #{wWindSpeed}, #{wWaveHeight}, #{wSeaTemp}, #{statBattery}, #{wRegion}, #{sailNum}, #{siCode});
 	</insert>
 	
 	<select id="weatherList" parameterType="com.doran.entity.Weather" resultType="com.doran.entity.Weather">

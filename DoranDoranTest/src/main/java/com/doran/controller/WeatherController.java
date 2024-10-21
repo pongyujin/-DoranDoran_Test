@@ -9,11 +9,11 @@ import java.time.format.DateTimeFormatter;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,8 +33,6 @@ public class WeatherController {
 
 	private final String serviceKey = "bvd0WcsuRPzcUhhu82GPw==";
 
-	private boolean sailingStarted = false; // 항해 시작 여부를 저장하는 변수
-
 	// 현재 날짜 불러오기
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 	String currentDate = LocalDate.now().format(formatter);
@@ -46,6 +44,12 @@ public class WeatherController {
 	DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:00");
 	String currentTime = LocalTime.now().format(timeFormatter);
 
+	// 메서드 실행 시 초기값 세팅
+    @PostConstruct
+    public void init() {
+        updateDateTime(); // 초기화 시에도 현재 날짜와 시간 세팅
+    }
+	
 	// 날짜와 시간 갱신 메서드
 	private void updateDateTime() {
 		currentDate = LocalDate.now().format(formatter);
@@ -56,8 +60,9 @@ public class WeatherController {
 	// Weather 객체를 필드로 추가
 	private Weather currentWeather;
 
-	// main. 현재 기상 정보 db 저장
+	// main. 현재 기상 정보 db 저장----------------------------------------------------
 	@PostMapping("/weather")
+	@Async
 	public void weather(Weather weather) {
 		
 		this.currentWeather = weather;
@@ -75,11 +80,12 @@ public class WeatherController {
 		weatherMapper.insertWeather(currentWeather);
 	}
 
+	private boolean sailingStarted = false; // 항해 시작 여부를 저장하는 변수
+	
 	// main-1. 항해 시작 메서드
-	@GetMapping("/toggleWeather")
-	public void toggleWeather() {
+	public void startSail() {
 
-		sailingStarted = !sailingStarted; // 현재 상태 반전
+		sailingStarted = true;
 		if (sailingStarted) {
 			System.out.println("항해가 시작되었습니다.");
 		} else {
@@ -87,7 +93,18 @@ public class WeatherController {
 		}
 	}
 
-	// main-2. 스케줄링 메서드(weather 메서드가 1분에 한번씩 실행되도록 설정)
+	// main-2. 항해 종료 메서드
+	public void endSail() {
+
+		sailingStarted = false;
+		if (sailingStarted) {
+			System.out.println("항해가 시작되었습니다.");
+		} else {
+			System.out.println("항해가 중단되었습니다.");
+		}
+	}
+
+	// main-3. 스케줄링 메서드(weather 메서드가 1분에 한번씩 실행되도록 설정)
 	@Scheduled(fixedRate = 60000)
 	public void scheduleWeatherUpdate() {
 
@@ -100,7 +117,7 @@ public class WeatherController {
 		}
 	}
 
-	// 0. json 파싱 포맷(차이가 작은 시간)
+	// 0. json 파싱 포맷(차이가 작은 시간)------------------------------------------------
 	public String weatherParsing2(String response, String what) {
 
 		// 현재 시간 가져오기

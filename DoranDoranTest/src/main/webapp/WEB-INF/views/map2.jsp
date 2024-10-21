@@ -3,7 +3,6 @@
 <html>
 <head>
 <title>map2</title>
-<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
@@ -255,11 +254,14 @@ body {
 .dark-mode .speed-display {
 	color: white;
 }
+
 </style>
 </head>
 <body>
 	<div id="app">
+	
 		<div id="map"></div>
+		
 		<div id="speedDisplay" class="speed-display">0</div>
 
 		<div class="speed-control-wrapper">
@@ -298,6 +300,7 @@ body {
 			<div class="icon" @click="showInfo('현재 위치', '위도: 37.5665, 경도: 126.9780')">📍</div>
 			<div class="icon" @click="showInfo('방위', '북쪽 방향')">🧭</div>
 			<div class="icon" @click="showInfo('주변 장애물 탐지', '장애물 없음')">🚧</div>
+			<div class="icon" @click="endSail">🚧</div>
 		</div>
 
 		<div class="info-overlay">
@@ -314,8 +317,10 @@ body {
 			<h3 id="infoTitle">정보</h3>
 			<p id="infoContent">상세 내용</p>
 		</div>
+		
 	</div>
-
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 	<script>
 	
 	new Vue({
@@ -504,7 +509,7 @@ body {
 	            });
 	            flightPath.setMap(this.map);
 
-	            toggleDarkMode(true); // 다크 모드 적용
+	            toggleDarkMode(false); // 다크 모드 적용
 	        },
 	        async updateLocation() {
 	            // 위치 업데이트를 위한 함수
@@ -580,10 +585,28 @@ body {
 	            // 정보 패널 숨김
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
+	        },
+	        endSail() { // 항해 종료 함수 endSail() 실행
+	   		 
+	            fetch('/sail/endSail', {
+	                method: 'GET'
+	            })
+	            .then(response => {
+	                if (response.ok) {
+	                    console.log("Weather toggled successfully.");
+	                } else {
+	                	 return response.text().then(text => { 
+	                         console.error("Failed to toggle weather: ", response.status, text); 
+	                     });
+	                }
+	            })
+	            .catch(error => {
+	                console.error('Error:', error);
+	            });
 	        }
 	    }
 	});
-
+	
 	// 다크 모드 전환 함수
 	function toggleDarkMode(isDarkMode) {
 	    const body = document.body;
@@ -593,8 +616,6 @@ body {
 	        body.classList.remove('dark-mode');
 	    }
 	}
-
-	toggleDarkMode(false); // 다크 모드 활성화
 
     </script>
 

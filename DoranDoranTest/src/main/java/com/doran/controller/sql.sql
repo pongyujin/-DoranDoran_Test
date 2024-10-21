@@ -1,12 +1,9 @@
-
-select * from sail;
+select * from ship;
 
 INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
 VALUES ('joy', '1234', '조이', 'joy@gmail.com', '010-1234-5678');
 INSERT INTO ship (siCode, memId, siName, siDocs, siCert, sailStatus)
 VALUES ('oliviaship01', 'sohui', 'olivia Voyager', 'Registration', '1', '0');
-INSERT INTO sail (siCode, startLat, startLng, endLat, endLng, comment)
-VALUES ('oliviaship01', 34.56123456789101, 126.12345678901234, 35.12345678901234, 127.56789012345678, 'First voyage to Busan.');
 INSERT INTO shipGroup (siCode, memId, authNum, comment)
 VALUES('oliviaship01', 'ningning', 3, 'ningning')
 
@@ -19,6 +16,33 @@ INSERT INTO authority (authNum, authName, authDesc) VALUES
 ALTER TABLE sail
 ADD COLUMN startSail VARCHAR(100) NOT NULL COMMENT '출발 항해 정보',
 ADD COLUMN endSail VARCHAR(100) NOT NULL COMMENT '목적지 항해 정보';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ---------------------------------------------------------------------------------
 

@@ -8,14 +8,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -27,31 +29,43 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 // 항해 정보 최초 등록
 @RequestMapping("/sail")
-@RestController
+@Controller
+@EnableAsync
 public class SailController {
 
 	@Autowired
 	private SailMapper sailMapper;
+	@Autowired
+	private ShipController shipController;
 
 	private final String apiKey = "AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg";
 	private final String placeKey = "AIzaSyAW9QwdMPgIykOFaLdCX5ZJTQOED8FVLfg";
 	
 	@Autowired
 	private WeatherController weatherController;
-
+	
+	private boolean sailingStarted = false; // 항해 시작 여부를 저장하는 변수
+	
 	// 0. 항해 정보 최초 생성 (Db 저장)
 	@PostMapping("/insert")
-	public void sailInsert(Sail sail) {
+	public String sailInsert(Sail sail, HttpSession session) {
 
 		try {
 
+			// a. 출발지 목적지 geocoding(좌표계산)
 			sail = coordinates(sail);
+			
+			// b. 항해 최초 생성 정보 db 저장
 			sailMapper.insert(sail);
 			System.out.println(sail);
+			// 항해 정보 세션 저장
+			session.setAttribute("sail", sail);
+
+			// c. 항해 시작 메서드 실행(+운항 상태 변경)
+			shipController.sailStatus(sail, session);
+			startSail(session);
 			
-			// 항해 시작 메서드(WeatherController)
-			weatherController.toggleWeather(); 			
-			// Weather 데이터를 설정하여 weather 메서드 호출
+			// e. Weather 데이터를 설정하여 weather 메서드 호출
 			Weather weather = new Weather();
 			weather.setSailNum(sail.getSailNum());
 			weather.setSiCode(sail.getSiCode());
@@ -60,6 +74,7 @@ public class SailController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		return "redirect:/map2";
 	}
 	
 	// 1. 항해 코멘트 수정
@@ -92,6 +107,26 @@ public class SailController {
 		return sailList;
 	}
 
+	// 5. 항해 시작 종료 메서드
+	@GetMapping("/startSail")
+	public void startSail(HttpSession session) {
+
+		sailingStarted = true;
+		weatherController.startSail(); // (WeatherController에서)
+		Sail sail = (Sail)session.getAttribute("sail");
+		shipController.sailStatus(sail, session);
+	}
+
+	@GetMapping("/endSail")
+	public void endSail(HttpSession session) {
+
+		sailingStarted = false;
+		weatherController.endSail();// (WeatherController에서)
+		Sail sail = (Sail)session.getAttribute("sail");
+		shipController.sailStatus(sail, session);
+		session.removeAttribute("sail"); // 항해 세션 삭제
+	}
+	
 	// -------------------------------------------------------------(api 메서드)-------------------
 	// 1. 출발지, 도착지 좌표 값 반환 메서드
 	@RequestMapping("/coordinates")

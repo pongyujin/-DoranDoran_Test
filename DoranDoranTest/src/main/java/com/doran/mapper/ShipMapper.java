@@ -15,5 +15,7 @@ public interface ShipMapper {
 	public int application(Ship ship);
 	// 3. 선박 등록 신청 승인
 	public int approveShip(Ship ship);
+	// 4. 선박 운항 상태 변경
+	public int sailStatus(Ship ship);
 
 }
