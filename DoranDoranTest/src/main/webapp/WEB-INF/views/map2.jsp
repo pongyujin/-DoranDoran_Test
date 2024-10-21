@@ -295,8 +295,7 @@ body {
 			<div class="icon" @click="showInfo('속도', '30 노트 속도')">🚤</div>
 			<div class="icon" @click="showInfo('남은 시간', '남은 시간 2시간')">⏱️</div>
 			<div class="icon" @click="showInfo('남은 거리', '남은 거리 10km')">🛣️</div>
-			<div class="icon"
-				@click="showInfo('현재 위치', '위도: 37.5665, 경도: 126.9780')">📍</div>
+			<div class="icon" @click="showInfo('현재 위치', '위도: 37.5665, 경도: 126.9780')">📍</div>
 			<div class="icon" @click="showInfo('방위', '북쪽 방향')">🧭</div>
 			<div class="icon" @click="showInfo('주변 장애물 탐지', '장애물 없음')">🚧</div>
 		</div>
@@ -318,7 +317,7 @@ body {
 	</div>
 
 	<script>
-
+	
 	new Vue({
 	    el: '#app',
 	    data() {
@@ -595,7 +594,7 @@ body {
 	    }
 	}
 
-	toggleDarkMode(true); // 다크 모드 활성화
+	toggleDarkMode(false); // 다크 모드 활성화
 
     </script>
 

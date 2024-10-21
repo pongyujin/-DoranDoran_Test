@@ -7,9 +7,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,12 +42,13 @@ public class WeatherController {
 
 	// 0. 현재 기상 정보 db 저장
 	@PostMapping("/weather")
-	public Weather weather(Weather weather) {
+	public void weather(Weather weather) {
 
 		System.out.println(weather);
 		weather.setWDate(currentDate);
 		weather.setWTime(currentTime);
 		weather.setWTemp(tideObsAirTemp());
+		weather.setStatBattery("80");
 		weather.setWWindSpeed(tideObsWind());
 		weather.setWWaveHeight(obsWaveHight());
 		weather.setWSeaTemp(tideObsTemp());
@@ -54,7 +56,6 @@ public class WeatherController {
 		System.out.println(weather);
 
 		weatherMapper.insertWeather(weather);
-		return weather;
 	}
 
 	// 0. json 파싱 포맷(차이가 작은 시간)
@@ -222,7 +223,7 @@ public class WeatherController {
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
 		String result = weatherParsing2(response, "air_temp");
-
+		System.out.println(result);
 		return result;
 	}
 
