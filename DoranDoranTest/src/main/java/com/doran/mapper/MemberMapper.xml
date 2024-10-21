@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doran.mapper.MemberMapper">
+
+	<insert id="memberJoin" parameterType="com.doran.entity.Member">
+		INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
+		VALUES (#{memId}, #{memPw}, #{memNick}, #{memEmail}, #{memPhone});
+	</insert>
+	
+	<select id="memberLogin" parameterType="com.doran.entity.Member" resultType="com.doran.entity.Member">
+		select * from member
+		where memId=#{memId} and memPw=#{memPw}
+	</select>
+	
+	<select id="registerCheck" parameterType="String" resultType="com.doran.entity.Member">
+		select * from member 
+		where memID=#{memID}
+	</select>
+	
+</mapper>

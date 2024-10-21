@@ -13,12 +13,12 @@ public interface AuthMapper {
 	// 1. 그룹 멤버 리스트 전체 불러오기
 	public List<ShipGroup> groupList(String siCode);
 	// 2. 그룹 초대
-	public void invite(ShipGroup tbl_group);
+	public void invite(ShipGroup shipGroup);
 	// 3. 권한 수정
-	public void update(ShipGroup tbl_group);
-	// 4. 선박 등록자 확인
-	public Ship topAuth(Ship tbl_ship);
+	public void update(ShipGroup shipGroup);
+	// 4. 권한 확인
+	public ShipGroup authCheck(ShipGroup shipGroup);
 	// 5. 회원 삭제
-	public void delete(ShipGroup tbl_group);
+	public void delete(ShipGroup shipGroup);
 	
 }

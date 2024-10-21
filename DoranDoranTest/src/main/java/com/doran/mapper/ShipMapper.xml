@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.doran.mapper.ShipMapper">
+
+	<select id="shipList" parameterType="string" resultType="com.doran.entity.Ship">
+		select * from ship
+		where memId=#{memId}
+	</select>
+	
+	<insert id="application" parameterType="com.doran.entity.Ship">
+		INSERT INTO ship (siCode, memId, siName, siDocs, siCert, sailStatus)
+		VALUES (#{siCode}, #{memId}, #{siName}, #{siDocs}, #{siCert}, #{sailStatus});
+	</insert>
+	
+	<update id="approveShip" parameterType="com.doran.entity.Ship">
+		update ship set
+		siCert=#{siCert}
+		where siCode=#{siCode} and memId=#{memId}
+	</update>
+	
+</mapper>

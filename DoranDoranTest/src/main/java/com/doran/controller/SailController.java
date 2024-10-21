@@ -36,7 +36,7 @@ public class SailController {
 
 	// 0. 항해 정보 최초 생성 (Db 저장)
 	@PostMapping("/insert")
-	public String sailInsert(Sail sail) {
+	public Sail sailInsert(Sail sail) {
 
 		// 선박 코드와 출발지 목적지 주소를 Sail로 받음
 		try {
@@ -47,7 +47,7 @@ public class SailController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return "redirect:/map.jsp";
+		return sail;
 	}
 
 	// 0-1. 항해 코멘트 수정

@@ -14,7 +14,7 @@ import lombok.ToString;
 public class Ship {
 	
     private String siCode; // 선박 코드
-    private String memId; // 회원 아이디
+    private String memId; // 소유주 아이디
     private String siName; // 선박 이름
     private String siDocs; // 선박 증빙서류
     private char siCert; // 인증 여부
