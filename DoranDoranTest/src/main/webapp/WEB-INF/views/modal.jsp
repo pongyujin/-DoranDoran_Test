@@ -45,11 +45,9 @@
 </div>
 
 <!-- 모달 CSS 스타일 -->
-<style>
-   
-* {
-    font-family: Arial, sans-serif; /* 또는 다른 폰트 */
-}
++
+
+
 
 <!-- 모달 CSS 스타일 -->
 <style>
