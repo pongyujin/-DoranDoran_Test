@@ -9,8 +9,8 @@ import com.doran.entity.Sail;
 @Mapper
 public interface SailMapper {
 
-	// 1. 항해 정보 insert
-	public void insert(Sail sail);
+	// 1. 항해 정보 insert (sailNum 반환)
+	public int insert(Sail sail);
 	// 2. 항해 코멘트 수정
 	public void comment(Sail sail);
 	// 3. 항해 상세내용 보기
