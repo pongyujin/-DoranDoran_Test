@@ -36,6 +36,7 @@ public class MemberController {
 			// 회원가입 실패
 			rttr.addFlashAttribute("msgType", "실패");
 			rttr.addFlashAttribute("msg", "모든 항목을 기입해주세요");
+			session.setAttribute("openJoinModal", true);
 
 		} else {
 
@@ -67,7 +68,6 @@ public class MemberController {
 			rttr.addFlashAttribute("msgType", "실패");
 			rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
 			session.setAttribute("openLoginModal", true);
-			System.out.println("실패");
 
 			return "redirect:/main";
 		} else {
@@ -75,7 +75,6 @@ public class MemberController {
 			// 로그인 성공
 			rttr.addFlashAttribute("msgType", "성공");
 			rttr.addFlashAttribute("msg", "로그인을 성공했습니다");
-			System.out.println("성공");
 			// 로그인 정보 세션 저장
 			session.setAttribute("user", member);
 
