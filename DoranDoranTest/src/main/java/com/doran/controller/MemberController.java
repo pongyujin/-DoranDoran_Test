@@ -34,7 +34,7 @@ public class MemberController {
 				|| member.getMemPhone() == null || member.getMemPhone().equals("")) {
 
 			// 회원가입 실패
-			rttr.addFlashAttribute("msgType", "실패");
+			rttr.addFlashAttribute("msgType", "회원가입 실패");
 			rttr.addFlashAttribute("msg", "모든 항목을 기입해주세요");
 			session.setAttribute("openJoinModal", true);
 
@@ -44,12 +44,12 @@ public class MemberController {
 
 			if (cnt > 0) {
 				
-				rttr.addFlashAttribute("msgType", "성공");
+				rttr.addFlashAttribute("msgType", "회원가입 성공");
 				rttr.addFlashAttribute("msg", "회원가입에 성공했습니다");
 				session.setAttribute("user", member);
 			} else {
 				
-				rttr.addFlashAttribute("msgType", "실패");
+				rttr.addFlashAttribute("msgType", "회원가입 실패");
 				rttr.addFlashAttribute("msg", "회원가입에 실패했습니다");
 			}
 		}
@@ -64,7 +64,7 @@ public class MemberController {
 		
 		if (mvo == null) {
 
-			rttr.addFlashAttribute("msgType", "실패");
+			rttr.addFlashAttribute("msgType", "로그인 실패");
 			rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
 			session.setAttribute("openLoginModal", true);
 
@@ -72,10 +72,10 @@ public class MemberController {
 		} else {
 
 			// 로그인 성공
-			rttr.addFlashAttribute("msgType", "성공");
-			rttr.addFlashAttribute("msg", "로그인을 성공했습니다");
+			rttr.addFlashAttribute("msgType", "로그인 성공");
+			rttr.addFlashAttribute("msg", mvo.getMemNick()+"님, 환영합니다!");
 			// 로그인 정보 세션 저장
-			session.setAttribute("user", member);
+			session.setAttribute("user", mvo);
 
 			return "redirect:/main";
 		}

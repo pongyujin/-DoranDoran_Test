@@ -265,7 +265,7 @@ public class WeatherController {
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
 		String result = weatherParsing2(response, "air_temp");
-		System.out.println(result);
+		
 		return result;
 	}
 
