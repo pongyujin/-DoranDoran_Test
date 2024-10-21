@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.doran.mapper.SailMapper">
 
-	<insert id="insert" parameterType="com.doran.entity.Sail">
+	<insert id="insert" parameterType="com.doran.entity.Sail" useGeneratedKeys="true" keyProperty="sailNum">
 		INSERT INTO sail (siCode, startSail, endSail, startLat, startLng, endLat, endLng)
 		VALUES (#{siCode}, #{startSail}, #{endSail}, #{startLat}, #{startLng}, #{endLat}, #{endLng});
 	</insert>

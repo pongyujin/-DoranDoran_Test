@@ -57,7 +57,7 @@
   	$(document).ready(
   		function(){
   			if(${not empty msgType}){
-  				if(${msgType eq "실패"}){
+  				if(${msgType eq "회원가입 실패"}){
   					$("#messageType2").attr("class", "modal-content panel-warning");
   				}
   				$("#myMessage").modal("show");
@@ -69,7 +69,7 @@
 	$(document).ready(
 		function(){
 			if(${not empty msgType}){
-				if(${msgType eq "실패"}){
+				if(${msgType eq "로그인 실패"}){
 					$("#messageType").attr("class", "modal-content panel-danger");
 				}
 				$("#myMessage").modal("show");

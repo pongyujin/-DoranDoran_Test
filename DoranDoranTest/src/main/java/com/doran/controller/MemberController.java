@@ -34,8 +34,9 @@ public class MemberController {
 				|| member.getMemPhone() == null || member.getMemPhone().equals("")) {
 
 			// 회원가입 실패
-			rttr.addFlashAttribute("msgType", "실패");
+			rttr.addFlashAttribute("msgType", "회원가입 실패");
 			rttr.addFlashAttribute("msg", "모든 항목을 기입해주세요");
+			session.setAttribute("openJoinModal", true);
 
 		} else {
 
@@ -43,12 +44,12 @@ public class MemberController {
 
 			if (cnt > 0) {
 				
-				rttr.addFlashAttribute("msgType", "성공");
+				rttr.addFlashAttribute("msgType", "회원가입 성공");
 				rttr.addFlashAttribute("msg", "회원가입에 성공했습니다");
 				session.setAttribute("user", member);
 			} else {
 				
-				rttr.addFlashAttribute("msgType", "실패");
+				rttr.addFlashAttribute("msgType", "회원가입 실패");
 				rttr.addFlashAttribute("msg", "회원가입에 실패했습니다");
 			}
 		}
@@ -60,17 +61,11 @@ public class MemberController {
 	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
 	    Member mvo = memberMapper.memberLogin(member);
 
-	    if (mvo == null) {
-	        System.out.println("세션에 저장할 사용자 정보: " + mvo);  // mvo 객체의 전체 값 확인
-	        rttr.addFlashAttribute("msgType", "실패");
-	        rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
-	        session.setAttribute("openLoginModal", true);
-	        return "redirect:/main";
-	    } else {
-	        // 로그인 성공 시 세션에 Member 객체 저장
-	        session.setAttribute("user", mvo);
-	        rttr.addFlashAttribute("msgType", "성공");
-	        rttr.addFlashAttribute("msg", "로그인에 성공했습니다");
+
+
+
+		
+		if (mvo == null) {
 
 	        // 세션에 저장된 Member 객체가 모든 값을 가지고 있는지 확인하는 로그 출력
 	        System.out.println("세션에 저장된 사용자 정보: " + session.getAttribute("user"));
@@ -78,16 +73,32 @@ public class MemberController {
 	        System.out.println("이메일: " + mvo.getMemEmail());
 	        System.out.println("전화번호: " + mvo.getMemPhone());
 
+			rttr.addFlashAttribute("msgType", "로그인 실패");
+			rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
+			session.setAttribute("openLoginModal", true);
+
 	        return "redirect:/main";  // main으로 이동
-	    }
+	    
+
+		} else {
+
+			// 로그인 성공
+			rttr.addFlashAttribute("msgType", "로그인 성공");
+			rttr.addFlashAttribute("msg", mvo.getMemNick()+"님, 환영합니다!");
+			// 로그인 정보 세션 저장
+			session.setAttribute("user", mvo);
+
+			return "redirect:/main";
+		}
+
 	}
 
 	// 3. 아이디 중복 확인
 	@RequestMapping("/registerCheck")
-	public int registerCheck(@RequestParam("memID") String memID) {
+	public @ResponseBody int registerCheck(@RequestParam("memId") String memId) {
 
-		Member member = memberMapper.registerCheck(memID);
-		if (member != null || memID.equals("")) {
+		Member member = memberMapper.registerCheck(memId);
+		if (member != null || memId.equals("")) {
 			return 0;
 		} else {
 			return 1;

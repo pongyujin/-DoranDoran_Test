@@ -152,6 +152,7 @@ body, html {
         document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
     });
 
+
     // 햄버거 메뉴 클릭 시 메뉴 리스트 토글
     document.getElementById("hamburgerMenu")?.addEventListener("click", function(e) {
         e.preventDefault();
@@ -159,7 +160,50 @@ body, html {
         var menu = document.getElementById("menu");
         menu.style.display = (menu.style.display === "block") ? "none" : "block";
     });
-</script>
+
+
+
+        // Login 모달 닫기
+        document.getElementById("closeLoginModal").addEventListener("click", function() {
+            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
+            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
+            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
+        });
+        
+        </script>  
+    
+    <%
+    Boolean openLoginModal = (Boolean) session.getAttribute("openLoginModal");
+    if (openLoginModal != null && openLoginModal) {
+        // 세션에서 로그인 모달을 열라는 신호가 있으면
+        session.removeAttribute("openLoginModal"); // 신호 제거
+	%>
+        <script>
+            document.getElementById("loginModal").style.display = "block"; // Login 모달 열기
+            document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
+            document.getElementById("openLoginModal").style.display = "none"; // Login 버튼 숨기기
+            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
+        </script>
+	<%
+    }
+	%>
+	
+	<%
+    Boolean openJoinModal = (Boolean) session.getAttribute("openJoinModal");
+    if (openJoinModal != null && openJoinModal) {
+        // 세션에서 회원가입 모달을 열라는 신호가 있으면
+        session.removeAttribute("openJoinModal"); // 신호 제거
+	%>
+        <script>
+            document.getElementById("joinModal").style.display = "block"; // Join 모달 열기
+            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
+            document.getElementById("openJoinModal").style.display = "none"; // Join 버튼 숨기기
+            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 보이기
+        </script>
+	<%
+    }
+	%>
+    
 
 </body>
 </html>

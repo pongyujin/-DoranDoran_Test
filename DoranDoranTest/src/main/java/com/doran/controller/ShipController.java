@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.doran.entity.Member;
+import com.doran.entity.Sail;
 import com.doran.entity.Ship;
 import com.doran.mapper.ShipMapper;
 
@@ -59,5 +60,19 @@ public class ShipController {
 
 		ship.setSiCert('1'); // 승인
 		shipMapper.approveShip(ship);
+	}
+	
+	// 4. 선박 운항 상태 변경
+	@PutMapping("/sailStatus")
+	public void sailStatus(Sail sail, HttpSession session) {
+		
+		Member user = (Member)session.getAttribute("user");
+		Ship ship = new Ship();
+		ship.setMemId(user.getMemId());
+		ship.setSiCode(sail.getSiCode());
+		
+		ship.setSailStatus(ship.getSailStatus() == '0' ? '1' : '0');
+		System.out.println(ship);
+		int cnt = shipMapper.sailStatus(ship);
 	}
 }
