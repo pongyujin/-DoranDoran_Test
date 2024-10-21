@@ -156,6 +156,8 @@ public class JavaSocketServer {
 	    
 	    return resultCam;  // 루프가 끝난 후 값이 있든 없든 반환
 	}
+	
+	
 
 
 	public void updateUI(BufferedImage image) {

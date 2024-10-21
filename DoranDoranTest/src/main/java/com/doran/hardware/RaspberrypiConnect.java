@@ -8,12 +8,12 @@ import java.io.InputStreamReader;
 public class RaspberrypiConnect {
 
     // SSH 연결 및 명령 실행 메서드
-    public void cmdRemote(String user, String host, int port, String password, String command) {
+    public void cmdRemote(String sshUser, String sshHost, int sshPort, String sshPw, String sshCommand) {
         try {
             // SSH 세션 생성 및 설정
             JSch jsch = new JSch();
-            Session session = jsch.getSession(user, host, port);
-            session.setPassword(password);
+            Session session = jsch.getSession(sshUser, sshHost, sshPort);
+            session.setPassword(sshPw);
 
             // SSH 연결 시 인증서 무시
             session.setConfig("StrictHostKeyChecking", "no");
@@ -24,7 +24,7 @@ public class RaspberrypiConnect {
 
             // 원격 명령 실행 (ChannelExec)
             ChannelExec channel = (ChannelExec) session.openChannel("exec");
-            channel.setCommand(command);
+            channel.setCommand(sshCommand);
 
             // 명령어 실행 결과를 읽기 위한 스트림 설정
             InputStream in = channel.getInputStream();
