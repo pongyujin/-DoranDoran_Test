@@ -3,6 +3,7 @@ package com.doran.controller;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.doran.entity.Member;
 import com.doran.mapper.MemberMapper;
 
-@RestController
+@Controller
 public class MemberController {
 
 	@Autowired
@@ -23,6 +24,8 @@ public class MemberController {
 	// 1. 회원가입
 	@PostMapping("/memberJoin")
 	public String memberJoin(Member member, RedirectAttributes rttr, HttpSession session) {
+		
+		System.out.println(member);
 
 		if (member.getMemId() == null || member.getMemId().equals("") 
 				|| member.getMemPw() == null || member.getMemPw().equals("") 
@@ -54,8 +57,9 @@ public class MemberController {
 
 	// 2. 로그인
 	@PostMapping("/memberLogin")
-	public String memberLogin(@RequestBody Member member, RedirectAttributes rttr, HttpSession session) {
+	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
 
+		System.out.println(member);
 		Member mvo = memberMapper.memberLogin(member);
 		System.out.println(mvo);
 		if (mvo == null) {
