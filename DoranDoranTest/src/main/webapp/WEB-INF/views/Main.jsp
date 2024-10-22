@@ -170,6 +170,11 @@ body, html {
             document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
         });
         
+    
+     
+
+        
+        
         </script>  
     
     <%
