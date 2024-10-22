@@ -24,15 +24,5 @@ public class HomeController {
 
 	}
 	
-	// hardware.jsp로 이동
-	@RequestMapping("/hardware")
-	public String showHardwarePage() {
-		return "hardware";
-	}
-	
-	// sailViewTest.jsp로 이동
-	@RequestMapping("/realTimeCamera")
-	public String showSailViewTestPage() {
-		return "realTimeCamera";
-	}
+
 }
