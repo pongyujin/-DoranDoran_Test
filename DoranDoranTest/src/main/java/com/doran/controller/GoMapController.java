@@ -18,4 +18,10 @@ public class GoMapController {
 	public String showMap2() {
 		return "map2";
 	}
+
+	// shipList.jsp 이동
+	@RequestMapping("/shipList")
+	public String showShipList() {
+		return "shipList";
+	}
 }

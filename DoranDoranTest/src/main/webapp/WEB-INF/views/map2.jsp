@@ -3,6 +3,8 @@
 <html>
 <head>
 <title>map2</title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
@@ -264,22 +266,26 @@ body {
 	z-index: 2;
 	border-radius: 10px;
 	cursor: grab;
+	overflow: hidden; /* 자식 요소가 부모 요소를 넘지 않도록 설정 */
+	display: flex; /* Flexbox 사용 */
+	flex-direction: column; /* 수직 방향으로 정렬 */
+	align-items: center; /* 수평 중앙 정렬 */
+	justify-content: center; /* 수직 중앙 정렬 */
 }
 
-.videoModal:active{
+.videoModal:active {
 	cursor: grabbing;
 }
 
 /* 비디오 스타일 */
-.modal video {
-	width: 100%;
-	height: 100%;
-	padding: 10px;
+.videoModal img {
+	width: auto; /* 부모 요소에 맞춰 너비 조정 */
+    height: 100%; /* 비율에 맞춰 높이 조정 */
+	margin: 10px;
 	color: white;
 }
 
 .videoModal h3 {
-	margin-top: 0;
 	font-size: 18px;
 	margin-top: 10px;
 	text-align: center;
@@ -337,8 +343,7 @@ body {
 		:style="{ top: modalTop, left: modalLeft, display: modalDisplay }">
 			<button class="close-btn" @click="closeVideoModal">✖</button>
 			<h3>camera view</h3>
-			<video id="cameraVideo" src="http://192.168.219.47:8080/video_feed"
-				autoplay></video>
+			<img id="cameraVideo" src="http://192.168.219.47:8080/video_feed" alt="Video Feed" />
 		</div>
 
 		<div class="info-overlay">
@@ -654,7 +659,7 @@ body {
 
                     // 모달 크기 설정
                     modal.style.height = (mapHeight * 0.6) + "px";
-                    modal.style.width = (mapWidth * 0.45) + "px";
+                    modal.style.width = (mapWidth * 0.4) + "px";
                     
                 	// 모달 위치 중앙에 설정
                     modal.style.top = (mapHeight * 0.3) + "px";
