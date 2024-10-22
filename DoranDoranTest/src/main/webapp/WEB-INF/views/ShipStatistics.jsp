@@ -143,7 +143,7 @@ new Vue({
             const siCode = this.siCode;
 
             // 선박 통계와 경로 정보를 서버에서 가져옵니다.
-            fetch('statistics/' + siCode + '/' + sailNum)
+            fetch('http://34.64.148.222:8080/statistics/' + siCode + '/' + sailNum)
                 .then(response => response.json())
                 .then(data => {
                     const route = data.gpsList;
@@ -156,13 +156,13 @@ new Vue({
                     this.drawWaveBatteryChart();
 
                     // 장애물 이미지 정보를 가져오기 위해 새로운 API 호출
-                    return fetch('http://192.168.219.101:8085/controller/statistics/getImage?siCode=' + siCode + '&sailNum=' + sailNum);
+                    return fetch('http://34.64.148.222:8080/statistics/getImage?siCode=' + siCode + '&sailNum=' + sailNum);
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data && Array.isArray(data)) {
                         // 이미지 목록을 저장하여 화면에 표시되도록 함
-                        this.imageUrls = data.map(camera => 'http://192.168.219.101:8085' + camera.obsImg);
+                        this.imageUrls = data.map(camera => 'http://34.64.148.222:8080' + camera.obsImg);
                     } else {
                         this.imageUrls = [];
                         console.error("이미지 정보가 없습니다.");
@@ -227,7 +227,6 @@ new Vue({
         // 파고와 배터리 상태를 차트로 그리는 함수
         drawWaveBatteryChart() {
             const ctx = document.getElementById('waveBatteryChart').getContext('2d');
-            console.log(this.weatherList);
             const labels = this.weatherList.map(item => item.wtime); // 시간 정보 추출
             const waveHeights = this.weatherList.map(item => parseFloat(item.wwaveHeight)); // 파고 정보 추출
             const batteryLevels = this.weatherList.map(item => parseFloat(item.statBattery)); // 배터리 상태 정보 추출
@@ -290,7 +289,7 @@ new Vue({
             const formData = new FormData();
             formData.append('file', file);
 
-            fetch('http://192.168.219.101:8085/controller/statistics/upload/image', {
+            fetch('http://34.64.148.222:8080/statistics/upload/image', {
                 method: 'POST',
                 body: formData,
             })
