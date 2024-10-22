@@ -1,4 +1,4 @@
-select * from member;
+select * from ship;
 
 INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
 VALUES ('joy', '1234', '조이', 'joy@gmail.com', '010-1234-5678');

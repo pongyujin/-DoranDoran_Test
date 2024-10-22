@@ -107,7 +107,7 @@ public class SailController {
 		return sailList;
 	}
 
-	// 5. 항해 시작 종료 메서드
+	// 5. 항해 시작/종료 메서드
 	@GetMapping("/startSail")
 	public void startSail(HttpSession session) {
 

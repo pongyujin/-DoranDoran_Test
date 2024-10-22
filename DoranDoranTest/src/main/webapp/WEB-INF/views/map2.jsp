@@ -374,8 +374,7 @@ body {
 				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
 			</div>
 
-			<button class="destination-btn" @click="setDestinationMode">목적지
-				설정</button>
+			<button class="destination-btn" @click="endSail">항해 완료</button>
 		</div>
 
 		<div class="info-panel" id="infoPanel">
@@ -657,9 +656,9 @@ body {
 	            // 정보 패널 숨김
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
-	        }, endSail() { // 항해 종료 함수 endSail() 실행
+	        }, async endSail() { // 항해 종료 함수 endSail() 실행
 	   		 
-	            fetch('/sail/endSail', {
+	            fetch('/endSail', {
 	                method: 'GET'
 	            })
 	            .then(response => {
@@ -754,8 +753,6 @@ body {
 	        }
 	    }
 	});
-	
-	
 	
     </script>
  
