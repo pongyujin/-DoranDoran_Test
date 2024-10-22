@@ -255,6 +255,35 @@ body {
 	color: white;
 }
 
+/* 모달창 기본 스타일 */
+.videoModal {
+	position: absolute;
+	color: white;
+	background-color: rgba(0, 0, 0, 0.9);
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	z-index: 2;
+	border-radius: 10px;
+	cursor: grab;
+}
+
+.videoModal:active{
+	cursor: grabbing;
+}
+
+/* 비디오 스타일 */
+.modal video {
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	color: white;
+}
+
+.videoModal h3 {
+	margin-top: 0;
+	font-size: 18px;
+	margin-top: 10px;
+	text-align: center;
+}
 </style>
 </head>
 <body>
@@ -300,7 +329,16 @@ body {
 			<div class="icon" @click="showInfo('현재 위치', '위도: 37.5665, 경도: 126.9780')">📍</div>
 			<div class="icon" @click="showInfo('방위', '북쪽 방향')">🧭</div>
 			<div class="icon" @click="showInfo('주변 장애물 탐지', '장애물 없음')">🚧</div>
-			<div class="icon" @click="endSail">🚧</div>
+			<div class="icon" @click="toggleModal()">📷</div>
+		</div>
+
+		<!-- 실시간 영상 모달창 -->
+		<div class="videoModal" id="videoModal"  @mousedown="startDrag" @mouseup="stopDrag" @mousemove="drag"
+		:style="{ top: modalTop, left: modalLeft, display: modalDisplay }">
+			<button class="close-btn" @click="closeVideoModal">✖</button>
+			<h3>camera view</h3>
+			<video id="cameraVideo" src="http://192.168.219.47:8080/video_feed"
+				autoplay></video>
 		</div>
 
 		<div class="info-overlay">
@@ -335,6 +373,7 @@ body {
 	        this.initMap(); // 컴포넌트가 마운트될 때 지도 초기화
 	        this.updateLocation(); // 위치 업데이트 시작
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
+	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	    },
 	    methods: {
 	        initMap() {
@@ -371,17 +410,17 @@ body {
 
 	            // Google Maps 초기화
 	            this.map = new google.maps.Map(document.getElementById('map'), {
-	                center: { lat: 34.500000, lng: 128.730000 }, // 초기 중심 좌표
+	                center: { lat: 34.500000-0.005032, lng: 128.730000-0.076814 }, // 초기 중심 좌표
 	                zoom: 13, // 초기 줌 레벨
 	                mapTypeControlOptions: {
 	                    mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'styled_map']
 	                },
-	                mapTypeId: "terrain", // 지도 유형 설정
+	                mapTypeId: "roadmap", // 지도 유형 설정
 	            });
 
-	            // 다크 모드 맵 적용
+	            // 기본 맵 스타일 적용
 	            this.map.mapTypes.set('styled_map', styledMapType);
-	            this.map.setMapTypeId('styled_map'); // 다크 모드로 설정
+	            this.map.setMapTypeId('roadmap');
 
 	            // Polyline 경로 설정 (예시 데이터)
 	            const flightPlanCoordinates = [
@@ -580,13 +619,15 @@ body {
 	            infoTitle.textContent = title; // 패널 제목 설정
 	            infoContent.textContent = content; // 패널 내용 설정
 	            infoPanel.classList.add('active'); // 패널 표시
-	        },
-	        closeInfoPanel() {
+	        }, closeInfoPanel() {
 	            // 정보 패널 숨김
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
-	        },
-	        endSail() { // 항해 종료 함수 endSail() 실행
+	        }, closeVideoModal(){
+	        	
+	        	var videoModal = document.getElementById("videoModal");
+	        	videoModal.style.display = "none";
+	        }, endSail() { // 항해 종료 함수 endSail() 실행
 	   		 
 	            fetch('/sail/endSail', {
 	                method: 'GET'
@@ -603,7 +644,28 @@ body {
 	            .catch(error => {
 	                console.error('Error:', error);
 	            });
-	        }
+	        }, toggleModal() { // 비디오 모달 열기
+                var modal = document.getElementById("videoModal");
+                var mapDiv = document.getElementById("map");
+
+                if (modal.style.display === "none" || modal.style.display === "") {
+                    var mapHeight = mapDiv.offsetHeight;
+                    var mapWidth = mapDiv.offsetWidth;
+
+                    // 모달 크기 설정
+                    modal.style.height = (mapHeight * 0.6) + "px";
+                    modal.style.width = (mapWidth * 0.45) + "px";
+                    
+                	// 모달 위치 중앙에 설정
+                    modal.style.top = (mapHeight * 0.3) + "px";
+                	modal.style.left = (mapWidth * 0.075) + "px";
+
+
+                    modal.style.display = "block"; // 모달 표시
+                } else {
+                    modal.style.display = "none";
+                }
+            }
 	    }
 	});
 	
