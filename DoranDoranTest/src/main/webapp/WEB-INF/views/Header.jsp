@@ -24,8 +24,9 @@
         }
 
         .hamburger {
-            font-size: 30px;
-            cursor: pointer;
+            font-size: 37px !important;
+            padding: 10px !important;
+            cursor: pointer !important;
         }
 
         .header a {
@@ -49,33 +50,59 @@
             color: white;
         }
 
-        /* 메뉴 리스트 스타일 */
-        .menu {
-            display: none; /* 기본적으로 숨김 */
-            position: absolute;
-            top: 60px; /* 헤더 바로 아래에 위치 */
-            right: 0;
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            width: 200px;
-            z-index: 1001;
-            max-height: 400px;
-            overflow-y: auto; /* 높이를 초과하는 경우 스크롤 가능하게 */
-        }
+.menu {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: calc(100% - 220px);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    width: 220px;
+    z-index: 1001;
+    max-height: 400px;
+    overflow-y: auto;
 
-        .menu a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
+    /* 메뉴 전체를 수직 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 메뉴 아이템들을 왼쪽 정렬 */
+    justify-content: center;
+}
 
-        .menu a:hover {
-            background-color: #f1f1f1;
-        }
+.menu a {
+    display: flex;
+    justify-content: flex-start; /* 가로 왼쪽 정렬 */
+    align-items: center; /* 세로 가운데 정렬 */
+    text-decoration: none;
+    color: black;
+    padding: 3px 10px;
+    font-size: 12px;
+    width: 100%; /* a 태그를 메뉴 너비에 맞춤 */
+    transition: background-color 0.3s;
+    list-style-type: none;
+    border-left: none !important;
+    box-sizing: border-box;
+}
+    
+.menu a::before, .menu a::after {
+    content: none !important; /* 가상 요소 제거 */
+    border: none !important; /* 가상 요소의 경계선 제거 */
+}
+
+.menu a:hover {
+    background-color: #f1f1f1; /* 배경색 변경 */
+    width: 200px; /* hover 시에도 너비 고정 */
+    box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+}
+.menu-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -92,17 +119,30 @@
         <!-- 로그인된 경우 햄버거 메뉴 표시 -->
         <a href="#" id="hamburgerMenu" class="hamburger">&#9776;</a>
         <div class="menu" id="menu">
-            <a href="/ship/register">선박 등록</a>
-            <a href="/ship/list">선박 리스트</a>
-            <a href="/member/edit">회원정보 수정</a>
-            <a href="/logout">로그아웃</a>
+            <a href="#" id="openShipRegisterModal">
+                <img src="<%=request.getContextPath()%>/resources/img/ship.png" alt="선박 등록" class="menu-icon">
+                선박 등록
+            </a>
+            <a href="/ship/list">
+                <img src="<%=request.getContextPath()%>/resources/img/list.png" alt="선박 리스트" class="menu-icon">
+                선박 리스트
+            </a>
+            <a href="#" id="openEditModal"> 
+                <img src="<%=request.getContextPath()%>/resources/img/user.png" alt="회원정보 수정" class="menu-icon">
+                회원정보 수정
+            </a>
+            <a href="<%=request.getContextPath()%>/logout">
+                <img src="<%=request.getContextPath()%>/resources/img/logout.png" alt="로그아웃" class="menu-icon">
+                로그아웃
+            </a>
         </div>
     <%
     } else {
     %>
         <!-- 비로그인 상태 Join 및 Login 버튼 표시 -->
-        <a href="#" id="openJoinModal">Join</a>
-        <a href="#" id="openLoginModal">Login</a>
+        <a href="#" id="openJoinModal" style="font-size: 20px; font-weight: bold;">Join</a>
+<a href="#" id="openLoginModal" style="font-size: 20px; font-weight: bold;">Login</a>
+
     <%
     }
     %>
@@ -118,6 +158,45 @@ document.getElementById("hamburgerMenu")?.addEventListener("click", function(e) 
         menu.style.display = "block";
     }
 });
+
+document.getElementById("openShipRegisterModal")?.addEventListener("click", function(e) {
+    e.preventDefault();
+    document.getElementById("shipRegisterModal").style.display = "block";
+});
+
+function closeAllModals() {
+    // 모든 모달 창 닫기
+    document.getElementById("shipRegisterModal").style.display = "none";
+    document.getElementById("editModal").style.display = "none";
+    // 필요시 추가 모달도 여기에 추가
+}
+
+// 선박 등록 모달 열기
+document.getElementById("openShipRegisterModal")?.addEventListener("click", function(e) {
+    e.preventDefault();
+    closeAllModals(); // 다른 모달을 닫기
+    document.getElementById("shipRegisterModal").style.display = "block"; // 선박 등록 모달 열기
+});
+
+// 회원정보 수정 모달 열기
+document.getElementById("openEditModal")?.addEventListener("click", function(e) {
+    e.preventDefault();
+    closeAllModals(); // 다른 모달을 닫기
+    document.getElementById("editModal").style.display = "block"; // 회원정보 수정 모달 열기
+});
+
+// 선박 등록 모달 닫기
+document.getElementById("closeShipRegisterModal")?.addEventListener("click", function() {
+    closeAllModals(); // 모든 모달 닫기
+});
+
+// 회원정보 수정 모달 닫기
+document.getElementById("closeEditModal")?.addEventListener("click", function() {
+    closeAllModals(); // 모든 모달 닫기
+});
+
+
+
 </script>
 
 </body>
