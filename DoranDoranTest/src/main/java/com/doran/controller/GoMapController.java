@@ -19,9 +19,15 @@ public class GoMapController {
 		return "map2";
 	}
 
-	// shipList.jsp 이동
-	@RequestMapping("/shipList")
-	public String showShipList() {
-		return "shipList";
+	// map3.jsp 이동
+	@RequestMapping("/map3")
+	public String map3() {
+		return "map3";
+	}
+
+	// videoModal.jsp 이동
+	@RequestMapping("/videoModal")
+	public String showVideoModal() {
+		return "videoModal";
 	}
 }
