@@ -8,8 +8,14 @@
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
-<style>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
 
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap" rel="stylesheet">
+<style>
 /* 지도 및 버튼 스타일 */
 #map {
 	width: 100%; /* 너비를 100%로 설정 */
@@ -22,6 +28,7 @@ body {
 		100%);
 	margin: 0;
 	padding: 0;
+	font-family: 'Manrope', sans-serif; /* 기본 폰트 설정 */
 	position: relative; /* 지도를 기준으로 속도 조절 위치 조정 */
 }
 
@@ -264,13 +271,7 @@ body {
 	background-color: rgba(0, 0, 0, 0.9);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 	z-index: 2;
-	border-radius: 10px;
 	cursor: grab;
-	overflow: hidden; /* 자식 요소가 부모 요소를 넘지 않도록 설정 */
-	display: flex; /* Flexbox 사용 */
-	flex-direction: column; /* 수직 방향으로 정렬 */
-	align-items: center; /* 수평 중앙 정렬 */
-	justify-content: center; /* 수직 중앙 정렬 */
 }
 
 .videoModal:active {
@@ -279,16 +280,25 @@ body {
 
 /* 비디오 스타일 */
 .videoModal img {
-	width: auto; /* 부모 요소에 맞춰 너비 조정 */
-    height: 100%; /* 비율에 맞춰 높이 조정 */
-	margin: 10px;
 	color: white;
 }
 
 .videoModal h3 {
 	font-size: 18px;
-	margin-top: 10px;
+	margin: 10px 0px 10px;
 	text-align: center;
+}
+
+.video-close-btn {
+	z-index: 3;
+	position: absolute;
+	top: 20px;
+	right: 30px;
+	cursor: pointer;
+	font-size: 20px;
+	color: black;
+	background-color: transparent;
+	border: none;
 }
 </style>
 </head>
@@ -296,6 +306,27 @@ body {
 	<div id="app">
 	
 		<div id="map"></div>
+		
+		<div id="videoModal"
+			class="videoModal w-[80%] max-w-screen-md rounded-3xl bg-neutral-50 text-center antialiased px-5 md:px-20 py-10 shadow-2xl shadow-zinc-900 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+			style="padding:10px 30px;">
+
+			<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4">
+				Camera view</h3>
+
+			<button class="video-close-btn" @click="closeVideoModal">✖</button>
+			<img id="cameraVideo" src="http://192.168.219.47:8080/video_feed"
+				alt="Video Feed" />
+
+			<button type="button" id="reset" disabled
+				class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
+				style="margin: 16px 0px 0px">
+				Reset the position</button>
+
+			<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+				class="w-[16px] h-[16px] absolute right-6 top-6">
+					<path d="m2 2 12 12m0-12-12 12" class="stroke-2 stroke-current" /></svg>
+		</div>
 		
 		<div id="speedDisplay" class="speed-display">0</div>
 
@@ -338,14 +369,6 @@ body {
 			<div class="icon" @click="toggleModal()">📷</div>
 		</div>
 
-		<!-- 실시간 영상 모달창 -->
-		<div class="videoModal" id="videoModal"  @mousedown="startDrag" @mouseup="stopDrag" @mousemove="drag"
-		:style="{ top: modalTop, left: modalLeft, display: modalDisplay }">
-			<button class="close-btn" @click="closeVideoModal">✖</button>
-			<h3>camera view</h3>
-			<img id="cameraVideo" src="http://192.168.219.47:8080/video_feed" alt="Video Feed" />
-		</div>
-
 		<div class="info-overlay">
 			<div class="time-distance">
 				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
@@ -364,6 +387,10 @@ body {
 	</div>
 	
 	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<!-- GSAP Scripts -->
+	<script src='https://unpkg.com/gsap@3/dist/gsap.min.js'></script>
+	<script src='https://unpkg.com/gsap@3/dist/Draggable.min.js'></script>
+	<script src='https://assets.codepen.io/16327/InertiaPlugin.min.js'></script>
 	<script>
 	
 	new Vue({
@@ -372,6 +399,8 @@ body {
 	        return {
 	            map: null,    // Google Maps 객체를 저장할 변수
 	            marker: null, // 사용자 마커 객체를 저장할 변수
+	            initialX: 50,
+	            initialY: -50,
 	        };
 	    },
 	    mounted() {
@@ -379,6 +408,7 @@ body {
 	        this.updateLocation(); // 위치 업데이트 시작
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
+	        this.initDraggable(); // 모달 드래그 기능 초기화
 	    },
 	    methods: {
 	        initMap() {
@@ -553,7 +583,6 @@ body {
 	            });
 	            flightPath.setMap(this.map);
 
-	            toggleDarkMode(false); // 다크 모드 적용
 	        },
 	        async updateLocation() {
 	            // 위치 업데이트를 위한 함수
@@ -628,10 +657,6 @@ body {
 	            // 정보 패널 숨김
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
-	        }, closeVideoModal(){
-	        	
-	        	var videoModal = document.getElementById("videoModal");
-	        	videoModal.style.display = "none";
 	        }, endSail() { // 항해 종료 함수 endSail() 실행
 	   		 
 	            fetch('/sail/endSail', {
@@ -649,42 +674,90 @@ body {
 	            .catch(error => {
 	                console.error('Error:', error);
 	            });
-	        }, toggleModal() { // 비디오 모달 열기
-                var modal = document.getElementById("videoModal");
-                var mapDiv = document.getElementById("map");
+	        
+	        }, closeVideoModal(){
+	        	
+	        	var videoModal = document.getElementById("videoModal");
+	        	videoModal.style.display = "none";
+	        }, toggleModal() {
+	            var modal = document.getElementById("videoModal");
+	            var mapDiv = document.getElementById("map");
 
-                if (modal.style.display === "none" || modal.style.display === "") {
-                    var mapHeight = mapDiv.offsetHeight;
-                    var mapWidth = mapDiv.offsetWidth;
+	            if (modal.style.display === "none" || modal.style.display === "") {
+	                var mapHeight = mapDiv.offsetHeight;
+	                var mapWidth = mapDiv.offsetWidth;
+	                
+	                var modalWidth = mapWidth * 0.35;
+	                var modalHeight = modalWidth * 0.946;
+	                console.log(modalHeight, modalWidth);
 
-                    // 모달 크기 설정
-                    modal.style.height = (mapHeight * 0.6) + "px";
-                    modal.style.width = (mapWidth * 0.4) + "px";
-                    
-                	// 모달 위치 중앙에 설정
-                    modal.style.top = (mapHeight * 0.3) + "px";
-                	modal.style.left = (mapWidth * 0.075) + "px";
+	                // 모달 크기 설정
+	                modal.style.height = modalHeight + "px";
+	                modal.style.width = modalWidth + "px";
+	                
+	                // 모달 위치 중앙에 설정
+	                modal.style.top = (mapHeight * 0.3) + "px";
+	                modal.style.left = (mapWidth * 0.075) + "px";
 
+	                modal.style.display = "block"; // 모달 표시
+	            } else {
+	                modal.style.display = "none";
+	            }
+	        },
+	        initDraggable() {
+	            const modal = document.getElementById('videoModal');
+	            const wrapper = document.getElementById('map');
+	            const reset = document.getElementById('reset');
+	            const page = document.getElementById('app');
 
-                    modal.style.display = "block"; // 모달 표시
-                } else {
-                    modal.style.display = "none";
-                }
-            }
+	            const resetModalPosition = () => {
+	                gsap.to(modal, {
+	                    duration: 0.6,
+	                    ease: "power3.out",
+	                    x: 0,
+	                    y: 0,
+	                    xPercent: this.initialX,
+	                    yPercent: this.initialY,
+	                });
+	                reset.disabled = true;
+	            };
+
+	            Draggable.create(modal, {
+	                type: 'x,y',
+	                bounds: wrapper,
+	                edgeResistance: 0.85,
+	                inertia: true,
+	                throwResistance: 3000,
+	                onPressInit: function() {
+	                    page.classList.add('bg-violet-900');
+	                },
+	                onRelease: function() {
+	                    page.classList.remove('bg-violet-900');
+	                },
+	                onDrag: function() {
+	                    const x = gsap.getProperty(this, 'x');
+	                    const y = gsap.getProperty(this, 'y');
+
+	                    if (x === 0 && y === 0) {
+	                        reset.disabled = true;
+	                    } else {
+	                        reset.disabled = false;
+	                    }
+	                }
+	            });
+
+	            reset.addEventListener('click', resetModalPosition);
+
+	            window.addEventListener('resize', () => {
+	                resetModalPosition();
+	            });
+	        }
 	    }
 	});
 	
-	// 다크 모드 전환 함수
-	function toggleDarkMode(isDarkMode) {
-	    const body = document.body;
-	    if (isDarkMode) {
-	        body.classList.add('dark-mode');
-	    } else {
-	        body.classList.remove('dark-mode');
-	    }
-	}
-
+	
+	
     </script>
-
+ 
 </body>
 </html>
