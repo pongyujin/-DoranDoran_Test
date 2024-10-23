@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,286 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap" rel="stylesheet">
-<style>
-
-#map {
-	width: 100%; 
-	height: 900px; 
-	z-index: 1; 
-}
-
-body {
-	background: linear-gradient(90deg, #1A2529 12%, #1C2933 29%, #17293A 46%, #313F49
-		100%);
-	margin: 0;
-	padding: 0;
-	font-family: 'Manrope', sans-serif;
-}
-
-/* 속도 정보 overlay --------------------------------------------------------------------*/
-.info-overlay {
-	position: absolute;
-	bottom: 8%; /* 화면 하단에서 12% 위에 배치 */
-	left: 50%;
-	transform: translateX(-50%);
-	background-color: rgba(255, 255, 255, 0.8);
-	padding: 10px 20px;
-	width: 500px;
-	border-radius: 10px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 100;
-}
-
-.time-distance {
-	font-size: 20px;
-	font-weight: bold;
-	color: #000;
-	display: flex;
-	justify-content: space-between;
-	width: 200px;
-}
-
-.destination-btn {
-	background-color: #1C2933;
-	color: #ffffff;
-	padding: 10px 20px;
-	font-size: 14px;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	position: absolute;
-	right: -80%;
-	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-.destination-btn:hover {
-	background-color: #ff4e4e;
-}
-
-/* 컨트롤 패널 --------------------------------------------------------------------*/
-.control-panel {
-	position: absolute;
-	top: 900px;
-	width: 100%;
-	height: 300px;
-}
-
-.left-btn, .right-btn, .up-btn {
-	position: absolute;
-	width: 130px;
-	height: 120px;
-}
-
-.left-btn {
-	left: 43%;
-	top: 90px;
-}
-
-.right-btn {
-	left: 51.5%;
-	top: 90px;
-	width: 115px;
-	height: 115px;
-}
-
-.up-btn {
-	top: 30px;
-	left: 50%;
-	transform: translateX(-42%);
-	width: 110px;
-	height: 110px;
-}
-
-.stop-icon {
-	position: absolute;
-	left: 65%;
-	top: 50px;
-	width: 160px;
-	height: 160px;
-}
-
-.left-btn:hover, .right-btn:hover, .up-btn:hover{
-	opacity: 0.3;
-	cursor: pointer;
-}
-
-.stop-icon:hover{
-	opacity: 0.8;
-	cursor: pointer;
-}
-
-/* 속도 제어 --------------------------------------------------------------------*/
-.speed-control-wrapper {
-
-	position: absolute;
-	top: 970px;
-	right: 100px; /* left: 370px;*/
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	z-index: 100;
-	padding: 10px;
-	border-radius: 10px;
-}
-
-.speed-control {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: #16547a;
-	padding: 10px;
-	border-radius: 10px;
-	width: 300px;
-	color: #ffffff;
-}
-
-.speed-control input[type="range"] {
-	width: 150px;
-	margin: 0 10px;
-}
-
-.speed-control button {
-	background-color: #16547a;
-	border: none;
-	color: #ffffff;
-	padding: 10px 20px;
-	font-size: 18px;
-	cursor: pointer;
-	border-radius: 5px;
-}
-
-.speed-control button:hover {
-	opacity: 0.5;
-	background-color: #48b1f0;
-}
-
-/* 아이콘 패널 --------------------------------------------------------------------*/
-.icon-panel {
-	position: absolute;
-	top: 100px;
-	right: 10px;
-	background-color: rgba(0, 0, 0, 0.7);
-	border-radius: 10px;
-	padding: 15px;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	z-index: 1;
-}
-
-.icon {
-	width: 40px;
-	height: 40px;
-	background-color: rgba(255, 255, 255, 0.1);
-	border-radius: 10px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: pointer;
-	transition: background-color 0.3s ease, transform 0.3s ease;
-	font-size: 27px;
-}
-
-.icon:hover {
-	background-color: rgba(255, 255, 255, 0.3);
-	transform: scale(1.1);
-}
-
-.info-panel {
-	position: absolute;
-	top: 100px;
-	right: 70px;
-	background-color: rgba(0, 0, 0, 0.9);
-	border-radius: 10px;
-	padding: 20px;
-	width: 250px;
-	color: white;
-	display: none;
-	z-index: 2;
-}
-
-.info-panel.active {
-	display: block;
-}
-
-.info-panel h3 {
-	margin-top: 0;
-	font-size: 18px;
-	text-align: center;
-}
-
-.info-panel p {
-	font-size: 14px;
-	text-align: center;
-}
-
-.close-btn {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	cursor: pointer;
-	font-size: 20px;
-	color: white;
-	background-color: transparent;
-	border: none;
-}
-
-/* 속도 출력 --------------------------------------------------------------------*/
-.speed-display {
-	font-size: 50px;
-	font-weight: bold;
-	position: fixed;
-	top: 170px; /* 화면의 위쪽에서 80px (이전보다 10px 더 아래) */
-	left: 170px; /* 화면의 왼쪽에서 80px (이전보다 20px 더 오른쪽) */
-	color: black; /* 기본 모드에서는 검은색 */
-	z-index: 10000; /*드래그중인 비디오 모달 위에서도 보이도록*/
-	padding: 10px;
-	border-radius: 5px;
-}
-
-.dark-mode .speed-display {
-	color: white;
-}
-
-/* 비디오 모달창 --------------------------------------------------------------------*/
-.videoModal {
-	position: absolute;
-	color: white;
-	background-color: rgba(0, 0, 0, 0.9);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	z-index: 2;
-	cursor: grab;
-}
-
-.videoModal:active {
-	cursor: grabbing;
-}
-
-/* 비디오 스타일 */
-.videoModal img {
-	color: white;
-}
-
-.videoModal h3 {
-	font-size: 18px;
-	margin: 10px 0px 10px;
-	text-align: center;
-}
-
-.video-close-btn {
-	z-index: 3;
-	position: absolute;
-	top: 20px;
-	right: 30px;
-	cursor: pointer;
-	font-size: 20px;
-	color: black;
-	background-color: transparent;
-	border: none;
-}
-</style>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/map.css">
 </head>
 <body>
 	<div id="app">
@@ -352,16 +74,16 @@ body {
 		</div>
 
 		<div class="icon-panel">
-			<div class="icon" @click="showInfo('날씨', '12 kn, SW(241°), 23°C')">🌤️</div>
-			<div class="icon" @click="showInfo('온도', '24°C 입니다')">🌡️</div>
-			<div class="icon" @click="showInfo('배터리', '배터리 잔량 80%')">🔋</div>
-			<div class="icon" @click="showInfo('통신 상태', '통신 상태 양호')">📶</div>
-			<div class="icon" @click="showInfo('속도', '30 노트 속도')">🚤</div>
-			<div class="icon" @click="showInfo('남은 시간', '남은 시간 2시간')">⏱️</div>
-			<div class="icon" @click="showInfo('남은 거리', '남은 거리 10km')">🛣️</div>
-			<div class="icon" @click="showInfo('현재 위치', '위도: 37.5665, 경도: 126.9780')">📍</div>
-			<div class="icon" @click="showInfo('방위', '북쪽 방향')">🧭</div>
-			<div class="icon" @click="showInfo('주변 장애물 탐지', '장애물 없음')">🚧</div>
+			<div class="icon" @click="getInfo('날씨')">🌤️</div>
+			<div class="icon" @click="getInfo('온도')">🌡️</div>
+			<div class="icon" @click="getInfo('배터리')">🔋</div>
+			<div class="icon" @click="getInfo('통신 상태')">📶</div>
+			<div class="icon" @click="getInfo('속도')">🚤</div>
+			<div class="icon" @click="getInfo('남은 시간')">⏱️</div>
+			<div class="icon" @click="getInfo('남은 거리')">🛣️</div>
+			<div class="icon" @click="getInfo('현재 위치')">📍</div>
+			<div class="icon" @click="getInfo('방위')">🧭</div>
+			<div class="icon" @click="getInfo('주변 장애물 탐지')">🚧</div>
 			<div class="icon" @click="toggleModal()">📷</div>
 		</div>
 
@@ -531,22 +253,38 @@ body {
 	                document.getElementById('speedDisplay1').textContent = speedValue;
 	            });
 	        },
-	        showInfo(title, content) { // 5. 정보 패널 표시 함수
+	        showInfo(title) { // 5. 정보 패널 표시 함수
 
 	            const infoPanel = document.getElementById('infoPanel');
 	            const infoTitle = document.getElementById('infoTitle');
-	            const infoContent = document.getElementById('infoContent');
 
 	            infoTitle.textContent = title; // 패널 제목 설정
-	            infoContent.textContent = content; // 패널 내용 설정
 	            infoPanel.classList.add('active'); // 패널 표시
-	            
-	        }, closeInfoPanel() { // 6. 정보 패널 숨김 함수
+
+	        }, getInfo(title){ // 6. 정보 패널 데이터 받아오기
+	        	
+	            const infoContent = document.getElementById('infoContent');
+	        
+	        	axios.get("http://localhost:8085/controller/getInfo", {
+	        		params: {
+	        			infoTitle: title
+	        		}
+	        	}) 
+	            .then(response => {
+	                this.infoTitle = title;
+	                infoContent.textContent = response.data;  // 받아온 데이터로 infoContent 업데이트
+	                this.showInfo(title);  // info-panel을 열어줌
+	            })
+	            .catch(error => {
+	                console.error('Error getInfow data:', error);
+	            });
+	        	
+	        }, closeInfoPanel() { // 7. 정보 패널 숨김 함수
 
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
 	            
-	        }, endSail() { // 7. 항해 종료 함수
+	        }, endSail() { // 8. 항해 종료 함수
 	        	
 	        	axios.get("http://localhost:8085/controller/sail/endSail")
 	        	.then(response => {
@@ -558,7 +296,7 @@ body {
 	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
 	            });
 	        
-	        }, closeVideoModal(){ // 8. 실시간 카메라 모달 끄기 함수
+	        }, closeVideoModal(){ // 9. 실시간 카메라 모달 끄기 함수
 	        	
 	        	var videoModal = document.getElementById("videoModal");
 	        	videoModal.style.display = "none";
@@ -586,7 +324,7 @@ body {
 	                modal.style.display = "none";
 	            }
 	        },
-	        initDraggable() { // 9. 실시간 카메라 모달 드래그 함수
+	        initDraggable() { // 10. 실시간 카메라 모달 드래그 함수
 	            const modal = document.getElementById('videoModal');
 	            const wrapper = document.getElementById('map');
 	            const reset = document.getElementById('reset');
