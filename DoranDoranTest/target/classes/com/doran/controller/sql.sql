@@ -1,4 +1,4 @@
-select * from ship;
+select * from weather;
 
 INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
 VALUES ('joy', '1234', '조이', 'joy@gmail.com', '010-1234-5678');
@@ -16,7 +16,6 @@ INSERT INTO authority (authNum, authName, authDesc) VALUES
 ALTER TABLE sail
 ADD COLUMN startSail VARCHAR(100) NOT NULL COMMENT '출발 항해 정보',
 ADD COLUMN endSail VARCHAR(100) NOT NULL COMMENT '목적지 항해 정보';
-
 
 
 
@@ -104,6 +103,48 @@ ALTER TABLE sail COMMENT '항해 정보 테이블';
 ALTER TABLE sail
     ADD CONSTRAINT FK_sail_siCode_ship_siCode FOREIGN KEY (siCode)
         REFERENCES ship (siCode) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE waypoint 
+DROP FOREIGN KEY FK_waypoint_sailNum_sail_sailNum;
+
+ALTER TABLE gps 
+DROP FOREIGN KEY FK_gps_sailNum_sail_sailNum;
+
+ALTER TABLE camera 
+DROP FOREIGN KEY FK_camera_sailNum_sail_sailNum;
+
+ALTER TABLE lidar 
+DROP FOREIGN KEY FK_lidar_sailNum_sail_sailNum;
+
+ALTER TABLE weather 
+DROP FOREIGN KEY FK_weather_sailNum_sail_sailNum;
+
+        
+-- 1. sailNum의 자동 증가 속성 제거 (ALTER COLUMN 사용)
+ALTER TABLE sail 
+MODIFY COLUMN sailNum INT UNSIGNED NOT NULL COMMENT '항해 번호';
+
+-- 2. 기존의 기본 키 삭제
+ALTER TABLE sail 
+DROP PRIMARY KEY;
+
+ALTER TABLE sail 
+ADD PRIMARY KEY (siCode, sailNum);
+
+-- 3. siCode에 따라 자동증가 트리거 (super 권한없어서 실행못시킴)
+CREATE TRIGGER before_insert_sail
+BEFORE INSERT ON sail
+FOR EACH ROW
+BEGIN
+    SET NEW.sailNum = COALESCE((SELECT MAX(sailNum) FROM sail WHERE siCode = NEW.siCode), 0) + 1;
+END;
+
+-- sail 테이블에 인덱스 추가
+ALTER TABLE sail
+ADD INDEX idx_sailNum (sailNum);
+
+INSERT INTO sail (siCode, sailNum, startLat, startLng, endLat, endLng, comment) VALUES ('ship123', COALESCE((SELECT MAX(sailNum) FROM sail WHERE siCode \= 'ship123'), 0) + 1, 34.123456, 126.123456, 35.123456, 127.123456, '항해 코멘트');
+        
 --------------------------------------------------------------------------------
 -- authority Table Create SQL
 -- 테이블 생성 SQL - authority

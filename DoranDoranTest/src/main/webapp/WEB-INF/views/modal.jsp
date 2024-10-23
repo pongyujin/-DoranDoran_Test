@@ -37,12 +37,12 @@
       var pw1 = $("#memPw").val();
       var pw2 = $("#memPw2").val();
       if(pw1==pw2){
-          $("#passMessage").attr("style", "color:green; vertical-align:middle;");
+          $(".passMessage").attr("style", "color:green; vertical-align:middle; margin-top:10px;");
           $("#memPwJoin").attr("value", pw1)
-          $("#passMessage").text("비밀 번호가 일치합니다");
+          $(".passMessage").text("비밀 번호가 일치합니다");
       }else{
-          $("#passMessage").attr("style", "color:red; vertical-align:middle;");
-          $("#passMessage").text("비밀 번호가 일치하지 않습니다");
+          $(".passMessage").attr("style", "color:#ff5656; vertical-align:middle; margin-top:10px;");
+          $(".passMessage").text("비밀 번호가 일치하지 않습니다");
       }
   }
 
@@ -82,10 +82,10 @@
         <form action="memberJoin" method="post">
             <input type="hidden" id="memPwJoin" name="memPw" value=""> 
             <input type="text" id="memIdJoin" name="memId" placeholder="ID" autocomplete="username">
-            <button type="button" id="checkDuplicate" class="duplicate-btn" onclick="registerCheck()">중복체크</button>
+            <button type="button" id="checkDuplicate" class="duplicate-btn" onclick="registerCheck()" style="padding:5px;">중복체크</button>
             <input type="password" id="memPw" name="memPw" placeholder="Password" autocomplete="new-password" onkeyup="passwordCheck();"> 
             <input type="password" id="memPw2" name="memPw2" placeholder="Password Check" autocomplete="new-password" onkeyup="passwordCheck();">
-            <span id="passMessage"></span>
+            <span class="passMessage"></span>
             <input type="text" id="memNickJoin" name="memNick" placeholder="Nickname">
             <input type="email" id="memEmailJoin" name="memEmail" placeholder="Email" autocomplete="email">
             <input type="text" id="memPhoneJoin" name="memPhone" placeholder="Phone Number">
@@ -158,7 +158,7 @@
             <input type="password" id="pwCheck" name="pwCheck" placeholder="Password" required>
             <input type="password" id="memPw" name="memPw" placeholder="New Password" required onkeyup="passwordCheck();">
             <input type="password" id="memPw2" name="memPw2" placeholder="Confirm New Password" required onkeyup="passwordCheck();">
-            <span id="passMessage"></span>
+            <span class="passMessage"></span>
             <input type="text" id="memNick" name="memNick" value="${sessionScope.user.memNick}" required>
             <input type="email" id="memEmail" name="memEmail" value="${sessionScope.user.memEmail}" required>
             <input type="text" id="memPhone" name="memPhone" value="${sessionScope.user.memPhone}" required>

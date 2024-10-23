@@ -57,6 +57,8 @@ public class SailController {
 			sail = coordinates(sail);
 			
 			// b. 항해 최초 생성 정보 db 저장
+			int sailNum = sailMapper.getSailNum(sail);
+			sail.setSailNum(sailNum);
 			sailMapper.insert(sail);
 			System.out.println(sail);
 			// 항해 정보 세션 저장
