@@ -414,7 +414,6 @@ body {
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
 	            axios.get("http://localhost:8085/controller/flightPlanCoordinates")
 	            .then(response => {
-	              console.log(JSON.stringify(response.data, null, 2)); // JSON 형식으로 출력
 	              this.flightPlanCoordinates = response.data;  // 데이터를 Vue 데이터 속성에 할당
 	              this.initMap();
 	            })
@@ -510,7 +509,6 @@ body {
 	                    try {
 	                        const response = await fetch(`/api/location?latitude=${latitude}&longitude=${longitude}`);
 	                        const data = await response.json();
-	                        console.log(data);
 	                    } catch (error) {
 	                        console.error('Error fetching location info:', error);
 	                    }
@@ -555,12 +553,15 @@ body {
 	            infoPanel.classList.remove('active'); // 패널 숨김
 	            
 	        }, endSail() { // 7. 항해 종료 함수
+	        	
 	        	axios.get("http://localhost:8085/controller/sail/endSail")
-	            .then(response => {
-	            	console.log("Sail toggled successfully.");
+	        	.then(response => {
+	                console.log("Sail ended successfully.", response.data);
+	                // 페이지 이동
+	                window.location.href = "http://localhost:8085/controller/main";
 	            })
 	            .catch(error => {
-	                console.error('Error endSail:', error);
+	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
 	            });
 	        
 	        }, closeVideoModal(){ // 8. 실시간 카메라 모달 끄기 함수
@@ -577,7 +578,6 @@ body {
 	                
 	                var modalWidth = mapWidth * 0.35;
 	                var modalHeight = modalWidth * 0.946;
-	                console.log(modalHeight, modalWidth);
 
 	                // 모달 크기 설정
 	                modal.style.height = modalHeight + "px";

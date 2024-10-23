@@ -195,9 +195,23 @@ document.getElementById("closeEditModal")?.addEventListener("click", function() 
     closeAllModals(); // 모든 모달 닫기
 });
 
-
-
 </script>
+
+
+	<%
+    Boolean openShipRegisterModal = (Boolean) session.getAttribute("openShipRegisterModal");
+    if (openShipRegisterModal != null && openShipRegisterModal) {
+        // 세션에서 선박 등록모달을 열라는 신호가 있으면
+        session.removeAttribute("openShipRegisterModal"); // 신호 제거
+	%>
+        <script>
+        closeAllModals(); // 다른 모달을 닫기
+        document.getElementById("shipRegisterModal").style.display = "block"; // 선박 등록 모달 열기
+        </script>
+	<%
+    }
+	%>
+
 
 </body>
 </html>
