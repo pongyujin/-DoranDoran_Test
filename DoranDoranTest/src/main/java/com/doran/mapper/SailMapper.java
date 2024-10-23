@@ -19,4 +19,6 @@ public interface SailMapper {
 	public void delete(Sail sail);
 	// 5. 선박코드로 전체 항해 정보 불러오기
 	public List<Sail> sailList(Sail sail);
+	// 6. 선박코드로 sailNum 불러오기(트리거생성안되서만드는거)
+	public int getSailNum(Sail sail);
 }
