@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page pageEncoding="UTF-8" %>
 <!-- Google Fonts 로드 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -130,30 +131,36 @@
 
 <!-- 선박 등록 모달 -->
 <div id="shipRegisterModal" class="modal">
-    <span class="close" id="closeShipRegisterModal">&times;</span>
-    <h2>Ship registration</h2>
-    <div class="modal-content">
-        <form action="shipRegister" method="post" enctype="multipart/form-data">
-            <input type="text" id="siCode" name="siCode" placeholder="Ship ID" pattern="[A-Za-z0-9]+" required title="영문자와 숫자만 입력 가능" maxlength="20">
-            <input type="text" id="siName" name="siName" placeholder="Ship Name" maxlength="30">
-            <!-- 커스텀 파일 업로드 버튼 -->
-            <label for="shipFile" class="custom-file-upload" style="margin-top: 10px;">파일 선택</label>
-            <input id="shipFile" type="file" name="shipFile" style="display:none;">
-            <span id="fileName" style="color:white; margin-left: 10px;"></span> <!-- 파일 이름 표시 -->
+	<span class="close" id="closeShipRegisterModal">&times;</span>
+	<h2>Ship registration</h2>
+	<div class="modal-content">
+		<form action="shipRegister" method="post"
+			enctype="multipart/form-data">
+			<input type="text" id="siCode" name="siCode" placeholder="Ship ID"
+				pattern="[A-Za-z0-9]+" required title="영문자와 숫자만 입력 가능"
+				maxlength="20"> <input type="text" id="siName" name="siName"
+				placeholder="Ship Name" maxlength="30">
+			<!-- 커스텀 파일 업로드 버튼 -->
 
-            <!-- 파일 선택 시 파일 이름 표시하는 스크립트 -->
-            <script>
-              $(document).ready(function(){
-                  $("#shipFile").change(function(){
-                      var fileName = this.files[0] ? this.files[0].name : "파일이 선택되지 않았습니다";
-                      $("#fileName").text(fileName); // 파일 이름을 span에 표시
-                  });
-              });
-            </script>
+			<label for="siDocsFile" class="custom-file-upload"
+				style="margin-top: 10px;">파일 선택</label> <input id="siDocsFile"
+				type="file" name="siDocsFile" style="display: none;"> <span
+				id="fileName" style="color: white; margin-left: 10px;"></span>
+			<!-- 파일 이름 표시 -->
 
-            <button type="submit" class="register-button">Registration</button>
-        </form>
-    </div>
+			<!-- 파일 선택 시 파일 이름 표시하는 스크립트 -->
+			<script>
+  $(document).ready(function(){
+      $("#siDocsFile").change(function(){
+          var fileName = this.files[0] ? this.files[0].name : "파일이 선택되지 않았습니다";
+          $("#fileName").text(fileName); // 파일 이름을 span에 표시
+      });
+  });
+</script>
+
+			<button type="submit" class="register-button">Registration</button>
+		</form>
+	</div>
 </div>
 
 <!-- 회원정보 수정 모달 -->
