@@ -23,6 +23,11 @@ public class HomeController {
 		return "Main";
 
 	}
-	
-
+	 // Manager 페이지 추가
+    @GetMapping("/manager")
+    public String showManagerPage() {
+        return "Manager";  
+    }
 }
+
+

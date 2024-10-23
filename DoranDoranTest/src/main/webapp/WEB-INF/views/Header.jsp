@@ -123,10 +123,11 @@
                 <img src="<%=request.getContextPath()%>/resources/img/ship.png" alt="선박 등록" class="menu-icon">
                 선박 등록
             </a>
-            <a href="/ship/list">
-                <img src="<%=request.getContextPath()%>/resources/img/list.png" alt="선박 리스트" class="menu-icon">
-                선박 리스트
-            </a>
+            <a href="#" id="openShipListModal">
+    <img src="<%=request.getContextPath()%>/resources/img/list.png" alt="선박 리스트" class="menu-icon">
+    선박 리스트
+</a>
+
             <a href="#" id="openEditModal"> 
                 <img src="<%=request.getContextPath()%>/resources/img/user.png" alt="회원정보 수정" class="menu-icon">
                 회원정보 수정
@@ -168,6 +169,9 @@ function closeAllModals() {
     // 모든 모달 창 닫기
     document.getElementById("shipRegisterModal").style.display = "none";
     document.getElementById("editModal").style.display = "none";
+    document.getElementById("listModal").style.display = "none";
+    document.getElementById("groupInfoModal").style.display = "none";
+    
     // 필요시 추가 모달도 여기에 추가
 }
 
@@ -195,6 +199,17 @@ document.getElementById("closeEditModal")?.addEventListener("click", function() 
     closeAllModals(); // 모든 모달 닫기
 });
 
+//선박 리스트 모달 열기
+document.getElementById("openShipListModal").addEventListener("click", function(e) {
+    e.preventDefault();
+    closeAllModals(); // 다른 모달을 닫기
+    document.getElementById("listModal").style.display = "block";
+});
+
+// 선박 리스트 모달 닫기
+document.getElementById("closeShipListModal").addEventListener("click", function() {
+    document.getElementById("listModal").style.display = "none";
+});
 
 
 </script>
