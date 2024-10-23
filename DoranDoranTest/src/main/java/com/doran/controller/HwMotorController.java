@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class MotorController {
+public class HwMotorController {
 
     // 모터 속도를 설정하는 메서드
     public static void setMotorSpeed(int speed) {

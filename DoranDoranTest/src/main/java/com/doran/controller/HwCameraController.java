@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/receive-data")
-public class DetectionController {
+public class HwCameraController {
 
 	// 멀티파트 데이터를 수신
 	@PostMapping(consumes = "multipart/form-data")
