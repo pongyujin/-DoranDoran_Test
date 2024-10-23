@@ -34,15 +34,15 @@
 
   // 2. 비밀번호 확인
   function passwordCheck(){
-      var pw1 = $("#memPwJoin").val();
-      var pw2 = $("#memPwJoin2").val();
+      var pw1 = $("#memPw").val();
+      var pw2 = $("#memPw2").val();
       if(pw1==pw2){
-          $("#passMessage").attr("style", "color:green; vertical-align:middle;");
+          $(".passMessage").attr("style", "color:green; vertical-align:middle; margin-top:10px;");
           $("#memPwJoin").attr("value", pw1)
-          $("#passMessage").text("비밀 번호가 일치합니다");
+          $(".passMessage").text("비밀 번호가 일치합니다");
       }else{
-          $("#passMessage").attr("style", "color:red; vertical-align:middle;");
-          $("#passMessage").text("비밀 번호가 일치하지 않습니다");
+          $(".passMessage").attr("style", "color:#ff5656; vertical-align:middle; margin-top:10px;");
+          $(".passMessage").text("비밀 번호가 일치하지 않습니다");
       }
   }
 
@@ -55,7 +55,8 @@
           $("#myMessage").modal("show");
       }
   });
-  //현재 비밀번호를 세션에서 가져온 값으로 설정합니다.
+
+  // 현재 비밀번호를 세션에서 가져온 값으로 설정
   const currentPassword = `${sessionScope.user.memPw}`; // 세션의 현재 비밀번호
   
   // 4. 비밀번호 검사
@@ -70,8 +71,7 @@
       
       return true; // 폼 제출 허용
   }
-  
-  
+
   // 그룹 정보 모달 열기 함수
   function openGroupInfo(shipId) {
       document.getElementById("listModal").style.display = "none"; // 선박 리스트 모달 닫기
@@ -103,11 +103,12 @@
     <h2>Join</h2>
     <div class="modal-content">
         <form action="memberJoin" method="post">
-            <input type="hidden" id="memPwJoin1" name="memPw1" value=""> 
+            <input type="hidden" id="memPwJoin" name="memPw" value=""> 
             <input type="text" id="memIdJoin" name="memId" placeholder="ID" autocomplete="username">
-            <button type="button" id="checkDuplicate" class="duplicate-btn" onclick="registerCheck()">중복체크</button>
-            <input type="password" id="memPwJoin" name="memPw" placeholder="Password" autocomplete="new-password"> 
-            <input type="password" id="memPwJoin2" name="memPw2" placeholder="Password Check" autocomplete="new-password">
+            <button type="button" id="checkDuplicate" class="duplicate-btn" onclick="registerCheck()" style="padding:5px;">중복체크</button>
+            <input type="password" id="memPw" name="memPw" placeholder="Password" autocomplete="new-password" onkeyup="passwordCheck();"> 
+            <input type="password" id="memPw2" name="memPw2" placeholder="Password Check" autocomplete="new-password" onkeyup="passwordCheck();">
+            <span class="passMessage"></span>
             <input type="text" id="memNickJoin" name="memNick" placeholder="Nickname">
             <input type="email" id="memEmailJoin" name="memEmail" placeholder="Email" autocomplete="email">
             <input type="text" id="memPhoneJoin" name="memPhone" placeholder="Phone Number">
@@ -146,8 +147,8 @@
     <h2>Ship registration</h2>
     <div class="modal-content">
         <form action="shipRegister" method="post" enctype="multipart/form-data">
-            <input type="text" id="shipId" name="shipId" placeholder="Ship ID">
-            <input type="text" id="shipName" name="shipName" placeholder="Ship Name">
+            <input type="text" id="siCode" name="siCode" placeholder="Ship ID" pattern="[A-Za-z0-9]+" required title="영문자와 숫자만 입력 가능" maxlength="20">
+            <input type="text" id="siName" name="siName" placeholder="Ship Name" maxlength="30">
             <!-- 커스텀 파일 업로드 버튼 -->
             <label for="shipFile" class="custom-file-upload" style="margin-top: 10px;">파일 선택</label>
             <input id="shipFile" type="file" name="shipFile" style="display:none;">
@@ -163,13 +164,11 @@
               });
             </script>
 
-            <input id="shipFile" type="file" name="shipFile" style="display:none;">
-            <span id="fileName" style="color:white; margin-left: 10px;"></span> <!-- 파일 이름 표시 -->
-
-            <button type="submit" class="register-button">Ship registration</button>
+            <button type="submit" class="register-button">Registration</button>
         </form>
     </div>
 </div>
+
 <!-- 회원정보 수정 모달 -->
 <div id="editModal" class="modal">
     <span class="close" id="closeEditModal">&times;</span>
@@ -275,7 +274,6 @@
     border-radius: 10px;
     color: white;
 }
-
 
 .modal-content {
     display: flex;
