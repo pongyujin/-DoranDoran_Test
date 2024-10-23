@@ -55,6 +55,46 @@
           $("#myMessage").modal("show");
       }
   });
+  //현재 비밀번호를 세션에서 가져온 값으로 설정합니다.
+  const currentPassword = `${sessionScope.user.memPw}`; // 세션의 현재 비밀번호
+  
+  // 4. 비밀번호 검사
+  function validateForm() {
+      var pwCheckValue = $("#pwCheck").val();
+      
+      // 현재 비밀번호 확인
+      if (pwCheckValue !== currentPassword) {
+          alert("기존 비밀번호를 올바르게 작성해주세요.");
+          return false; // 폼 제출 방지
+      }
+      
+      return true; // 폼 제출 허용
+  }
+  
+  
+  // 그룹 정보 모달 열기 함수
+  function openGroupInfo(shipId) {
+      document.getElementById("listModal").style.display = "none"; // 선박 리스트 모달 닫기
+      document.getElementById("groupInfoModal").style.display = "block"; // 그룹 정보 모달 열기
+  }
+
+  // 모든 모달 닫기 함수
+  function closeAllModals() {
+      document.getElementById("listModal").style.display = "none"; // 선박 리스트 모달 닫기
+      document.getElementById("groupInfoModal").style.display = "none"; // 그룹 정보 모달 닫기
+  }
+
+  // 그룹 정보 모달 닫기 버튼 클릭 이벤트
+  document.getElementById("closeGroupInfoModal").addEventListener("click", function() {
+      closeAllModals(); // 모든 모달 닫기
+      document.getElementById("listModal").style.display = "block"; // 선박 리스트 모달 다시 열기
+  });
+
+  // 선박 리스트 모달 닫기 버튼 클릭 이벤트
+  document.getElementById("closeShipListModal").addEventListener("click", function() {
+      closeAllModals(); // 모든 모달 닫기
+  });
+
 </script>
 
 <!-- Join 모달 -->
@@ -109,23 +149,22 @@
             <input type="text" id="shipId" name="shipId" placeholder="Ship ID">
             <input type="text" id="shipName" name="shipName" placeholder="Ship Name">
             <!-- 커스텀 파일 업로드 버튼 -->
-          <!-- 커스텀 파일 업로드 버튼 -->
-<label for="shipFile" class="custom-file-upload" style="margin-top: 10px;">파일 선택</label>
-<input id="shipFile" type="file" name="shipFile" style="display:none;">
-<span id="fileName" style="color:white; margin-left: 10px;"></span> <!-- 파일 이름 표시 -->
+            <label for="shipFile" class="custom-file-upload" style="margin-top: 10px;">파일 선택</label>
+            <input id="shipFile" type="file" name="shipFile" style="display:none;">
+            <span id="fileName" style="color:white; margin-left: 10px;"></span> <!-- 파일 이름 표시 -->
 
-<!-- 파일 선택 시 파일 이름 표시하는 스크립트 -->
-<script>
-  $(document).ready(function(){
-      $("#shipFile").change(function(){
-          var fileName = this.files[0] ? this.files[0].name : "파일이 선택되지 않았습니다";
-          $("#fileName").text(fileName); // 파일 이름을 span에 표시
-      });
-  });
-</script>
+            <!-- 파일 선택 시 파일 이름 표시하는 스크립트 -->
+            <script>
+              $(document).ready(function(){
+                  $("#shipFile").change(function(){
+                      var fileName = this.files[0] ? this.files[0].name : "파일이 선택되지 않았습니다";
+                      $("#fileName").text(fileName); // 파일 이름을 span에 표시
+                  });
+              });
+            </script>
 
-<input id="shipFile" type="file" name="shipFile" style="display:none;">
-<span id="fileName" style="color:white; margin-left: 10px;"></span> <!-- 파일 이름 표시 -->
+            <input id="shipFile" type="file" name="shipFile" style="display:none;">
+            <span id="fileName" style="color:white; margin-left: 10px;"></span> <!-- 파일 이름 표시 -->
 
             <button type="submit" class="register-button">Ship registration</button>
         </form>
@@ -136,15 +175,87 @@
     <span class="close" id="closeEditModal">&times;</span>
     <h2>Edit</h2>
     <div class="modal-content">
-        <form action="updateMemberInfo" method="post">
-            <input type="text" id="editId" name="editId" placeholder="ID" required>
-            <input type="password" id="editPw" name="editPw" placeholder="Password" required>
-            <input type="password" id="editNewPw" name="editNewPw" placeholder="New Password" required>
-            <input type="password" id="editConfirmNewPw" name="editConfirmNewPw" placeholder="Confirm New Password" required>
+        <form action="memberUpdate" method="post" onsubmit="return validateForm();">
+            <input type="text" id="memId" name="memId" value="${sessionScope.user.memId}" required readonly>
+            <input type="password" id="pwCheck" name="pwCheck" placeholder="Password" required>
+            <input type="password" id="memPw" name="memPw" placeholder="New Password" required onkeyup="passwordCheck();">
+            <input type="password" id="memPw2" name="memPw2" placeholder="Confirm New Password" required onkeyup="passwordCheck();">
+            <span class="passMessage"></span>
+            <input type="text" id="memNick" name="memNick" value="${sessionScope.user.memNick}" required>
+            <input type="email" id="memEmail" name="memEmail" value="${sessionScope.user.memEmail}" required>
+            <input type="text" id="memPhone" name="memPhone" value="${sessionScope.user.memPhone}" required>
             <button type="submit" class="edit-button">Edit</button>
         </form>
     </div>
 </div>
+
+<!-- 선박 리스트 모달 -->
+<div id="listModal" class="modal">
+    <span class="close" id="closeShipListModal">&times;</span>
+    <h2>선박 리스트</h2>
+    <div class="modal-content">
+        <!-- 선박 리스트 표시 부분 -->
+        <ul id="shipList">
+            <li>
+                <p>선박번호: ship01</p>
+                <p>선박명: 도란의 배</p>
+                <!-- 그룹 정보 버튼 -->
+                <button onclick="openGroupInfo('ship01')">그룹정보</button>
+            </li>
+            <li>
+                <p>선박번호: ship02</p>
+                <p>선박명: do의 배</p>
+                <button onclick="openGroupInfo('ship02')">그룹정보</button>
+            </li>
+            <li>
+                <p>선박번호: ship03</p>
+                <p>선박명: zzz의 배</p>
+                <button onclick="openGroupInfo('ship03')">그룹정보</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- 그룹 정보 모달 -->
+<div id="groupInfoModal" class="modal">
+    <span class="close" id="closeGroupInfoModal">&times;</span>
+    <h2>그룹 정보</h2>
+    <div class="modal-content">
+        <!-- 초대 섹션 -->
+        <div class="invite-section">
+            <input type="text" placeholder="Email or ID">
+            <button>초대</button>
+        </div>
+        <!-- 사용자 리스트 -->
+        <ul class="user-list">
+            <li>
+                <span>정유진</span>
+                <select>
+                    <option value="관리자">관리자</option>
+                    <option value="관제보기전용">관제보기전용</option>
+                    <option value="통계이용">통계이용</option>
+                </select>
+            </li>
+            <li>
+                <span>고유석</span>
+                <select>
+                    <option value="관리자">관리자</option>
+                    <option value="관제보기전용">관제보기전용</option>
+                    <option value="통계이용" selected>통계이용</option>
+                </select>
+            </li>
+            <li>
+                <span>허재혁</span>
+                <select>
+                    <option value="관리자">관리자</option>
+                    <option value="관제보기전용">관제보기전용</option>
+                    <option value="통계이용" selected>통계이용</option>
+                </select>
+            </li>
+        </ul>
+    </div>
+</div>
+
 <!-- 모달 CSS 스타일 -->
 <style>
 * {
@@ -154,16 +265,17 @@
 .modal {
     display: none;
     position: fixed;
-    z-index: 1001;
+    z-index: 1001; /* 높은 값을 유지 */
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     width: 400px;
     background-color: rgba(49, 63, 73, 0.9);
-    padding: 60px;
+    padding: 20px;
     border-radius: 10px;
     color: white;
 }
+
 
 .modal-content {
     display: flex;
@@ -174,7 +286,6 @@
 h2 {
     text-align: center;
 }
-
 
 /* 중복체크 버튼 스타일 */
 .duplicate-btn {
@@ -190,7 +301,6 @@ h2 {
     cursor: pointer;
     width: 80px;
 }
-
 
 .duplicate-btn:hover {
     background-color: #17293A;
@@ -273,46 +383,74 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     height: 60px;
     margin-top: -12px;
 }
-</style>
-<!-- 모달 CSS 스타일 -->
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 400px;
-    background-color: rgba(49, 63, 73, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    color: white;
-}
 
-.modal-content {
+/* 그룹 정보 모달의 초대 섹션 스타일 */
+.invite-section {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-h2 {
-    text-align: center;
-}
-
-.edit-button {
-    display: block;
-    margin: 20px auto 0;
+.invite-section input {
+    width: 70%;
     padding: 10px;
-    width: 150px;
-    background-color: #1C2933;
-    border: none;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+}
+
+.invite-section button {
+    width: 25%;
+    padding: 10px;
+    background-color: #5A77F9;
     color: white;
-    font-size: 16px;
+    border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px;
 }
 
-.edit-button:hover {
-    background-color: #17293A;
+.invite-section button:hover {
+    background-color: #4763C8;
 }
+
+/* 그룹 정보 모달의 사용자 리스트 스타일 */
+.user-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.user-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #1F2D3A;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+}
+
+.user-list li span {
+    font-size: 14px;
+    color: white;
+}
+
+.user-list li select {
+    width: 50%;
+    padding: 8px;
+    background-color: #2C3E50;
+    color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.user-list li select:hover {
+    background-color: #34495E;
+}
+</style>
