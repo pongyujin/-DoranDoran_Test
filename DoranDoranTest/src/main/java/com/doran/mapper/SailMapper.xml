@@ -3,9 +3,16 @@
 <mapper namespace="com.doran.mapper.SailMapper">
 
 	<insert id="insert" parameterType="com.doran.entity.Sail" useGeneratedKeys="true" keyProperty="sailNum">
-		INSERT INTO sail (siCode, startSail, endSail, startLat, startLng, endLat, endLng)
-		VALUES (#{siCode}, #{startSail}, #{endSail}, #{startLat}, #{startLng}, #{endLat}, #{endLng});
+		INSERT INTO sail (sailNum, siCode, startSail, endSail, startLat, startLng, endLat, endLng)
+		VALUES (#{sailNum}, #{siCode}, #{startSail}, #{endSail}, #{startLat}, #{startLng}, #{endLat}, #{endLng});
 	</insert>
+	
+	<!-- 항해 등록을 위해(insert) 최대 sailNum을 가져오는 쿼리 -->
+    <select id="getSailNum" parameterType="com.doran.entity.Sail" resultType="int">
+        SELECT COALESCE(MAX(sailNum), 0) + 1
+        FROM sail
+        WHERE siCode = #{siCode}
+    </select>
 
 	<update id="comment" parameterType="com.doran.entity.Sail">
 		update sail set
