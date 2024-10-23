@@ -46,7 +46,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	z-index: 500;
+	z-index: 100;
 }
 
 .time-distance {
@@ -132,11 +132,11 @@ body {
 
 	position: absolute;
 	top: 970px;
-	left: 370px;
+	right: 100px; /* left: 370px;*/
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	z-index: 300;
+	z-index: 100;
 	padding: 10px;
 	border-radius: 10px;
 }
@@ -247,11 +247,11 @@ body {
 .speed-display {
 	font-size: 50px;
 	font-weight: bold;
-	position: absolute;
+	position: fixed;
 	top: 170px; /* 화면의 위쪽에서 80px (이전보다 10px 더 아래) */
 	left: 170px; /* 화면의 왼쪽에서 80px (이전보다 20px 더 오른쪽) */
 	color: black; /* 기본 모드에서는 검은색 */
-	z-index: 1000;
+	z-index: 10000; /*드래그중인 비디오 모달 위에서도 보이도록*/
 	padding: 10px;
 	border-radius: 5px;
 }
@@ -596,6 +596,8 @@ body {
 	            	
 	            	const wrapperRect = wrapper.getBoundingClientRect();
 	                const pageRect = page.getBoundingClientRect();
+	                
+	                modal.style.position = 'fixed';
 	            	
 	                gsap.to(modal, {
 	                    duration: 0.6,
