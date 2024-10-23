@@ -34,6 +34,9 @@ public class ShipController {
 		Member login = (Member) session.getAttribute("user");
 
 		List<Ship> shipList = shipMapper.shipList(login.getMemId());
+		
+		System.out.println("ShipController : " + shipList);
+		
 		return shipList;
 	}
 

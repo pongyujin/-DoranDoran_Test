@@ -13,11 +13,13 @@ public class HomeController {
 		return "home";
 	}
 
+	// 나는야 통계페이지
 	@RequestMapping("/statistics")
 	public String statistics() {
 		return "ShipStatistics";
 	}
 
+	// 암
 	@GetMapping("/main")
 	public String showMainPage() {
 		return "Main";
