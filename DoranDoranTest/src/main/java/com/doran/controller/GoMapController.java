@@ -13,16 +13,10 @@ public class GoMapController {
 		return "map";
 	}
 
-	// map2.jsp 이동
+	// Controller.jsp 이동
 	@RequestMapping("/map2")
-	public String showMap2() {
-		return "map2";
-	}
-
-	// map3.jsp 이동
-	@RequestMapping("/map3")
-	public String map3() {
-		return "map3";
+	public String showController() {
+		return "Controller";
 	}
 
 	// videoModal.jsp 이동

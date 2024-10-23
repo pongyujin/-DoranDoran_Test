@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -57,20 +58,11 @@ public class MemberController {
 	// 2. 로그인
 	@PostMapping("/memberLogin")
 	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
-	    Member mvo = memberMapper.memberLogin(member);
-
-
-
-
+	    
+		Member user = memberMapper.memberLogin(member);
 		
-		if (mvo == null) {
-
-	        // 세션에 저장된 Member 객체가 모든 값을 가지고 있는지 확인하는 로그 출력
-	        System.out.println("세션에 저장된 사용자 정보: " + session.getAttribute("user"));
-	        System.out.println("닉네임: " + mvo.getMemNick());
-	        System.out.println("이메일: " + mvo.getMemEmail());
-	        System.out.println("전화번호: " + mvo.getMemPhone());
-
+		if (user == null) {
+	        
 			rttr.addFlashAttribute("msgType", "로그인 실패");
 			rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
 			session.setAttribute("openLoginModal", true);
@@ -82,13 +74,12 @@ public class MemberController {
 
 			// 로그인 성공
 			rttr.addFlashAttribute("msgType", "로그인 성공");
-			rttr.addFlashAttribute("msg", mvo.getMemNick()+"님, 환영합니다!");
+			rttr.addFlashAttribute("msg", user.getMemNick()+"님, 환영합니다!");
 			// 로그인 정보 세션 저장
-			session.setAttribute("user", mvo);
+			session.setAttribute("user", user);
 
 			return "redirect:/main";
 		}
-
 	}
 
 	// 3. 아이디 중복 확인
@@ -110,5 +101,28 @@ public class MemberController {
 		session.invalidate();
 		return "redirect:/main";
 		
+	}
+	
+	// 5. 회원 정보 수정
+	@PostMapping("/memberUpdate")
+	public String memberUpdate(Member member, RedirectAttributes rttr, HttpSession session) {
+		
+		int cnt = memberMapper.memberUpdate(member);
+		
+		if (cnt > 0) {
+			
+			rttr.addFlashAttribute("msgType", "수정 성공");
+			rttr.addFlashAttribute("msg", "회원 정보 수정을 성공했습니다");
+			// 세션 생성 시 타임아웃 설정(1시간)
+			session.setMaxInactiveInterval(3600);
+			session.setAttribute("user", member);
+
+		} else {
+			
+			rttr.addFlashAttribute("msgType", "수정 실패");
+			rttr.addFlashAttribute("msg", "회원 정보 수정을 실패했습니다. 다시 시도해주세요");
+		}
+		
+		return "redirect:/main";
 	}
 }

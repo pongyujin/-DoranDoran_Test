@@ -78,22 +78,9 @@
       document.getElementById("groupInfoModal").style.display = "block"; // 그룹 정보 모달 열기
   }
 
-  // 모든 모달 닫기 함수
-  function closeAllModals() {
-      document.getElementById("listModal").style.display = "none"; // 선박 리스트 모달 닫기
-      document.getElementById("groupInfoModal").style.display = "none"; // 그룹 정보 모달 닫기
-  }
+ 
 
-  // 그룹 정보 모달 닫기 버튼 클릭 이벤트
-  document.getElementById("closeGroupInfoModal").addEventListener("click", function() {
-      closeAllModals(); // 모든 모달 닫기
-      document.getElementById("listModal").style.display = "block"; // 선박 리스트 모달 다시 열기
-  });
 
-  // 선박 리스트 모달 닫기 버튼 클릭 이벤트
-  document.getElementById("closeShipListModal").addEventListener("click", function() {
-      closeAllModals(); // 모든 모달 닫기
-  });
 
 </script>
 

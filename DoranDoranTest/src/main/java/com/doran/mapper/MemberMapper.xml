@@ -17,4 +17,10 @@
 		where memID=#{memID}
 	</select>
 	
+	<update id="memberUpdate" parameterType="com.doran.entity.Member">
+		update member set
+		memPw=#{memPw}, memNick=#{memNick}, memEmail=#{memEmail}, memPhone=#{memPhone}
+		where memId=#{memId}
+	</update>
+	
 </mapper>

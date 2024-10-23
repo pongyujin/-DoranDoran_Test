@@ -6,6 +6,8 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
 <!-- Tailwind CSS CDN -->
@@ -16,11 +18,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap" rel="stylesheet">
 <style>
-/* 지도 및 버튼 스타일 */
+
 #map {
-	width: 100%; /* 너비를 100%로 설정 */
-	height: 900px; /* 높이를 900px로 설정 */
-	z-index: 1; /* 지도는 뒤로 배치 */
+	width: 100%; 
+	height: 900px; 
+	z-index: 1; 
 }
 
 body {
@@ -28,14 +30,13 @@ body {
 		100%);
 	margin: 0;
 	padding: 0;
-	font-family: 'Manrope', sans-serif; /* 기본 폰트 설정 */
-	position: relative; /* 지도를 기준으로 속도 조절 위치 조정 */
+	font-family: 'Manrope', sans-serif;
 }
 
-/* 투명한 배경 박스 스타일 (위쪽으로 위치 조정) */
+/* 속도 정보 overlay --------------------------------------------------------------------*/
 .info-overlay {
 	position: absolute;
-	bottom: 370px;
+	bottom: 8%; /* 화면 하단에서 12% 위에 배치 */
 	left: 50%;
 	transform: translateX(-50%);
 	background-color: rgba(255, 255, 255, 0.8);
@@ -45,7 +46,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	z-index: 10; /* 지도의 z-index보다 높은 값을 설정하여 지도 위에 표시되도록 설정 */
+	z-index: 100;
 }
 
 .time-distance {
@@ -57,11 +58,6 @@ body {
 	width: 200px;
 }
 
-.time-distance span {
-	margin: 0 10px;
-}
-
-/* 목적지 설정 버튼 스타일 */
 .destination-btn {
 	background-color: #1C2933;
 	color: #ffffff;
@@ -70,102 +66,99 @@ body {
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
-	position: fixed !important; /* Viewport에 고정 */
-	right: -600px !important; /* 오른쪽 끝에서 100px 더 오른쪽으로 이동 */
-	bottom: 11px !important; /* 바텀은 그대로 유지 */
-	z-index: 9999 !important; /* 매우 높은 z-index로 다른 요소 위에 표시 */
-	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* 버튼에 그림자 추가 */
+	position: absolute;
+	right: -80%;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .destination-btn:hover {
-	background-color: #17293A;
+	background-color: #ff4e4e;
 }
 
-/* 부모 컨테이너 설정 */
+/* 컨트롤 패널 --------------------------------------------------------------------*/
 .control-panel {
-	position: relative;
-	width: 100%; /* 부모 컨테이너의 너비를 100%로 설정 */
-	height: 300px; /* 패널의 높이 */
-	margin-top: 50px;
+	position: absolute;
+	top: 900px;
+	width: 100%;
+	height: 300px;
 }
 
-/* 개별 클래스 적용 */
-.left-btn {
+.left-btn, .right-btn, .up-btn {
 	position: absolute;
-	left: 42.9%; /* 적당한 위치로 이동 */
 	width: 130px;
 	height: 120px;
-	bottom: 120px;
+}
+
+.left-btn {
+	left: 43%;
+	top: 90px;
 }
 
 .right-btn {
-	position: absolute;
-	left: 51.5%; /* 적당한 위치로 이동 */
-	width: 110px;
-	height: 120px;
-	bottom: 125px;
+	left: 51.5%;
+	top: 90px;
+	width: 115px;
+	height: 115px;
 }
 
-/* 상향 버튼 (.up-btn) */
 .up-btn {
-	position: absolute;
-	bottom: 200px; /* 위쪽으로 배치 */
-	left: 50%; /* 부모의 왼쪽으로부터 50% */
-	transform: translateX(-42%); /* 50%에서 45%로 변경하여 살짝 오른쪽으로 이동 */
+	top: 30px;
+	left: 50%;
+	transform: translateX(-42%);
 	width: 110px;
 	height: 110px;
 }
 
-/* STOP 아이콘 */
 .stop-icon {
 	position: absolute;
+	left: 65%;
+	top: 50px;
 	width: 160px;
 	height: 160px;
-	bottom: 130px;
-	right: 500px; /* 70px에서 90px로 변경하여 살짝 왼쪽으로 이동 */
 }
 
-/* 속도 조절 컨트롤 고정 */
+.left-btn:hover, .right-btn:hover, .up-btn:hover{
+	opacity: 0.3;
+	cursor: pointer;
+}
+
+.stop-icon:hover{
+	opacity: 0.8;
+	cursor: pointer;
+}
+
+/* 속도 제어 --------------------------------------------------------------------*/
 .speed-control-wrapper {
-	position: absolute; /* 부모 요소에 고정 */
-	bottom: 120px; /* 부모 요소의 아래쪽으로부터 100px 간격 */
-	left: 400px; /* 부모 요소의 왼쪽으로부터 400px 간격 */
+
+	position: absolute;
+	top: 970px;
+	right: 100px; /* left: 370px;*/
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	z-index: 1000; /* 다른 요소 위에 배치 */
+	z-index: 100;
 	padding: 10px;
 	border-radius: 10px;
 }
 
-/* 속도 조절 컨트롤 스타일 */
 .speed-control {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #1A2529;
+	background-color: #16547a;
 	padding: 10px;
 	border-radius: 10px;
 	width: 300px;
-	margin-bottom: 10px;
-	font-size: 18px;
 	color: #ffffff;
 }
 
 .speed-control input[type="range"] {
 	width: 150px;
 	margin: 0 10px;
-	background-color: #313F49;
-	accent-color: #1C2933;
-}
-
-.speed-control span {
-	color: #ffffff;
-	font-weight: bold;
 }
 
 .speed-control button {
-	background-color: #1C2933;
+	background-color: #16547a;
 	border: none;
 	color: #ffffff;
 	padding: 10px 20px;
@@ -175,9 +168,11 @@ body {
 }
 
 .speed-control button:hover {
-	background-color: #17293A;
+	opacity: 0.5;
+	background-color: #48b1f0;
 }
 
+/* 아이콘 패널 --------------------------------------------------------------------*/
 .icon-panel {
 	position: absolute;
 	top: 100px;
@@ -248,14 +243,15 @@ body {
 	border: none;
 }
 
+/* 속도 출력 --------------------------------------------------------------------*/
 .speed-display {
 	font-size: 50px;
 	font-weight: bold;
-	position: absolute;
+	position: fixed;
 	top: 170px; /* 화면의 위쪽에서 80px (이전보다 10px 더 아래) */
 	left: 170px; /* 화면의 왼쪽에서 80px (이전보다 20px 더 오른쪽) */
 	color: black; /* 기본 모드에서는 검은색 */
-	z-index: 1000;
+	z-index: 10000; /*드래그중인 비디오 모달 위에서도 보이도록*/
 	padding: 10px;
 	border-radius: 5px;
 }
@@ -264,7 +260,7 @@ body {
 	color: white;
 }
 
-/* 모달창 기본 스타일 */
+/* 비디오 모달창 --------------------------------------------------------------------*/
 .videoModal {
 	position: absolute;
 	color: white;
@@ -374,8 +370,7 @@ body {
 				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
 			</div>
 
-			<button class="destination-btn" @click="setDestinationMode">목적지
-				설정</button>
+			<button class="destination-btn" @click="endSail">항해 완료</button>
 		</div>
 
 		<div class="info-panel" id="infoPanel">
@@ -399,19 +394,28 @@ body {
 	        return {
 	            map: null,    // Google Maps 객체를 저장할 변수
 	            marker: null, // 사용자 마커 객체를 저장할 변수
-	            initialX: 50,
-	            initialY: -50,
+	            flightPlanCoordinates: [] // Polyline 데이터를 저장할 곳
 	        };
 	    },
 	    mounted() {
-	        this.initMap(); // 컴포넌트가 마운트될 때 지도 초기화
+	        this.loadPoly(); // 경로 데이터 받아오기
 	        this.updateLocation(); // 위치 업데이트 시작
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
 	    },
 	    methods: {
-	        initMap() {
+	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
+	            axios.get("http://localhost:8085/controller/flightPlanCoordinates")
+	            .then(response => {
+	              this.flightPlanCoordinates = response.data;  // 데이터를 Vue 데이터 속성에 할당
+	              this.initMap();
+	            })
+	            .catch(error => {
+	              console.error("Error fetching coordinates:", error);
+	            });
+	        },
+	        initMap() { // 2. 지도 초기화 및 polyline 그리기(Google maps api)
 	            // Google Maps 스타일 설정 (다크 모드)
 	            var styledMapType = new google.maps.StyledMapType(
 	                [
@@ -456,126 +460,10 @@ body {
 	            // 기본 맵 스타일 적용
 	            this.map.mapTypes.set('styled_map', styledMapType);
 	            this.map.setMapTypeId('roadmap');
-
-	            // Polyline 경로 설정 (예시 데이터)
-	            const flightPlanCoordinates = [
-	            	{ lat: 34.500000, lng: 128.730000 },
-	                { lat: 34.503015, lng: 128.722764 },
-	                { lat: 34.508543, lng: 128.717588 },
-	                { lat: 34.514070, lng: 128.712412 },
-	                { lat: 34.519598, lng: 128.707236 },
-	                { lat: 34.525126, lng: 128.702060 },
-	                { lat: 34.530653, lng: 128.702060 },
-	                { lat: 34.536181, lng: 128.702060 },
-	                { lat: 34.541709, lng: 128.702060 },
-	                { lat: 34.547236, lng: 128.702060 },
-	                { lat: 34.552764, lng: 128.702060 },
-	                { lat: 34.558291, lng: 128.702060 },
-	                { lat: 34.563819, lng: 128.702060 },
-	                { lat: 34.569347, lng: 128.702060 },
-	                { lat: 34.574874, lng: 128.702060 },
-	                { lat: 34.580402, lng: 128.702060 },
-	                { lat: 34.585930, lng: 128.702060 },
-	                { lat: 34.591457, lng: 128.702060 },
-	                { lat: 34.596985, lng: 128.702060 },
-	                { lat: 34.602513, lng: 128.702060 },
-	                { lat: 34.607985, lng: 128.710016 },
-	                { lat: 34.614002, lng: 128.716287 },
-	                { lat: 34.620020, lng: 128.722558 },
-	                { lat: 34.626037, lng: 128.728829 },
-	                { lat: 34.632055, lng: 128.735100 },
-	                { lat: 34.638072, lng: 128.741371 },
-	                { lat: 34.644090, lng: 128.747642 },
-	                { lat: 34.650107, lng: 128.753913 },
-	                { lat: 34.656125, lng: 128.760184 },
-	                { lat: 34.662142, lng: 128.766455 },
-	                { lat: 34.668160, lng: 128.772726 },
-	                { lat: 34.674177, lng: 128.778997 },
-	                { lat: 34.680195, lng: 128.785268 },
-	                { lat: 34.686212, lng: 128.791539 },
-	                { lat: 34.692230, lng: 128.797810 },
-	                { lat: 34.698248, lng: 128.804081 },
-	                { lat: 34.704265, lng: 128.810353 },
-	                { lat: 34.710283, lng: 128.816624 },
-	                { lat: 34.716300, lng: 128.822895 },
-	                { lat: 34.722318, lng: 128.829166 },
-	                { lat: 34.728335, lng: 128.835437 },
-	                { lat: 34.734353, lng: 128.841708 },
-	                { lat: 34.740370, lng: 128.847979 },
-	                { lat: 34.746388, lng: 128.854250 },
-	                { lat: 34.752405, lng: 128.860521 },
-	                { lat: 34.758423, lng: 128.866792 },
-	                { lat: 34.764440, lng: 128.873063 },
-	                { lat: 34.770458, lng: 128.879334 },
-	                { lat: 34.776475, lng: 128.885605 },
-	                { lat: 34.782493, lng: 128.891876 },
-	                { lat: 34.788510, lng: 128.898147 },
-	                { lat: 34.794528, lng: 128.904418 },
-	                { lat: 34.800545, lng: 128.910689 },
-	                { lat: 34.800545, lng: 128.916960 },
-	                { lat: 34.800545, lng: 128.923231 },
-	                { lat: 34.800545, lng: 128.929503 },
-	                { lat: 34.800545, lng: 128.935774 },
-	                { lat: 34.800545, lng: 128.942045 },
-	                { lat: 34.800545, lng: 128.948316 },
-	                { lat: 34.806984, lng: 128.942596 },
-	                { lat: 34.814117, lng: 128.937328 },
-	                { lat: 34.821250, lng: 128.932060 },
-	                { lat: 34.828383, lng: 128.926792 },
-	                { lat: 34.835516, lng: 128.921524 },
-	                { lat: 34.842649, lng: 128.916256 },
-	                { lat: 34.849782, lng: 128.910988 },
-	                { lat: 34.856915, lng: 128.905720 },
-	                { lat: 34.864048, lng: 128.900452 },
-	                { lat: 34.871180, lng: 128.895184 },
-	                { lat: 34.878313, lng: 128.889916 },
-	                { lat: 34.885446, lng: 128.884648 },
-	                { lat: 34.892579, lng: 128.879381 },
-	                { lat: 34.899712, lng: 128.874113 },
-	                { lat: 34.906845, lng: 128.879381 },
-	                { lat: 34.913978, lng: 128.884648 },
-	                { lat: 34.921111, lng: 128.889916 },
-	                { lat: 34.928244, lng: 128.895184 },
-	                { lat: 34.935377, lng: 128.900452 },
-	                { lat: 34.942510, lng: 128.900452 },
-	                { lat: 34.949643, lng: 128.900452 },
-	                { lat: 34.956776, lng: 128.900452 },
-	                { lat: 34.963909, lng: 128.900452 },
-	                { lat: 34.971042, lng: 128.900452 },
-	                { lat: 34.978175, lng: 128.900452 },
-	                { lat: 34.985307, lng: 128.900452 },
-	                { lat: 34.992440, lng: 128.900452 },
-	                { lat: 34.999573, lng: 128.900452 },
-	                { lat: 35.006706, lng: 128.900452 },
-	                { lat: 35.013839, lng: 128.900452 },
-	                { lat: 35.020972, lng: 128.900452 },
-	                { lat: 35.028105, lng: 128.900452 },
-	                { lat: 35.035238, lng: 128.900452 },
-	                { lat: 35.042371, lng: 128.900452 },
-	                { lat: 35.049504, lng: 128.900452 },
-	                { lat: 35.056637, lng: 128.900452 },
-	                { lat: 35.063770, lng: 128.900452 },
-	                { lat: 35.070903, lng: 128.900452 },
-	                { lat: 35.078036, lng: 128.900452 },
-	                { lat: 35.085169, lng: 128.900452 },
-	                { lat: 35.092302, lng: 128.900452 },
-	                { lat: 35.099434, lng: 128.900452 },
-	                { lat: 35.106567, lng: 128.900452 },
-	                { lat: 35.113700, lng: 128.900452 },
-	                { lat: 35.120833, lng: 128.900452 },
-	                { lat: 35.127966, lng: 128.900452 },
-	                { lat: 35.135099, lng: 128.900452 },
-	                { lat: 35.142232, lng: 128.900452 },
-	                { lat: 35.149365, lng: 128.900452 },
-	                { lat: 35.156498, lng: 128.900452 },
-	                { lat: 35.163631, lng: 128.900452 },
-	                { lat: 35.170764, lng: 128.900452 },
-	                { lat: 35.177897, lng: 128.900452 }
-	            ];
-
+	            
 	            // Polyline 생성 및 지도에 추가
 	            const flightPath = new google.maps.Polyline({
-	                path: flightPlanCoordinates,
+	                path: this.flightPlanCoordinates,
 	                geodesic: true,
 	                strokeColor: "#FF0000",
 	                strokeOpacity: 1.0,
@@ -584,7 +472,7 @@ body {
 	            flightPath.setMap(this.map);
 
 	        },
-	        async updateLocation() {
+	        async updateLocation() { // 3. 사용자 현재 위치 표시(Google geolocation api)
 	            // 위치 업데이트를 위한 함수
 	            const updatePosition = () => {
 	                // Geolocation API를 사용하여 현재 위치 가져오기
@@ -615,7 +503,6 @@ body {
 	                    try {
 	                        const response = await fetch(`/api/location?latitude=${latitude}&longitude=${longitude}`);
 	                        const data = await response.json();
-	                        console.log(data);
 	                    } catch (error) {
 	                        console.error('Error fetching location info:', error);
 	                    }
@@ -624,10 +511,10 @@ body {
 	                });
 	            };
 
-	            // 위치 업데이트 간격 설정
-	            setInterval(updatePosition, 10000); // 10초 간격
+	            // 위치 업데이트 간격 설정(100초 간격)
+	            setInterval(updatePosition, 100000);
 	        },
-	        initSpeedControls() {
+	        initSpeedControls() { // 4. 속도 조절 함수
 	            // 속도 조절 기능 초기화
 	            document.getElementById('speedRange1').addEventListener('input', function () {
 	                document.getElementById('speedDisplay1').textContent = this.value;
@@ -644,8 +531,8 @@ body {
 	                document.getElementById('speedDisplay1').textContent = speedValue;
 	            });
 	        },
-	        showInfo(title, content) {
-	            // 정보 패널 표시
+	        showInfo(title, content) { // 5. 정보 패널 표시 함수
+
 	            const infoPanel = document.getElementById('infoPanel');
 	            const infoTitle = document.getElementById('infoTitle');
 	            const infoContent = document.getElementById('infoContent');
@@ -653,29 +540,25 @@ body {
 	            infoTitle.textContent = title; // 패널 제목 설정
 	            infoContent.textContent = content; // 패널 내용 설정
 	            infoPanel.classList.add('active'); // 패널 표시
-	        }, closeInfoPanel() {
-	            // 정보 패널 숨김
+	            
+	        }, closeInfoPanel() { // 6. 정보 패널 숨김 함수
+
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
-	        }, endSail() { // 항해 종료 함수 endSail() 실행
-	   		 
-	            fetch('/sail/endSail', {
-	                method: 'GET'
-	            })
-	            .then(response => {
-	                if (response.ok) {
-	                    console.log("Weather toggled successfully.");
-	                } else {
-	                	 return response.text().then(text => { 
-	                         console.error("Failed to toggle weather: ", response.status, text); 
-	                     });
-	                }
+	            
+	        }, endSail() { // 7. 항해 종료 함수
+	        	
+	        	axios.get("http://localhost:8085/controller/sail/endSail")
+	        	.then(response => {
+	                console.log("Sail ended successfully.", response.data);
+	                // 페이지 이동
+	                window.location.href = "http://localhost:8085/controller/main";
 	            })
 	            .catch(error => {
-	                console.error('Error:', error);
+	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
 	            });
 	        
-	        }, closeVideoModal(){
+	        }, closeVideoModal(){ // 8. 실시간 카메라 모달 끄기 함수
 	        	
 	        	var videoModal = document.getElementById("videoModal");
 	        	videoModal.style.display = "none";
@@ -689,7 +572,6 @@ body {
 	                
 	                var modalWidth = mapWidth * 0.35;
 	                var modalHeight = modalWidth * 0.946;
-	                console.log(modalHeight, modalWidth);
 
 	                // 모달 크기 설정
 	                modal.style.height = modalHeight + "px";
@@ -704,20 +586,26 @@ body {
 	                modal.style.display = "none";
 	            }
 	        },
-	        initDraggable() {
+	        initDraggable() { // 9. 실시간 카메라 모달 드래그 함수
 	            const modal = document.getElementById('videoModal');
 	            const wrapper = document.getElementById('map');
 	            const reset = document.getElementById('reset');
 	            const page = document.getElementById('app');
 
 	            const resetModalPosition = () => {
+	            	
+	            	const wrapperRect = wrapper.getBoundingClientRect();
+	                const pageRect = page.getBoundingClientRect();
+	                
+	                modal.style.position = 'fixed';
+	            	
 	                gsap.to(modal, {
 	                    duration: 0.6,
 	                    ease: "power3.out",
-	                    x: 0,
-	                    y: 0,
-	                    xPercent: this.initialX,
-	                    yPercent: this.initialY,
+	                    x: wrapperRect.left,
+	                    y: pageRect.top,
+	                    xPercent: 0,
+	                    yPercent: 0,
 	                });
 	                reset.disabled = true;
 	            };
@@ -754,8 +642,6 @@ body {
 	        }
 	    }
 	});
-	
-	
 	
     </script>
  

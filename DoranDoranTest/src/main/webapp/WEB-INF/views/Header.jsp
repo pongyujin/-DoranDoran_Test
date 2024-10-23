@@ -207,6 +207,11 @@ document.getElementById("openShipListModal").addEventListener("click", function(
 document.getElementById("closeShipListModal").addEventListener("click", function() {
     document.getElementById("listModal").style.display = "none";
 });
+//그룹 정보 모달 닫기 버튼 클릭 이벤트
+document.getElementById("closeGroupInfoModal").addEventListener("click", function() {
+    closeAllModals(); // 모든 모달 닫기
+    document.getElementById("listModal").style.display = "block"; // 선박 리스트 모달 다시 열기
+});
 
 
 </script>
