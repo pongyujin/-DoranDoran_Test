@@ -218,24 +218,24 @@
                 <span>정유진</span>
                 <select>
                     <option value="관리자">관리자</option>
-                    <option value="관제보기전용">관제보기전용</option>
-                    <option value="통계이용">통계이용</option>
+                    <option value="관제보기전용">관제페이지허용</option>
+                    <option value="통계이용">통계페이지보기</option>
                 </select>
             </li>
             <li>
-                <span>고유석</span>
+                <span>고우석</span>
                 <select>
                     <option value="관리자">관리자</option>
-                    <option value="관제보기전용">관제보기전용</option>
-                    <option value="통계이용" selected>통계이용</option>
+                    <option value="관제보기전용">관제페이지허용</option>
+                    <option value="통계이용" selected>통계페이지보기</option>
                 </select>
             </li>
             <li>
                 <span>허재혁</span>
                 <select>
                     <option value="관리자">관리자</option>
-                    <option value="관제보기전용">관제보기전용</option>
-                    <option value="통계이용" selected>통계이용</option>
+                    <option value="관제보기전용">관제페이지허용</option>
+                    <option value="통계이용" selected>통계페이지보기</option>
                 </select>
             </li>
         </ul>
