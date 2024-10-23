@@ -6,6 +6,8 @@
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script
 	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg"></script>
 <!-- Tailwind CSS CDN -->
@@ -398,19 +400,29 @@ body {
 	        return {
 	            map: null,    // Google Maps 객체를 저장할 변수
 	            marker: null, // 사용자 마커 객체를 저장할 변수
-	            initialX: 50,
-	            initialY: -50,
+	            flightPlanCoordinates: [] // Polyline 데이터를 저장할 곳
 	        };
 	    },
 	    mounted() {
-	        this.initMap(); // 컴포넌트가 마운트될 때 지도 초기화
+	        this.loadPoly(); // 경로 데이터 받아오기
 	        this.updateLocation(); // 위치 업데이트 시작
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
 	    },
 	    methods: {
-	        initMap() {
+	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
+	            axios.get("http://localhost:8085/controller/flightPlanCoordinates")
+	            .then(response => {
+	              console.log(JSON.stringify(response.data, null, 2)); // JSON 형식으로 출력
+	              this.flightPlanCoordinates = response.data;  // 데이터를 Vue 데이터 속성에 할당
+	              this.initMap();
+	            })
+	            .catch(error => {
+	              console.error("Error fetching coordinates:", error);
+	            });
+	        },
+	        initMap() { // 2. 지도 초기화 및 polyline 그리기(Google maps api)
 	            // Google Maps 스타일 설정 (다크 모드)
 	            var styledMapType = new google.maps.StyledMapType(
 	                [
@@ -455,126 +467,10 @@ body {
 	            // 기본 맵 스타일 적용
 	            this.map.mapTypes.set('styled_map', styledMapType);
 	            this.map.setMapTypeId('roadmap');
-
-	            // Polyline 경로 설정 (예시 데이터)
-	            const flightPlanCoordinates = [
-	            	{ lat: 34.500000, lng: 128.730000 },
-	                { lat: 34.503015, lng: 128.722764 },
-	                { lat: 34.508543, lng: 128.717588 },
-	                { lat: 34.514070, lng: 128.712412 },
-	                { lat: 34.519598, lng: 128.707236 },
-	                { lat: 34.525126, lng: 128.702060 },
-	                { lat: 34.530653, lng: 128.702060 },
-	                { lat: 34.536181, lng: 128.702060 },
-	                { lat: 34.541709, lng: 128.702060 },
-	                { lat: 34.547236, lng: 128.702060 },
-	                { lat: 34.552764, lng: 128.702060 },
-	                { lat: 34.558291, lng: 128.702060 },
-	                { lat: 34.563819, lng: 128.702060 },
-	                { lat: 34.569347, lng: 128.702060 },
-	                { lat: 34.574874, lng: 128.702060 },
-	                { lat: 34.580402, lng: 128.702060 },
-	                { lat: 34.585930, lng: 128.702060 },
-	                { lat: 34.591457, lng: 128.702060 },
-	                { lat: 34.596985, lng: 128.702060 },
-	                { lat: 34.602513, lng: 128.702060 },
-	                { lat: 34.607985, lng: 128.710016 },
-	                { lat: 34.614002, lng: 128.716287 },
-	                { lat: 34.620020, lng: 128.722558 },
-	                { lat: 34.626037, lng: 128.728829 },
-	                { lat: 34.632055, lng: 128.735100 },
-	                { lat: 34.638072, lng: 128.741371 },
-	                { lat: 34.644090, lng: 128.747642 },
-	                { lat: 34.650107, lng: 128.753913 },
-	                { lat: 34.656125, lng: 128.760184 },
-	                { lat: 34.662142, lng: 128.766455 },
-	                { lat: 34.668160, lng: 128.772726 },
-	                { lat: 34.674177, lng: 128.778997 },
-	                { lat: 34.680195, lng: 128.785268 },
-	                { lat: 34.686212, lng: 128.791539 },
-	                { lat: 34.692230, lng: 128.797810 },
-	                { lat: 34.698248, lng: 128.804081 },
-	                { lat: 34.704265, lng: 128.810353 },
-	                { lat: 34.710283, lng: 128.816624 },
-	                { lat: 34.716300, lng: 128.822895 },
-	                { lat: 34.722318, lng: 128.829166 },
-	                { lat: 34.728335, lng: 128.835437 },
-	                { lat: 34.734353, lng: 128.841708 },
-	                { lat: 34.740370, lng: 128.847979 },
-	                { lat: 34.746388, lng: 128.854250 },
-	                { lat: 34.752405, lng: 128.860521 },
-	                { lat: 34.758423, lng: 128.866792 },
-	                { lat: 34.764440, lng: 128.873063 },
-	                { lat: 34.770458, lng: 128.879334 },
-	                { lat: 34.776475, lng: 128.885605 },
-	                { lat: 34.782493, lng: 128.891876 },
-	                { lat: 34.788510, lng: 128.898147 },
-	                { lat: 34.794528, lng: 128.904418 },
-	                { lat: 34.800545, lng: 128.910689 },
-	                { lat: 34.800545, lng: 128.916960 },
-	                { lat: 34.800545, lng: 128.923231 },
-	                { lat: 34.800545, lng: 128.929503 },
-	                { lat: 34.800545, lng: 128.935774 },
-	                { lat: 34.800545, lng: 128.942045 },
-	                { lat: 34.800545, lng: 128.948316 },
-	                { lat: 34.806984, lng: 128.942596 },
-	                { lat: 34.814117, lng: 128.937328 },
-	                { lat: 34.821250, lng: 128.932060 },
-	                { lat: 34.828383, lng: 128.926792 },
-	                { lat: 34.835516, lng: 128.921524 },
-	                { lat: 34.842649, lng: 128.916256 },
-	                { lat: 34.849782, lng: 128.910988 },
-	                { lat: 34.856915, lng: 128.905720 },
-	                { lat: 34.864048, lng: 128.900452 },
-	                { lat: 34.871180, lng: 128.895184 },
-	                { lat: 34.878313, lng: 128.889916 },
-	                { lat: 34.885446, lng: 128.884648 },
-	                { lat: 34.892579, lng: 128.879381 },
-	                { lat: 34.899712, lng: 128.874113 },
-	                { lat: 34.906845, lng: 128.879381 },
-	                { lat: 34.913978, lng: 128.884648 },
-	                { lat: 34.921111, lng: 128.889916 },
-	                { lat: 34.928244, lng: 128.895184 },
-	                { lat: 34.935377, lng: 128.900452 },
-	                { lat: 34.942510, lng: 128.900452 },
-	                { lat: 34.949643, lng: 128.900452 },
-	                { lat: 34.956776, lng: 128.900452 },
-	                { lat: 34.963909, lng: 128.900452 },
-	                { lat: 34.971042, lng: 128.900452 },
-	                { lat: 34.978175, lng: 128.900452 },
-	                { lat: 34.985307, lng: 128.900452 },
-	                { lat: 34.992440, lng: 128.900452 },
-	                { lat: 34.999573, lng: 128.900452 },
-	                { lat: 35.006706, lng: 128.900452 },
-	                { lat: 35.013839, lng: 128.900452 },
-	                { lat: 35.020972, lng: 128.900452 },
-	                { lat: 35.028105, lng: 128.900452 },
-	                { lat: 35.035238, lng: 128.900452 },
-	                { lat: 35.042371, lng: 128.900452 },
-	                { lat: 35.049504, lng: 128.900452 },
-	                { lat: 35.056637, lng: 128.900452 },
-	                { lat: 35.063770, lng: 128.900452 },
-	                { lat: 35.070903, lng: 128.900452 },
-	                { lat: 35.078036, lng: 128.900452 },
-	                { lat: 35.085169, lng: 128.900452 },
-	                { lat: 35.092302, lng: 128.900452 },
-	                { lat: 35.099434, lng: 128.900452 },
-	                { lat: 35.106567, lng: 128.900452 },
-	                { lat: 35.113700, lng: 128.900452 },
-	                { lat: 35.120833, lng: 128.900452 },
-	                { lat: 35.127966, lng: 128.900452 },
-	                { lat: 35.135099, lng: 128.900452 },
-	                { lat: 35.142232, lng: 128.900452 },
-	                { lat: 35.149365, lng: 128.900452 },
-	                { lat: 35.156498, lng: 128.900452 },
-	                { lat: 35.163631, lng: 128.900452 },
-	                { lat: 35.170764, lng: 128.900452 },
-	                { lat: 35.177897, lng: 128.900452 }
-	            ];
-
+	            
 	            // Polyline 생성 및 지도에 추가
 	            const flightPath = new google.maps.Polyline({
-	                path: flightPlanCoordinates,
+	                path: this.flightPlanCoordinates,
 	                geodesic: true,
 	                strokeColor: "#FF0000",
 	                strokeOpacity: 1.0,
@@ -583,7 +479,7 @@ body {
 	            flightPath.setMap(this.map);
 
 	        },
-	        async updateLocation() {
+	        async updateLocation() { // 3. 사용자 현재 위치 표시(Google geolocation api)
 	            // 위치 업데이트를 위한 함수
 	            const updatePosition = () => {
 	                // Geolocation API를 사용하여 현재 위치 가져오기
@@ -623,10 +519,10 @@ body {
 	                });
 	            };
 
-	            // 위치 업데이트 간격 설정
-	            setInterval(updatePosition, 10000); // 10초 간격
+	            // 위치 업데이트 간격 설정(100초 간격)
+	            setInterval(updatePosition, 100000);
 	        },
-	        initSpeedControls() {
+	        initSpeedControls() { // 4. 속도 조절 함수
 	            // 속도 조절 기능 초기화
 	            document.getElementById('speedRange1').addEventListener('input', function () {
 	                document.getElementById('speedDisplay1').textContent = this.value;
@@ -643,8 +539,8 @@ body {
 	                document.getElementById('speedDisplay1').textContent = speedValue;
 	            });
 	        },
-	        showInfo(title, content) {
-	            // 정보 패널 표시
+	        showInfo(title, content) { // 5. 정보 패널 표시 함수
+
 	            const infoPanel = document.getElementById('infoPanel');
 	            const infoTitle = document.getElementById('infoTitle');
 	            const infoContent = document.getElementById('infoContent');
@@ -652,29 +548,22 @@ body {
 	            infoTitle.textContent = title; // 패널 제목 설정
 	            infoContent.textContent = content; // 패널 내용 설정
 	            infoPanel.classList.add('active'); // 패널 표시
-	        }, closeInfoPanel() {
-	            // 정보 패널 숨김
+	            
+	        }, closeInfoPanel() { // 6. 정보 패널 숨김 함수
+
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
-	        }, async endSail() { // 항해 종료 함수 endSail() 실행
-	   		 
-	            fetch('/endSail', {
-	                method: 'GET'
-	            })
+	            
+	        }, endSail() { // 7. 항해 종료 함수
+	        	axios.get("http://localhost:8085/controller/sail/endSail")
 	            .then(response => {
-	                if (response.ok) {
-	                    console.log("Weather toggled successfully.");
-	                } else {
-	                	 return response.text().then(text => { 
-	                         console.error("Failed to toggle weather: ", response.status, text); 
-	                     });
-	                }
+	            	console.log("Sail toggled successfully.");
 	            })
 	            .catch(error => {
-	                console.error('Error:', error);
+	                console.error('Error endSail:', error);
 	            });
 	        
-	        }, closeVideoModal(){
+	        }, closeVideoModal(){ // 8. 실시간 카메라 모달 끄기 함수
 	        	
 	        	var videoModal = document.getElementById("videoModal");
 	        	videoModal.style.display = "none";
@@ -703,20 +592,24 @@ body {
 	                modal.style.display = "none";
 	            }
 	        },
-	        initDraggable() {
+	        initDraggable() { // 9. 실시간 카메라 모달 드래그 함수
 	            const modal = document.getElementById('videoModal');
 	            const wrapper = document.getElementById('map');
 	            const reset = document.getElementById('reset');
 	            const page = document.getElementById('app');
 
 	            const resetModalPosition = () => {
+	            	
+	            	const wrapperRect = wrapper.getBoundingClientRect();
+	                const pageRect = page.getBoundingClientRect();
+	            	
 	                gsap.to(modal, {
 	                    duration: 0.6,
 	                    ease: "power3.out",
-	                    x: 0,
-	                    y: 0,
-	                    xPercent: this.initialX,
-	                    yPercent: this.initialY,
+	                    x: wrapperRect.left,
+	                    y: pageRect.top,
+	                    xPercent: 0,
+	                    yPercent: 0,
 	                });
 	                reset.disabled = true;
 	            };

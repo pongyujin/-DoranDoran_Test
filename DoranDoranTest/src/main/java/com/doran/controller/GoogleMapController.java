@@ -5,16 +5,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.doran.entity.Coordinate;
+import com.doran.entity.Member;
+import com.doran.entity.Ship;
 
 // 구글 api로 지도 및 경로를 표시하는 controller
-@Controller
+@RestController
 public class GoogleMapController {
 
 	private final String apiKey = "AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg";
@@ -31,9 +36,9 @@ public class GoogleMapController {
 		String response = restTemplate.getForObject(url, String.class);
 		return response; // JSON 응답을 반환합니다.
 	}
-
+	
 	// 2. a* 경로 좌표 리스트 변환(문자열 정보를 api에 쓸 수 있는 json 형태로)
-	@GetMapping("/flightPlanCoordinates")
+	@RequestMapping("/flightPlanCoordinates")
 	public List<Coordinate> flightPlanCoordinates(String coordinateData) {
 		
 		coordinateData = "위도: 34.500000, 경도: 128.730000\r\n"

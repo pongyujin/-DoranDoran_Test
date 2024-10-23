@@ -72,7 +72,6 @@ public class ShipController {
 		ship.setSiCode(sail.getSiCode());
 		
 		ship.setSailStatus(ship.getSailStatus() == '0' ? '1' : '0');
-		System.out.println(ship);
 		int cnt = shipMapper.sailStatus(ship);
 	}
 }
