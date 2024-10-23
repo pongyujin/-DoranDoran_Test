@@ -118,13 +118,14 @@ public class SailController {
 	}
 
 	@GetMapping("/endSail")
-	public void endSail(HttpSession session) {
+	public String endSail(HttpSession session) {
 
 		sailingStarted = false;
 		weatherController.endSail();// (WeatherController에서)
 		Sail sail = (Sail)session.getAttribute("sail");
 		shipController.sailStatus(sail, session);
 		session.removeAttribute("sail"); // 항해 세션 삭제
+		return "redirect:/main";
 	}
 	
 	// -------------------------------------------------------------(api 메서드)-------------------
