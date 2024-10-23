@@ -18,11 +18,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap" rel="stylesheet">
 <style>
-/* 지도 및 버튼 스타일 */
+
 #map {
-	width: 100%; /* 너비를 100%로 설정 */
-	height: 900px; /* 높이를 900px로 설정 */
-	z-index: 1; /* 지도는 뒤로 배치 */
+	width: 100%; 
+	height: 900px; 
+	z-index: 1; 
 }
 
 body {
@@ -30,14 +30,13 @@ body {
 		100%);
 	margin: 0;
 	padding: 0;
-	font-family: 'Manrope', sans-serif; /* 기본 폰트 설정 */
-	position: relative; /* 지도를 기준으로 속도 조절 위치 조정 */
+	font-family: 'Manrope', sans-serif;
 }
 
-/* 투명한 배경 박스 스타일 (위쪽으로 위치 조정) */
+/* 속도 정보 overlay --------------------------------------------------------------------*/
 .info-overlay {
 	position: absolute;
-	bottom: 370px;
+	bottom: 8%; /* 화면 하단에서 12% 위에 배치 */
 	left: 50%;
 	transform: translateX(-50%);
 	background-color: rgba(255, 255, 255, 0.8);
@@ -47,7 +46,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	z-index: 10; /* 지도의 z-index보다 높은 값을 설정하여 지도 위에 표시되도록 설정 */
+	z-index: 500;
 }
 
 .time-distance {
@@ -59,11 +58,6 @@ body {
 	width: 200px;
 }
 
-.time-distance span {
-	margin: 0 10px;
-}
-
-/* 목적지 설정 버튼 스타일 */
 .destination-btn {
 	background-color: #1C2933;
 	color: #ffffff;
@@ -72,102 +66,99 @@ body {
 	border: none;
 	border-radius: 5px;
 	cursor: pointer;
-	position: fixed !important; /* Viewport에 고정 */
-	right: -600px !important; /* 오른쪽 끝에서 100px 더 오른쪽으로 이동 */
-	bottom: 11px !important; /* 바텀은 그대로 유지 */
-	z-index: 9999 !important; /* 매우 높은 z-index로 다른 요소 위에 표시 */
-	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* 버튼에 그림자 추가 */
+	position: absolute;
+	right: -80%;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .destination-btn:hover {
-	background-color: #17293A;
+	background-color: #ff4e4e;
 }
 
-/* 부모 컨테이너 설정 */
+/* 컨트롤 패널 --------------------------------------------------------------------*/
 .control-panel {
-	position: relative;
-	width: 100%; /* 부모 컨테이너의 너비를 100%로 설정 */
-	height: 300px; /* 패널의 높이 */
-	margin-top: 50px;
+	position: absolute;
+	top: 900px;
+	width: 100%;
+	height: 300px;
 }
 
-/* 개별 클래스 적용 */
-.left-btn {
+.left-btn, .right-btn, .up-btn {
 	position: absolute;
-	left: 42.9%; /* 적당한 위치로 이동 */
 	width: 130px;
 	height: 120px;
-	bottom: 120px;
+}
+
+.left-btn {
+	left: 43%;
+	top: 90px;
 }
 
 .right-btn {
-	position: absolute;
-	left: 51.5%; /* 적당한 위치로 이동 */
-	width: 110px;
-	height: 120px;
-	bottom: 125px;
+	left: 51.5%;
+	top: 90px;
+	width: 115px;
+	height: 115px;
 }
 
-/* 상향 버튼 (.up-btn) */
 .up-btn {
-	position: absolute;
-	bottom: 200px; /* 위쪽으로 배치 */
-	left: 50%; /* 부모의 왼쪽으로부터 50% */
-	transform: translateX(-42%); /* 50%에서 45%로 변경하여 살짝 오른쪽으로 이동 */
+	top: 30px;
+	left: 50%;
+	transform: translateX(-42%);
 	width: 110px;
 	height: 110px;
 }
 
-/* STOP 아이콘 */
 .stop-icon {
 	position: absolute;
+	left: 65%;
+	top: 50px;
 	width: 160px;
 	height: 160px;
-	bottom: 130px;
-	right: 500px; /* 70px에서 90px로 변경하여 살짝 왼쪽으로 이동 */
 }
 
-/* 속도 조절 컨트롤 고정 */
+.left-btn:hover, .right-btn:hover, .up-btn:hover{
+	opacity: 0.3;
+	cursor: pointer;
+}
+
+.stop-icon:hover{
+	opacity: 0.8;
+	cursor: pointer;
+}
+
+/* 속도 제어 --------------------------------------------------------------------*/
 .speed-control-wrapper {
-	position: absolute; /* 부모 요소에 고정 */
-	bottom: 120px; /* 부모 요소의 아래쪽으로부터 100px 간격 */
-	left: 400px; /* 부모 요소의 왼쪽으로부터 400px 간격 */
+
+	position: absolute;
+	top: 970px;
+	left: 370px;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
-	z-index: 1000; /* 다른 요소 위에 배치 */
+	z-index: 300;
 	padding: 10px;
 	border-radius: 10px;
 }
 
-/* 속도 조절 컨트롤 스타일 */
 .speed-control {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background-color: #1A2529;
+	background-color: #16547a;
 	padding: 10px;
 	border-radius: 10px;
 	width: 300px;
-	margin-bottom: 10px;
-	font-size: 18px;
 	color: #ffffff;
 }
 
 .speed-control input[type="range"] {
 	width: 150px;
 	margin: 0 10px;
-	background-color: #313F49;
-	accent-color: #1C2933;
-}
-
-.speed-control span {
-	color: #ffffff;
-	font-weight: bold;
 }
 
 .speed-control button {
-	background-color: #1C2933;
+	background-color: #16547a;
 	border: none;
 	color: #ffffff;
 	padding: 10px 20px;
@@ -177,9 +168,11 @@ body {
 }
 
 .speed-control button:hover {
-	background-color: #17293A;
+	opacity: 0.5;
+	background-color: #48b1f0;
 }
 
+/* 아이콘 패널 --------------------------------------------------------------------*/
 .icon-panel {
 	position: absolute;
 	top: 100px;
@@ -250,6 +243,7 @@ body {
 	border: none;
 }
 
+/* 속도 출력 --------------------------------------------------------------------*/
 .speed-display {
 	font-size: 50px;
 	font-weight: bold;
@@ -266,7 +260,7 @@ body {
 	color: white;
 }
 
-/* 모달창 기본 스타일 */
+/* 비디오 모달창 --------------------------------------------------------------------*/
 .videoModal {
 	position: absolute;
 	color: white;
