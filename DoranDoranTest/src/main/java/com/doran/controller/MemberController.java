@@ -113,7 +113,10 @@ public class MemberController {
 			
 			rttr.addFlashAttribute("msgType", "수정 성공");
 			rttr.addFlashAttribute("msg", "회원 정보 수정을 성공했습니다");
+			// 세션 생성 시 타임아웃 설정(1시간)
+			session.setMaxInactiveInterval(3600);
 			session.setAttribute("user", member);
+
 		} else {
 			
 			rttr.addFlashAttribute("msgType", "수정 실패");
