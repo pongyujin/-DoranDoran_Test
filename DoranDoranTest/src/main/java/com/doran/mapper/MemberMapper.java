@@ -13,5 +13,7 @@ public interface MemberMapper {
 	public Member memberLogin(Member member);
 	// 3. 아이디 중복 체크
 	public Member registerCheck(String memID);
+	// 4. 회원 정보 수정
+	public int memberUpdate(Member member);
 	
 }
