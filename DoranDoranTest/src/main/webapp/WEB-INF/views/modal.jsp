@@ -34,8 +34,8 @@
 
   // 2. 비밀번호 확인
   function passwordCheck(){
-      var pw1 = $("#memPwJoin").val();
-      var pw2 = $("#memPwJoin2").val();
+      var pw1 = $("#memPw").val();
+      var pw2 = $("#memPw2").val();
       if(pw1==pw2){
           $("#passMessage").attr("style", "color:green; vertical-align:middle;");
           $("#memPwJoin").attr("value", pw1)
@@ -55,6 +55,23 @@
           $("#myMessage").modal("show");
       }
   });
+  
+  //현재 비밀번호를 세션에서 가져온 값으로 설정합니다.
+  const currentPassword = `${sessionScope.user.memPw}`; // 세션의 현재 비밀번호
+  
+  // 4. 비밀번호 검사
+  function validateForm() {
+      var pwCheckValue = $("#pwCheck").val();
+      
+      // 현재 비밀번호 확인
+      if (pwCheckValue !== currentPassword) {
+          alert("기존 비밀번호를 올바르게 작성해주세요.");
+          return false; // 폼 제출 방지
+      }
+      
+      return true; // 폼 제출 허용
+  }
+  
 </script>
 
 <!-- Join 모달 -->
@@ -63,11 +80,12 @@
     <h2>Join</h2>
     <div class="modal-content">
         <form action="memberJoin" method="post">
-            <input type="hidden" id="memPwJoin1" name="memPw1" value=""> 
+            <input type="hidden" id="memPwJoin" name="memPw" value=""> 
             <input type="text" id="memIdJoin" name="memId" placeholder="ID" autocomplete="username">
             <button type="button" id="checkDuplicate" class="duplicate-btn" onclick="registerCheck()">중복체크</button>
-            <input type="password" id="memPwJoin" name="memPw" placeholder="Password" autocomplete="new-password"> 
-            <input type="password" id="memPwJoin2" name="memPw2" placeholder="Password Check" autocomplete="new-password">
+            <input type="password" id="memPw" name="memPw" placeholder="Password" autocomplete="new-password" onkeyup="passwordCheck();"> 
+            <input type="password" id="memPw2" name="memPw2" placeholder="Password Check" autocomplete="new-password" onkeyup="passwordCheck();">
+            <span id="passMessage"></span>
             <input type="text" id="memNickJoin" name="memNick" placeholder="Nickname">
             <input type="email" id="memEmailJoin" name="memEmail" placeholder="Email" autocomplete="email">
             <input type="text" id="memPhoneJoin" name="memPhone" placeholder="Phone Number">
@@ -135,11 +153,15 @@
     <span class="close" id="closeEditModal">&times;</span>
     <h2>Edit</h2>
     <div class="modal-content">
-        <form action="updateMemberInfo" method="post">
-            <input type="text" id="editId" name="editId" placeholder="ID" required>
-            <input type="password" id="editPw" name="editPw" placeholder="Password" required>
-            <input type="password" id="editNewPw" name="editNewPw" placeholder="New Password" required>
-            <input type="password" id="editConfirmNewPw" name="editConfirmNewPw" placeholder="Confirm New Password" required>
+        <form action="memberUpdate" method="post" onsubmit="return validateForm();">
+            <input type="text" id="memId" name="memId" value="${sessionScope.user.memId}" required readonly>
+            <input type="password" id="pwCheck" name="pwCheck" placeholder="Password" required>
+            <input type="password" id="memPw" name="memPw" placeholder="New Password" required onkeyup="passwordCheck();">
+            <input type="password" id="memPw2" name="memPw2" placeholder="Confirm New Password" required onkeyup="passwordCheck();">
+            <span id="passMessage"></span>
+            <input type="text" id="memNick" name="memNick" value="${sessionScope.user.memNick}" required>
+            <input type="email" id="memEmail" name="memEmail" value="${sessionScope.user.memEmail}" required>
+            <input type="text" id="memPhone" name="memPhone" value="${sessionScope.user.memPhone}" required>
             <button type="submit" class="edit-button">Edit</button>
         </form>
     </div>

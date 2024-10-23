@@ -42,8 +42,6 @@ ADD COLUMN endSail VARCHAR(100) NOT NULL COMMENT '목적지 항해 정보';
 
 
 
-
-
 ---------------------------------------------------------------------------------
 
 CREATE TABLE member

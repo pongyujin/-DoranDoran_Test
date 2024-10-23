@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -100,5 +101,25 @@ public class MemberController {
 		session.invalidate();
 		return "redirect:/main";
 		
+	}
+	
+	// 5. 회원 정보 수정
+	@PostMapping("/memberUpdate")
+	public String memberUpdate(Member member, RedirectAttributes rttr, HttpSession session) {
+		
+		int cnt = memberMapper.memberUpdate(member);
+		
+		if (cnt > 0) {
+			
+			rttr.addFlashAttribute("msgType", "수정 성공");
+			rttr.addFlashAttribute("msg", "회원 정보 수정을 성공했습니다");
+			session.setAttribute("user", member);
+		} else {
+			
+			rttr.addFlashAttribute("msgType", "수정 실패");
+			rttr.addFlashAttribute("msg", "회원 정보 수정을 실패했습니다. 다시 시도해주세요");
+		}
+		
+		return "redirect:/main";
 	}
 }
