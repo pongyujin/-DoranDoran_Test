@@ -17,5 +17,8 @@ public interface ShipMapper {
 	public int approveShip(Ship ship);
 	// 4. 선박 운항 상태 변경
 	public int sailStatus(Ship ship);
+	
+	// 정유진이 만듬 
+	public Ship findShipBySiCode(String siCode);
 
 }

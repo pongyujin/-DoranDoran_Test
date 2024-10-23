@@ -3,6 +3,7 @@
 <% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); %>
 <% response.setHeader("Pragma", "no-cache"); %>
 <% response.setDateHeader("Expires", 0); %>
+<script src="<%=request.getContextPath()%>/resources/js/modal.js"></script>
 <!DOCTYPE html>
 <html>
 <head>
@@ -201,16 +202,19 @@ document.getElementById("openShipListModal").addEventListener("click", function(
     e.preventDefault();
     closeAllModals(); // 다른 모달을 닫기
     document.getElementById("listModal").style.display = "block";
+    loadShipList(); // 리스트 로드 함수 호출
 });
 
 // 선박 리스트 모달 닫기
 document.getElementById("closeShipListModal").addEventListener("click", function() {
     document.getElementById("listModal").style.display = "none";
 });
+
 //그룹 정보 모달 닫기 버튼 클릭 이벤트
 document.getElementById("closeGroupInfoModal").addEventListener("click", function() {
     closeAllModals(); // 모든 모달 닫기
     document.getElementById("listModal").style.display = "block"; // 선박 리스트 모달 다시 열기
+    
 });
 
 
