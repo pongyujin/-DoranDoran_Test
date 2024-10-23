@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -59,10 +60,9 @@ public class SailController {
 			sailMapper.insert(sail);
 			System.out.println(sail);
 			// 항해 정보 세션 저장
-			session.setAttribute("sail", sail);
+			session.setAttribute("nowSail", sail);
 
 			// c. 항해 시작 메서드 실행(+운항 상태 변경)
-			shipController.sailStatus(sail, session);
 			startSail(session);
 			
 			// e. Weather 데이터를 설정하여 weather 메서드 호출
@@ -113,19 +113,18 @@ public class SailController {
 
 		sailingStarted = true;
 		weatherController.startSail(); // (WeatherController에서)
-		Sail sail = (Sail)session.getAttribute("sail");
+		Sail sail = (Sail)session.getAttribute("nowSail");
 		shipController.sailStatus(sail, session);
 	}
 
 	@GetMapping("/endSail")
-	public String endSail(HttpSession session) {
+	public @ResponseBody void endSail(HttpSession session) {
 
 		sailingStarted = false;
-		weatherController.endSail();// (WeatherController에서)
-		Sail sail = (Sail)session.getAttribute("sail");
+		weatherController.endSail(); // 항해 중단 알림
+		Sail sail = (Sail)session.getAttribute("nowSail");
 		shipController.sailStatus(sail, session);
-		session.removeAttribute("sail"); // 항해 세션 삭제
-		return "redirect:/main";
+		session.removeAttribute("nowSail"); // 항해 세션 삭제
 	}
 	
 	// -------------------------------------------------------------(api 메서드)-------------------

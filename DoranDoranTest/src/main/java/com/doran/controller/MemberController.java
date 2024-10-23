@@ -57,20 +57,11 @@ public class MemberController {
 	// 2. 로그인
 	@PostMapping("/memberLogin")
 	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
-	    Member mvo = memberMapper.memberLogin(member);
-
-
-
-
+	    
+		Member user = memberMapper.memberLogin(member);
 		
-		if (mvo == null) {
-
-	        // 세션에 저장된 Member 객체가 모든 값을 가지고 있는지 확인하는 로그 출력
-	        System.out.println("세션에 저장된 사용자 정보: " + session.getAttribute("user"));
-	        System.out.println("닉네임: " + mvo.getMemNick());
-	        System.out.println("이메일: " + mvo.getMemEmail());
-	        System.out.println("전화번호: " + mvo.getMemPhone());
-
+		if (user == null) {
+	        
 			rttr.addFlashAttribute("msgType", "로그인 실패");
 			rttr.addFlashAttribute("msg", "아이디와 비밀번호를 확인해주세요");
 			session.setAttribute("openLoginModal", true);
@@ -82,13 +73,12 @@ public class MemberController {
 
 			// 로그인 성공
 			rttr.addFlashAttribute("msgType", "로그인 성공");
-			rttr.addFlashAttribute("msg", mvo.getMemNick()+"님, 환영합니다!");
+			rttr.addFlashAttribute("msg", user.getMemNick()+"님, 환영합니다!");
 			// 로그인 정보 세션 저장
-			session.setAttribute("user", mvo);
+			session.setAttribute("user", user);
 
 			return "redirect:/main";
 		}
-
 	}
 
 	// 3. 아이디 중복 확인

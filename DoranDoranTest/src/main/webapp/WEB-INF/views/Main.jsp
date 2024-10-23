@@ -208,7 +208,6 @@ body, html {
 	<%
     }
 	%>
-    
-
+	
 </body>
 </html>
