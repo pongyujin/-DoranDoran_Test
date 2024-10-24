@@ -136,12 +136,13 @@
                 로그아웃
             </a>
              <!-- 추가된 관리자 전용 메뉴 -->
-    <c:if test="${user.memId == 'admin'}">
-        <a href="/adminPage">
-            <img src="<%=request.getContextPath()%>/resources/img/admin.png" alt="관리자 전용" class="menu-icon">
-            관리자 전용
-        </a>
-    </c:if>
+    <c:if test="${user.memId eq 'admin'}">
+    <a href="<%=request.getContextPath()%>/manager" id="adminOnly">
+        <img src="<%=request.getContextPath()%>/resources/img/admin.png" alt="관리자 전용" class="menu-icon">
+        관리자 전용
+    </a>
+</c:if>
+
         </div>
     <%
     } else {
