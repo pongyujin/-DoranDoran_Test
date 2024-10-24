@@ -68,13 +68,21 @@
 
 				<button class="sail-close-btn" @click="closeSailModal">✖</button>
 
+				<div>
+					<button type="submit" id="reset"
+						class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
+						style="margin: 16px 0px 0px">경유지 추가</button>
+				</div>
+
 				<div class="sailContainer form-floating mb-3">
+
 					<form action="sail/insert" method="post">
 						<table class="table table-bordered" style="text-align: center;">
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">선박 코드</td>
 								<td><input type="text" name="siCode" id="siCode"
-									value="${sessionScope.nowShip.siCode }" readonly class="form-control"></td>
+									value="${sessionScope.nowShip.siCode }" readonly
+									class="form-control"></td>
 							</tr>
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">출발지</td>
@@ -143,7 +151,7 @@
 			<div class="icon" @click="getInfo('현재 위치')">📍</div>
 			<div class="icon" @click="getInfo('방위')">🧭</div>
 			<div class="icon" @click="getInfo('주변 장애물 탐지')">🚧</div>
-			<div class="icon" @click="goMain()">🔙</div>			
+			<div class="icon" @click="goMain()">🔙</div>
 			<div class="icon" @click="toggleModal()">📷</div>
 		</div>
 
@@ -154,8 +162,9 @@
 			</div>
 
 			<button class="startSail-btn" @click="toggleSailStart"
-				:disabled="sailStatus === 1">항해 시작</button>
-			<button class="destination-btn" @click="endSail">항해 완료</button>
+				:disabled="sailStatus === '1'">항해 시작</button>
+			<button class="destination-btn" @click="endSail"
+				:disabled="sailStatus === '0'">항해 완료</button>
 
 		</div>
 
@@ -176,6 +185,24 @@
 			<img class="nowSail-btn" id="nowSail-btn"
 				src="<%=request.getContextPath()%>/resources/img/stop.png"
 				alt="STOP">
+		</div>
+	</div>
+
+	<!-- 최초 선박 정보 표시 모달 -->
+	<div class="modal-overlay" id="shipModal" style="display: none;"
+		@click="closeShipModal2">
+		<div
+			class="shipModal w-[80%] max-w-screen-md rounded-3xl bg-neutral-50 text-center antialiased px-5 md:px-20 py-10 shadow-2xl shadow-zinc-900 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+			style="padding: 10px 30px;">
+
+			<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4">
+				현재 선박 정보</h3>
+
+			<button class="ship-close-btn" @click="closeShipModal">✖</button>
+
+			<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+				class="w-[16px] h-[16px] absolute right-6 top-6">
+					<path d="m2 2 12 12m0-12-12 12" class="stroke-2 stroke-current" /></svg>
 		</div>
 	</div>
 
@@ -497,6 +524,43 @@
 	        }
 	    }
 	});
+	
+	new Vue({
+		el: 'modal-overlay',
+		data(){
+			return{
+				
+			};
+		}, mounted(){
+			
+			this.toggleShipModal();
+		},
+		methods: {
+			toggleShipModal() { // 1. 선박 정보 최조 출력 모달
+	            
+				var modal = document.getElementById("shipModal");
+
+	            if (modal.style.display === "none" || modal.style.display === "") {
+	               
+	            	modal.style.display = "block"; // 모달 표시
+	            } else {
+	                modal.style.display = "none";
+	            }
+	        }, closeShipModal(){ // 항해 시작 모달 끄기
+	        	
+	        	var shipModal = document.getElementById("shipModal");
+	        	shipModal.style.display = "none";
+	        	
+	        }, closeShipModal2(event){
+	        	
+	        	var modal = document.getElementById("shipModal");
+	        	
+	        	if (event.target === event.currentTarget) {
+	                modal.style.display = "none";
+	            }
+	        }
+		}
+	})
 	
 	new Vue({
 	    el: '.status-overlay',

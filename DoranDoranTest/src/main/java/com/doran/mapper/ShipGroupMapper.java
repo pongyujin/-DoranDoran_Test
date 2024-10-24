@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.doran.entity.Ship;
 import com.doran.entity.ShipGroup;
 
 @Mapper
@@ -19,6 +20,8 @@ public interface ShipGroupMapper {
 	public ShipGroup authCheck(ShipGroup shipGroup);
 	// 5. 회원 삭제
 	public void delete(ShipGroup shipGroup);
+	// 6. 최초 선박 등록
+	public int shipRegister(Ship ship);
 	
 	// 중복 사용자 초대 불가하게
 	public ShipGroup findMemberInGroup(ShipGroup shipGroup);

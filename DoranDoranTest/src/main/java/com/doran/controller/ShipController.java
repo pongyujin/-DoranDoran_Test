@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.doran.entity.Member;
 import com.doran.entity.Sail;
 import com.doran.entity.Ship;
+import com.doran.mapper.ShipGroupMapper;
 import com.doran.mapper.ShipMapper;
 
 // 선박 정보 등록 및 선박 정보 반환
@@ -32,6 +33,8 @@ public class ShipController {
 
 	@Autowired
 	private ShipMapper shipMapper;
+	@Autowired
+	private ShipGroupMapper shipGroupMapper;
 
 	// 1. 선박 전체 리스트 불러오기
 	@RequestMapping("/shipList")
@@ -67,6 +70,7 @@ public class ShipController {
 		}
 		
 		int cnt = shipMapper.application(ship);
+		shipGroupMapper.shipRegister(ship); // 선박 최초 등록자 0권한 부여
 
 		if (cnt > 0) {
 

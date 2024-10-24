@@ -33,6 +33,11 @@
 		siCode=#{siCode} and memId=#{memId}
 	</delete>
 	
+	<insert id="shipRegister" parameterType="com.doran.entity.Ship">
+		INSERT INTO shipGroup (memId, siCode, authNum)
+		VALUES (#{memId}, #{siCode}, 0)
+	</insert>
+	
 	<select id="findMemberInGroup" parameterType="com.doran.entity.ShipGroup" resultType="com.doran.entity.ShipGroup">
     SELECT * FROM shipGroup
     WHERE memId = #{memId} AND siCode = #{siCode}

@@ -24,4 +24,10 @@ public class GoMapController {
 	public String showVideoModal() {
 		return "videoModal";
 	}
+
+	// waypoint.jsp 이동
+	@RequestMapping("/waypoint")
+	public String waypoint() {
+		return "waypoint";
+	}
 }
