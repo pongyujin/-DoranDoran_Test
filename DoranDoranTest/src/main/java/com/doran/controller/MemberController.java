@@ -59,7 +59,9 @@ public class MemberController {
 	@PostMapping("/memberLogin")
 	public String memberLogin(Member member, RedirectAttributes rttr, HttpSession session) {
 	    
+		System.out.println(member);
 		Member user = memberMapper.memberLogin(member);
+		System.out.println(user);
 		
 		if (user == null) {
 	        

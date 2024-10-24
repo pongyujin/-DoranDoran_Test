@@ -24,8 +24,7 @@
 		parameterType="com.doran.entity.ShipGroup"
 		resultType="com.doran.entity.ShipGroup">
 		select * from shipGroup
-		where siCode=#{siCode} and
-		memId=#{memId}
+		where siCode=#{siCode} and memId=#{memId}
 	</select>
 
 	<delete id="delete" parameterType="com.doran.entity.ShipGroup">
