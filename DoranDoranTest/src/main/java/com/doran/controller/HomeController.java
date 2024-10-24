@@ -1,11 +1,14 @@
 package com.doran.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
+	
 
 	// 기본 홈 페이지
 	@RequestMapping("/")
@@ -13,23 +16,25 @@ public class HomeController {
 		return "home";
 	}
 
-	// 나는야 통계페이지
-	@RequestMapping("/statistics")
-	public String statistics() {
-		return "ShipStatistics";
+	// 통계 페이지로 이동 (권한 확인 불필요)
+	@GetMapping("/statistics")
+	public String showStatisticsPage(@RequestParam String siCode, Model model) {
+	    // siCode를 전달하여 통계 페이지에서 사용할 수 있도록 설정
+	    model.addAttribute("siCode", siCode);
+
+	    return "ShipStatistics"; // ShipStatistics.jsp로 이동
 	}
 
-	// 암
+	// 메인 페이지 이동
 	@GetMapping("/main")
 	public String showMainPage() {
 		return "Main";
 
 	}
-	 // Manager 페이지 추가
-    @GetMapping("/manager")
-    public String showManagerPage() {
-        return "Manager";  
-    }
+
+	// Manager 관리자 페이지 추가
+	@GetMapping("/manager")
+	public String showManagerPage() {
+		return "Manager";
+	}
 }
-
-

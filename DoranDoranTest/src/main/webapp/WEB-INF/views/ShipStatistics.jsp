@@ -200,13 +200,6 @@ body, html {
 			</div>
 		</div>
 
-		<!-- 입력 폼 (하단으로 이동) -->
-		<div id="simple-form">
-			<label for="sailNum">sailNum를 입력하세요:</label> <input type="text"
-				v-model="sailNum" class="form-control" /> <label for="siCode">siCode를
-				입력하세요:</label> <input type="text" v-model="siCode" class="form-control" />
-			<button class="btn btn-primary" @click="loadShipStats">조회</button>
-		</div>
 	</div>
 </div>
 
@@ -216,22 +209,25 @@ body, html {
   new Vue({
     el: '#app',
     data: {
-      siCode: '', // 사용자로부터 입력받는 siCode
-      sailNum: '', // 사용자로부터 입력받는 sailNum
+      siCode: '', // URL로부터 가져올 siCode
+      sailNum: '', // 추후에 사용 가능
       totalDistanceKm: '', // 총 경로 거리 저장
       map: null, // Google Map 객체 저장
       weatherList: [], // 날씨 정보 목록 저장
       imageUrls: [] // 서버에서 가져온 이미지 URL 목록 저장
     },
     methods: {
-     initMap() {
-    	        this.map = new google.maps.Map(document.getElementById("map"), {
-    	            center: { lat: 33.5097, lng: 126.5219 },
-    	            zoom: 7
-    });
-    	        
-   
-     },
+      initMap() {
+        this.map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 33.5097, lng: 126.5219 },
+          zoom: 7
+        });
+      },
+      // URL에서 siCode 파라미터를 추출
+      getSiCodeFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        this.siCode = urlParams.get('siCode'); // URL에서 siCode 추출
+      },
       // 선박 경로를 지도에 그리는 함수
       drawRoute(routeData) {
         const routeCoordinates = [];
@@ -265,10 +261,9 @@ body, html {
       },
       // 서버로부터 선박 통계와 경로 데이터를 가져오는 함수
       loadShipStats() {
-        const sailNum = this.sailNum;
-        const siCode = this.siCode;
+        const siCode = this.siCode; // URL에서 받은 siCode 사용
 
-        fetch('statistics/' + siCode + '/' + sailNum)
+        fetch('statistics/' + siCode + '/sailNum') // sailNum은 서버 측에서 필요한 값을 채워야 할 수 있음
           .then(response => response.json())
           .then(data => {
             const route = data.gpsList;
@@ -279,7 +274,7 @@ body, html {
             this.drawWeatherChart();
             this.drawWaveBatteryChart();
 
-            return fetch('http://192.168.219.101:8085/controller/statistics/getImage?siCode=' + siCode + '&sailNum=' + sailNum);
+            return fetch('http://192.168.219.101:8085/controller/statistics/getImage?siCode=' + siCode + '&sailNum=sailNum');
           })
           .then(response => response.json())
           .then(data => {
@@ -321,8 +316,8 @@ body, html {
             ]
           },
           options: {
-        	  responsive: true, // 그래프가 박스 크기에 맞춰지도록 설정
-              maintainAspectRatio: false, // 비율을 유지하지 않고 박스 크기에 맞춤
+            responsive: true,
+            maintainAspectRatio: false,
             title: {
               display: true,
               text: 'Weather and Battery Level Over Time',
@@ -389,8 +384,8 @@ body, html {
             ]
           },
           options: {
-        	  responsive: true, // 그래프가 박스 크기에 맞춰지도록 설정
-              maintainAspectRatio: false, // 비율을 유지하지 않고 박스 크기에 맞춤
+            responsive: true,
+            maintainAspectRatio: false,
             title: {
               display: true,
               text: 'Weather and Battery Level Over Time',
@@ -428,38 +423,13 @@ body, html {
             }
           }
         });
-      },
-      uploadImage() {
-        const fileInput = document.getElementById('fileInput');
-        const file = fileInput.files[0];
-
-        if (!file) {
-          alert('이미지를 선택하세요.');
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        fetch('http://192.168.219.101:8085/controller/statistics/upload/image', {
-          method: 'POST',
-          body: formData,
-        })
-          .then(response => response.text())
-          .then(result => {
-            console.log("업로드 결과:", result);
-            alert("이미지가 업로드되었습니다.");
-          })
-          .catch(error => {
-            console.error("업로드 중 오류 발생:", error);
-            alert("이미지 업로드에 실패했습니다.");
-          });
       }
     },
     mounted() {
-    	  window.initMap = this.initMap; // Vue의 this.initMap을 전역으로 설정
-    	}
-
+      this.getSiCodeFromURL(); // URL에서 siCode 가져오기
+      this.loadShipStats(); // siCode로 데이터를 로드
+      window.initMap = this.initMap; // Vue의 this.initMap을 전역으로 설정
+    }
   });
 </script>
 

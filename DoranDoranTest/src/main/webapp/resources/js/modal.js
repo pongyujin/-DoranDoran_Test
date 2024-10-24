@@ -58,8 +58,8 @@ function loadShipList() {
                     <p>선박번호: ${ship.siCode}</p>
                     <p>선박명: ${ship.siName}</p>
                     <button onclick="openGroupInfo('${ship.siCode}')">그룹 정보</button>
-                    <button onclick="openGroupInfo('${ship.siCode}')">관제 화면</button>
-                    <button onclick="openGroupInfo('${ship.siCode}')">통계 페이지</button>
+                    <button onclick="goToStatisticsPage('${ship.siCode}')">관제 화면</button>
+  					<button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
                 `;
 				shipListElement.appendChild(listItem);
 			});
@@ -69,6 +69,54 @@ function loadShipList() {
 		}
 	});
 }
+
+// Ship - 3. 모달을 열 때 항해 리스트 로드
+function loadSailList(siCode) {
+    // siCode가 정상적으로 전달되었는지 콘솔에서 확인
+    console.log("전달된 siCode: ", siCode);
+
+    $.ajax({
+		// 이거 sailController 변경해야함 
+        url: '/controller/sail/all',  // 서버의 API 경로
+        type: 'GET',
+        data: { siCode: siCode },  // siCode 전달
+        dataType: 'json',
+        success: function(data) {
+            console.log("항해 리스트 데이터:", data);
+            const sailListElement = document.getElementById('sailList');
+            sailListElement.innerHTML = ''; // 기존 리스트 초기화
+
+            data.forEach(function(sail) {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
+                    <p>선박번호 (siCode): ${sail.siCode}</p>
+                    <p>등록일자: ${sail.registeredDate}</p>
+                    <p>운항상태: ${sail.status}</p>
+                    <p>코멘트: ${sail.comment}</p>
+                `;
+                sailListElement.appendChild(listItem);
+            });
+
+            // 모달을 화면에 표시
+            document.getElementById("sailListModal").style.display = "block";
+        },
+        error: function(xhr, status, error) {
+            console.error('항해 리스트를 가져오는 중 오류 발생:', error);
+        }
+    });
+}
+
+// 모달 닫기 기능
+document.getElementById('closeSailListModal').onclick = function() {
+    document.getElementById('sailListModal').style.display = 'none';
+};
+
+
+// 통계 페이지 이동
+function goToStatisticsPage(siCode) {
+    window.location.href = `/controller/statistics?siCode=${siCode}`;  // 권한 확인 없이 바로 이동
+}
+
 
 // ------------------------------------- shipgroup 가져오기 
 
