@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ page import="com.doran.entity.Ship" %>
+<%@ page import="com.doran.entity.Ship"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -155,7 +155,8 @@
 				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
 			</div>
 
-			<button class="startSail-btn" @click="toggleSailStart" :disabled="sailStatus === 1">항해 시작</button>
+			<button class="startSail-btn" @click="toggleSailStart"
+				:disabled="sailStatus === 1">항해 시작</button>
 			<button class="destination-btn" @click="endSail">항해 완료</button>
 
 		</div>
@@ -172,16 +173,17 @@
 	<!-- 자동/수동, 운항중 상태 표시 패널 -->
 	<div class="status-overlay">
 		<div class="status-btn">
-			<button class="autoSift-btn" id="autoSift-btn" @click="toggleAutopilot()">auto "on"</button>
-			<img class="nowSail-btn"
+			<button class="autoSift-btn" id="autoSift-btn"
+				@click="toggleAutopilot()">auto "on"</button>
+			<img class="nowSail-btn" id="nowSail-btn"
 				src="<%=request.getContextPath()%>/resources/img/stop.png"
 				alt="STOP">
 		</div>
 	</div>
 
-	<% 
-		Ship nowShip = (Ship)session.getAttribute("nowShip");
-		char sailStatus = (nowShip != null) ? nowShip.getSailStatus() : '0'; 
+	<%
+	Ship nowShip = (Ship) session.getAttribute("nowShip");
+	char sailStatus = (nowShip != null) ? nowShip.getSailStatus() : '0';
 	%>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
@@ -198,7 +200,7 @@
 	            map: null,    // Google Maps 객체를 저장할 변수
 	            marker: null, // 사용자 마커 객체를 저장할 변수
 	            flightPlanCoordinates: [], // Polyline 데이터를 저장할 곳
-	            sailStatus: '<%= String.valueOf(sailStatus) %>'
+	            sailStatus: '<%=String.valueOf(sailStatus)%>'
 	        };
 	    },
 	    mounted() {
@@ -491,19 +493,50 @@
 	        	if (event.target === event.currentTarget) {
 	                modal.style.display = "none";
 	            }
-	        	
-	        }, toggleAutopilot() { // 자율운항 toggle
-	        	
-	        	var btn = document.getElementById("autoSift-btn");
-	        	console.log(btn.textContent);
-	        	btn.textContent = btn.textContent === 'auto "on"' ? 'auto "off"' : 'auto "on"';
-	        	if(btn.textContent === 'auto "off"'){
-	        		btn.style.opacity = 0.7;
-	        	}
 	        }
 	    }
 	});
 	
+	new Vue({
+	    el: '.status-overlay',
+	    data() {
+	        return {
+	            
+	            sailStatus: '<%=String.valueOf(sailStatus)%>'
+	        };
+	    }, mounted () {
+	    	
+	    	this.checkSailStatus(); // 운항 상태 확인
+	    },
+	    methods: {
+	    	toggleAutopilot() { // 자율운항 toggle
+
+	        	var btn = document.getElementById("autoSift-btn");
+	        	console.log(btn.textContent);
+	        	btn.textContent = btn.textContent === 'auto "on"' ? 'auto "off"' : 'auto "on"';
+	        	
+	        	if(btn.textContent === 'auto "off"'){
+	        		btn.style.opacity = 0.7;
+	        	}else{
+	        		btn.style.opacity = 1;
+	        	}
+	        	
+        	}, checkSailStatus(){
+        		
+        		var btn = document.getElementById("nowSail-btn");
+        		console.log(this.sailStatus);
+        		
+        		if(this.sailStatus === '1'){
+        			btn.style.opacity = 1;
+        			btn.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.5)';
+        		}else {
+        			btn.style.opacity = 0.5;
+        			btn.style.boxShadow = 'none';
+        		}
+        		
+        	}
+	    }
+	});
     </script>
 
 </body>

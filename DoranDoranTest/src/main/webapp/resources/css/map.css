@@ -50,6 +50,7 @@ body {
 	position: absolute;
 	right: -80%;
 	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+	transition: transform 0.3s ease; /* 부드러운 변환 효과 */
 }
 
 .startSail-btn {
@@ -63,10 +64,12 @@ body {
 	position: absolute;
 	right: -55%;
 	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+	transition: transform 0.3s ease; /* 부드러운 변환 효과 */
 }
 
 .destination-btn:hover, .startSail-btn:hover {
-	background-color: #ff4e4e;
+	background-color: #ff4e4e;	
+	transform: scale(1.1); /* 마우스를 올리면 10% 커짐 */
 }
 
 /* 컨트롤 패널 --------------------------------------------------------------------*/
@@ -374,6 +377,11 @@ body {
     width: 50%; /* 버튼을 overlay의 너비에 맞춤 */
     margin-top: 20px;
     margin-bottom: 5px; /* 버튼 간격 설정 */
+    transition: transform 0.3s ease; /* 부드러운 변환 효과 */
+}
+
+.autoSift-btn:hover {
+	transform: scale(1.1); 
 }
 
 .nowSail-btn {
@@ -383,7 +391,9 @@ body {
     border: none;
     border-radius: 5px;
     margin-bottom: 5px; /* 버튼 간격 설정 */
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* 육각형 모양 */
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.5); /* 다홍빛 그림자 */
     width: 60%; /* 버튼을 overlay의 너비에 맞춤 */
     height: auto; /* 버튼의 높이를 자동으로 설정 */
-    opacity: 0.5px;
+    opacity: 0.5;
 }
