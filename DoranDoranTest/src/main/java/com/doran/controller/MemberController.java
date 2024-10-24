@@ -81,6 +81,7 @@ public class MemberController {
 			return "redirect:/main";
 		}
 	}
+	 
 
 	// 3. 아이디 중복 확인
 	@RequestMapping("/registerCheck")
