@@ -11,7 +11,6 @@ public class HwMotorController {
     public static void setMotorSpeed(int speed) {
         try {
             // 라즈베리파이의 IP와 Flask 서버 포트에 맞게 URL 설정
-            // 예: http://<라즈베리파이-IP>:5000/set_speed
             String targetUrl = "http://192.168.219.47:5000/set_speed";
 
             // URL 객체 생성 (요청을 보낼 대상 URL)
@@ -26,7 +25,7 @@ public class HwMotorController {
             // 서버로 데이터를 전송할 수 있도록 설정
             connection.setDoOutput(true);
 
-            // JSON 형식의 데이터 생성 (예: {"speed": 0})
+            // JSON 형식의 데이터 생성 
             String jsonInputString = "{\"speed\": " + speed + "}";
 
             // 요청 본문에 JSON 데이터를 전송
@@ -48,7 +47,8 @@ public class HwMotorController {
     }
 
     public static void main(String[] args) {
-        // 프로그램 시작 시, 모터 속도를 0%로 설정 (정지 상태)
+
+    	// 모터속도값 0(정지) ~ 100(풀파워)
         setMotorSpeed(0);
     }
 }
