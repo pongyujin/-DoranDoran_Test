@@ -10,7 +10,7 @@ public class GoMapController {
 	// map.jsp 이동
 	@RequestMapping("/map")
 	public String showMap() {
-		return "map";
+		return "Controller2";
 	}
 
 	// Controller.jsp 이동
@@ -29,5 +29,11 @@ public class GoMapController {
 	@RequestMapping("/waypoint")
 	public String waypoint() {
 		return "waypoint";
+	}
+
+	// designation.jsp 이동
+	@RequestMapping("/designation")
+	public String designation() {
+		return "designation";
 	}
 }

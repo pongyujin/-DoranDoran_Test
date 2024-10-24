@@ -25,10 +25,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
-	href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap"
+	href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
 	rel="stylesheet">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/map.css">
+	href="${pageContext.request.contextPath}/resources/css/map2.css">
 </head>
 <body>
 	<div id="app">
@@ -144,7 +144,7 @@
 
 		<!-- 아이콘 패널(우측) -->
 		<div class="icon-panel">
-			<div class="icon" @click="getInfo('선박 정보')">🚤</div>
+			<div class="icon" @click="toggleShipModal()">🚤</div>
 			<div class="icon" @click="getInfo('온도')">🌡️</div>
 			<div class="icon" @click="getInfo('배터리')">🔋</div>
 			<div class="icon" @click="getInfo('통신 상태')">📶</div>
@@ -189,20 +189,62 @@
 	</div>
 
 	<!-- 최초 선박 정보 표시 모달 -->
-	<div class="modal-overlay" id="shipModal" style="display: none;"
-		@click="closeShipModal2">
-		<div
-			class="shipModal w-[80%] max-w-screen-md rounded-3xl bg-neutral-50 text-center antialiased px-5 md:px-20 py-10 shadow-2xl shadow-zinc-900 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-			style="padding: 10px 30px;">
+	<div id="shipModal" class="modal-overlay">
+		<div class="modal" @click="closeShipModal2">
 
-			<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4">
-				현재 선박 정보</h3>
+			<article class="modal-container">
+				<header class="modal-container-header">
+					<h1 class="modal-container-title">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+							width="24" height="24" aria-hidden="true">
+          <path fill="none" d="M0 0h24v24H0z" />
+          <path fill="currentColor"
+								d="M14 9V4H5v16h6.056c.328.417.724.785 1.18 1.085l1.39.915H3.993A.993.993 0 0 1 3 21.008V2.992C3 2.455 3.449 2 4.002 2h10.995L21 8v1h-7zm-2 2h9v5.949c0 .99-.501 1.916-1.336 2.465L16.5 21.498l-3.164-2.084A2.953 2.953 0 0 1 12 16.95V11zm2 5.949c0 .316.162.614.436.795l2.064 1.36 2.064-1.36a.954.954 0 0 0 .436-.795V13h-5v3.949z" />
+        </svg>
+						Current Ship
+					</h1>
+					<button class="icon-button" @click="closeShipModal">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+							width="24" height="24">
+          <path fill="none" d="M0 0h24v24H0z" />
+          <path fill="currentColor"
+								d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z" />
+        </svg>
+					</button>
+				</header>
+				<section class="modal-container-body rtf">
 
-			<button class="ship-close-btn" @click="closeShipModal">✖</button>
+					<h1>Ship Code</h1>
 
-			<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
-				class="w-[16px] h-[16px] absolute right-6 top-6">
-					<path d="m2 2 12 12m0-12-12 12" class="stroke-2 stroke-current" /></svg>
+					<p id="siCode">${sessionScope.nowShip.siCode}</p>
+
+					<h2>선박 명</h2>
+
+					<p id="siName">${sessionScope.nowShip.siName}</p>
+
+					<p id="siCert">
+						인증 여부 :  ${sessionScope.nowShip.siCert == '1' ? '인증 승인 완료' : '인증 미승인'}
+					</p>
+					<p id="sailStatus">
+						운항 상태 :  ${sessionScope.nowShip.sailStatus == '1' ? '운항중' : '정박중'}
+					</p>
+
+					<h2>자율운항 이용약관</h2>
+					<ol style="margin-left: 20px; list-style-position: inside; list-style: numeric;">
+						<li>자율운항선박 운항해역의 지정·변경·해제(안 제2조) 해수부장관은 자율운항선박 운항해역 지정·변경·해제
+							절차 등 규정</li>
+						<li>자율운항선박 및 기자재 안전성 평가(안 제3조) 안전성 평가의 신청, 심사·평가 및 활용에 관한 사항
+							규정</li>
+						<li>운항의 승인신청(안 제4조) 자율운항선박의 운항 승인 신청 절차 규정</li>
+						<li>운항의 승인(안 제5조) 자율운항선박의 운항 승인·불승인 관련 사항 규정</li>
+						<li>규제 신속확인(안 제6조) 규제 신속확인 신청서 및 통지서 서식</li>
+					</ol>
+				</section>
+				<footer class="modal-container-footer">
+					<button class="button is-ghost" @click="goMain">Decline</button>
+					<button class="button is-primary" @click="closeShipModal">Accept</button>
+				</footer>
+			</article>
 		</div>
 	</div>
 
@@ -521,19 +563,33 @@
 	            }
 	        }, goMain(){
 	        	window.location.href = "http://localhost:8085/controller/main"; // 특정 페이지로 이동
+	        	
+	        }, toggleShipModal() { // 1. 선박 정보 최조 출력 모달
+	            
+				var modal = document.getElementById("shipModal");
+
+	            if (modal.style.display === "none" || modal.style.display === "") {
+	               
+	            	modal.style.display = "block"; // 모달 표시
+	            } else {
+	                modal.style.display = "none";
+	            }
 	        }
 	    }
 	});
 	
 	new Vue({
-		el: 'modal-overlay',
+		el: '#shipModal',
 		data(){
 			return{
-				
+				sailStatus: '<%=String.valueOf(sailStatus)%>'
 			};
 		}, mounted(){
 			
-			this.toggleShipModal();
+			// 이전 페이지가 main인지 확인
+	        if (document.referrer === "http://localhost:8085/controller/main") {
+	            this.toggleShipModal();
+	        }
 		},
 		methods: {
 			toggleShipModal() { // 1. 선박 정보 최조 출력 모달
@@ -546,7 +602,7 @@
 	            } else {
 	                modal.style.display = "none";
 	            }
-	        }, closeShipModal(){ // 항해 시작 모달 끄기
+	        }, closeShipModal(){ // 2. 선박 정보 최초 출력 모달 끄기
 	        	
 	        	var shipModal = document.getElementById("shipModal");
 	        	shipModal.style.display = "none";
@@ -560,7 +616,7 @@
 	            }
 	        }
 		}
-	})
+	});
 	
 	new Vue({
 	    el: '.status-overlay',
