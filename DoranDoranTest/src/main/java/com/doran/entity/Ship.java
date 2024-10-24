@@ -22,4 +22,7 @@ public class Ship {
     private String siDocs; // 선박 증빙서류 이름
     private char siCert; // 인증 여부
     private char sailStatus; // 운항 상태
+    private String shipId;
+    private String ownerId; // 선박 소유자 정보
+    private String filePath; // 파일 경로
 }

@@ -104,40 +104,37 @@
             </tr>
         </thead>
         <tbody>
-            <!-- 서버에서 받은 userList 데이터가 있을 때만 반복 출력 -->
-            <c:forEach var="user" items="${userList}">
-                <tr>
-                    <td>${user.userId}</td>
-                    <td>${user.shipId}</td>
-                    <td>
-                        <!-- 파일이 있을 경우 파일 링크, 없을 경우 "파일 없음" 표시 -->
-                        <c:choose>
-                            <c:when test="${not empty user.filePath}">
-                                <a href="${user.filePath}" download>파일 다운로드</a>
-                            </c:when>
-                            <c:otherwise>
-                                파일 없음
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                    <td>
-                        <!-- 등록한 사용자가 있을 때만 승인/거절 버튼 표시 -->
-                        <c:if test="${not empty user.userId and not empty user.shipId}">
-                            <form action="approveShip" method="post" style="display:inline;">
-                                <input type="hidden" name="userId" value="${user.userId}">
-                                <input type="hidden" name="shipId" value="${user.shipId}">
-                                <button type="submit" class="approve-btn">승인</button>
-                            </form>
-                            <form action="rejectShip" method="post" style="display:inline;">
-                                <input type="hidden" name="userId" value="${user.userId}">
-                                <input type="hidden" name="shipId" value="${user.shipId}">
-                                <button type="submit" class="reject-btn">거절</button>
-                            </form>
-                        </c:if>
-                    </td>
-                </tr>
-            </c:forEach>
-        </tbody>
+    <!-- 서버에서 받은 shipList 데이터가 있을 때만 반복 출력 -->
+    <c:forEach var="ship" items="${shipList}">
+        <tr>
+            <td>${ship.ownerId}</td> <!-- 소유자 ID 또는 관련 정보 -->
+            <td>${ship.shipId}</td> <!-- Ship ID -->
+            <td>
+                <!-- 파일이 있을 경우 파일 링크, 없을 경우 "파일 없음" 표시 -->
+                <c:choose>
+                    <c:when test="${not empty ship.filePath}">
+                        <a href="${ship.filePath}" download>파일 다운로드</a>
+                    </c:when>
+                    <c:otherwise>
+                        파일 없음
+                    </c:otherwise>
+                </c:choose>
+            </td>
+            <td>
+                <!-- 등록된 선박이 있을 때만 승인/거절 버튼 표시 -->
+                <form action="approveShip" method="post" style="display:inline;">
+                    <input type="hidden" name="shipId" value="${ship.shipId}">
+                    <button type="submit" class="approve-btn">승인</button>
+                </form>
+                <form action="rejectShip" method="post" style="display:inline;">
+                    <input type="hidden" name="shipId" value="${ship.shipId}">
+                    <button type="submit" class="reject-btn">거절</button>
+                </form>
+            </td>
+        </tr>
+    </c:forEach>
+</tbody>
+
     </table>
 </div>
 

@@ -37,4 +37,10 @@ public class HomeController {
 	public String showManagerPage() {
 		return "Manager";
 	}
+	
+	// motorControlTest.jsp 이동 (수동제어 테스트용입니당)
+	@GetMapping("/motorControlTest")
+	public String motorControlTestPage() {
+		return "motorControlTest";
+	}
 }

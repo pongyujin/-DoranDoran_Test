@@ -1,11 +1,19 @@
 package com.doran.controller;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
+@RestController
 public class HwMotorController {
+
+    private int speed = 0;  // 속도 값을 서버 측에서 관리
 
     // 모터 속도를 설정하는 메서드
     public static void setMotorSpeed(int speed) {
@@ -20,9 +28,7 @@ public class HwMotorController {
 
             // HTTP 요청 설정 (POST 요청 사용)
             connection.setRequestMethod("POST");
-            // 요청 본문의 데이터 형식 설정 (JSON)
             connection.setRequestProperty("Content-Type", "application/json");
-            // 서버로 데이터를 전송할 수 있도록 설정
             connection.setDoOutput(true);
 
             // JSON 형식의 데이터 생성 
@@ -30,25 +36,28 @@ public class HwMotorController {
 
             // 요청 본문에 JSON 데이터를 전송
             try (OutputStream os = connection.getOutputStream()) {
-                // JSON 문자열을 바이트 배열로 변환하여 전송
                 byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
                 os.write(input, 0, input.length);
             }
 
-            // 서버로부터의 응답 코드 확인
             int responseCode = connection.getResponseCode();
-            System.out.println("Response Code: " + responseCode); // 서버 응답 코드 출력
+            System.out.println("Response Code: " + responseCode);
 
-            // 연결 종료
             connection.disconnect();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) {
+    // 클라이언트로부터 AJAX 요청을 받아 속도 값을 설정하는 메서드
+    @PostMapping("/updateSpeed")
+    public Map<String, Object> updateSpeed(@RequestBody Map<String, Integer> request) {
+        if (request.containsKey("speed")) {
+            speed = request.get("speed");
+            setMotorSpeed(speed);
+        }
 
-    	// 모터속도값 0(정지) ~ 100(풀파워)
-        setMotorSpeed(0);
+        // 현재 속도를 JSON으로 반환
+        return Map.of("status", "success", "speed", speed);
     }
 }
