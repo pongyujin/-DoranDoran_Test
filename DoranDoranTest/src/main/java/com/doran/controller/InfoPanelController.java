@@ -1,10 +1,17 @@
 package com.doran.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.doran.entity.Gps;
 
 @Controller
 public class InfoPanelController {
@@ -112,6 +119,21 @@ public class InfoPanelController {
 		String location = "위도: " + 37.5665 + ", 경도: " + 126.9780;
 		return location;
 	}
+	
+	@RequestMapping(value = "/gps-data", method = RequestMethod.POST)
+    @ResponseBody
+    public String receiveGpsData(@RequestBody Map<String, Object> data) {
+        // 개별 값 출력
+        double latitude = (double) data.get("latitude"); // 위도
+        double longitude = (double) data.get("longitude"); // 경도
+        double speed = (double) data.get("speed"); // 속도
+        double heading = (double) data.get("heading"); // 북쪽기준 방위각
+        String time = (String) data.get("time"); // 시간
+
+        String location = "위도: " + latitude + ", 경도: " + longitude;
+
+        return location;
+    }
 
 	// 10. 방위
 	public String direction() {

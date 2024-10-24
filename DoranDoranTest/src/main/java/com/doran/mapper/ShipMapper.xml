@@ -26,6 +26,11 @@
 		sailStatus=#{sailStatus}
 		where memId=#{memId} and siCode=#{siCode}
 	</update>
+	
+	<select id="getShip" parameterType="com.doran.entity.Ship" resultType="com.doran.entity.Ship">
+		select * from ship
+		where memId=#{memId} and siCode=#{siCode}
+	</select>
 
 	<!-- 정유진이 만듬 -->
 	<select id="findShipBySiCode" parameterType="String"

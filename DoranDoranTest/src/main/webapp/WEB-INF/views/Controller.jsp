@@ -1,9 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ page pageEncoding="UTF-8" %>
+<%@ page pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <title>map2</title>
+<!-- bootstrap -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
 <script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <!-- Google Maps API - Spring에서 전달된 API 키 사용 -->
@@ -17,17 +23,21 @@
 <!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/map.css">
+<link
+	href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;800&display=swap"
+	rel="stylesheet">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/resources/css/map.css">
 </head>
 <body>
 	<div id="app">
-	
+
 		<div id="map"></div>
-		
+
+		<!-- 실시간 비디오 모달 -->
 		<div id="videoModal"
 			class="videoModal w-[80%] max-w-screen-md rounded-3xl bg-neutral-50 text-center antialiased px-5 md:px-20 py-10 shadow-2xl shadow-zinc-900 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-			style="padding:10px 30px;">
+			style="padding: 10px 30px;">
 
 			<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4">
 				Camera view</h3>
@@ -38,16 +48,65 @@
 
 			<button type="button" id="reset" disabled
 				class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
-				style="margin: 16px 0px 0px">
-				Reset the position</button>
+				style="margin: 16px 0px 0px">Reset the position</button>
 
 			<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
 				class="w-[16px] h-[16px] absolute right-6 top-6">
 					<path d="m2 2 12 12m0-12-12 12" class="stroke-2 stroke-current" /></svg>
 		</div>
-		
+
+		<!-- 항해 시작 설정 모달 -->
+		<div class="modal-overlay" id="sailModal" style="display: none;"
+			@click="closeSailModal2">
+			<div
+				class="sailModal w-[80%] max-w-screen-md rounded-3xl bg-neutral-50 text-center antialiased px-5 md:px-20 py-10 shadow-2xl shadow-zinc-900 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+				style="padding: 10px 30px;">
+
+				<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4">
+					Sail Start</h3>
+
+				<button class="sail-close-btn" @click="closeSailModal">✖</button>
+
+				<div class="sailContainer form-floating mb-3">
+					<form action="sail/insert" method="post">
+						<table class="table table-bordered" style="text-align: center;">
+							<tr>
+								<td style="vertical-align: middle; width: 110px;">선박 코드</td>
+								<td><input type="text" name="siCode" id="siCode"
+									placeholder="선박 코드를 입력해주세요" class="form-control"></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: middle; width: 110px;">출발지</td>
+								<td><input type="text" name="startSail" id="startSail"
+									placeholder="출발지를 입력해주세요" class="form-control"></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: middle; width: 110px;">목적지</td>
+								<td><input type="text" name="endSail" id="endSail"
+									placeholder="목적지를 입력해주세요" class="form-control"></td>
+							</tr>
+
+							<tr>
+								<td colspan="2">
+									<button type="submit" id="reset"
+										class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
+										style="margin: 16px 0px 0px">항해 시작</button>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+
+				<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
+					class="w-[16px] h-[16px] absolute right-6 top-6">
+					<path d="m2 2 12 12m0-12-12 12" class="stroke-2 stroke-current" /></svg>
+			</div>
+		</div>
+
+		<!-- 속도계 -->
 		<div id="speedDisplay" class="speed-display">0</div>
 
+		<!-- 속도 조절 패널 -->
 		<div class="speed-control-wrapper">
 			<div class="speed-control">
 				<label for="speedRange1">속도</label> <input type="range"
@@ -59,6 +118,7 @@
 			</div>
 		</div>
 
+		<!-- 수동 제어 패널 -->
 		<div class="control-panel">
 			<div class="arrow-buttons">
 				<img src="<%=request.getContextPath()%>/resources/img/left.png"
@@ -73,6 +133,7 @@
 				alt="STOP">
 		</div>
 
+		<!-- 아이콘 패널(우측) -->
 		<div class="icon-panel">
 			<div class="icon" @click="getInfo('날씨')">🌤️</div>
 			<div class="icon" @click="getInfo('온도')">🌡️</div>
@@ -87,22 +148,37 @@
 			<div class="icon" @click="toggleModal()">📷</div>
 		</div>
 
+		<!-- 남은 시간 거리 패널 -->
 		<div class="info-overlay">
 			<div class="time-distance">
 				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
 			</div>
 
+			<button class="startSail-btn" @click="toggleSailStart">항해 시작</button>
 			<button class="destination-btn" @click="endSail">항해 완료</button>
+
 		</div>
 
+		<!-- 아이콘 정보 상세 패널 -->
 		<div class="info-panel" id="infoPanel">
 			<button class="close-btn" @click="closeInfoPanel">✖</button>
 			<h3 id="infoTitle">정보</h3>
 			<p id="infoContent">상세 내용</p>
 		</div>
-		
+
 	</div>
-	
+
+	<!-- 자동/수동, 운항중 상태 표시 패널 -->
+	<div class="status-overlay">
+		<div class="status-btn">
+			<button class="autoSift-btn" id="autoSift-btn" @click="toggleAutopilot"></button>
+			<img class="nowSail-btn"
+				:style="{ opacity: sailStatus === 0 ? 0.5 : 1 }"
+				src="<%=request.getContextPath()%>/resources/img/stop.png"
+				alt="STOP">
+		</div>
+	</div>
+
 	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 	<!-- GSAP Scripts -->
 	<script src='https://unpkg.com/gsap@3/dist/gsap.min.js'></script>
@@ -284,7 +360,19 @@
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
 	            
-	        }, endSail() { // 8. 항해 종료 함수
+	        }, startSail(){ // 8. 항해 시작 함수
+	        	
+	        	axios.get("http://localhost:8085/controller/sail/startSail")
+	        	.then(response => {
+	                console.log("Sail started successfully.", response.data);
+	                // 페이지 이동
+	                window.location.href = "http://localhost:8085/controller/map2";
+	            })
+	            .catch(error => {
+	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
+	            });
+	        	
+	        }, endSail() { // 9. 항해 종료 함수
 	        	
 	        	axios.get("http://localhost:8085/controller/sail/endSail")
 	        	.then(response => {
@@ -296,10 +384,11 @@
 	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
 	            });
 	        
-	        }, closeVideoModal(){ // 9. 실시간 카메라 모달 끄기 함수
+	        }, closeVideoModal(){ // 10. 실시간 카메라 모달 끄기 함수
 	        	
 	        	var videoModal = document.getElementById("videoModal");
 	        	videoModal.style.display = "none";
+	        	 
 	        }, toggleModal() {
 	            var modal = document.getElementById("videoModal");
 	            var mapDiv = document.getElementById("map");
@@ -324,7 +413,7 @@
 	                modal.style.display = "none";
 	            }
 	        },
-	        initDraggable() { // 10. 실시간 카메라 모달 드래그 함수
+	        initDraggable() { // 11. 실시간 카메라 모달 드래그 함수
 	            const modal = document.getElementById('videoModal');
 	            const wrapper = document.getElementById('map');
 	            const reset = document.getElementById('reset');
@@ -377,11 +466,37 @@
 	            window.addEventListener('resize', () => {
 	                resetModalPosition();
 	            });
+	        }, toggleSailStart() { // 항해 시작 모달 켜기 함수
+	            var modal = document.getElementById("sailModal");
+
+	            if (modal.style.display === "none" || modal.style.display === "") {
+	               
+	            	modal.style.display = "block"; // 모달 표시
+	            } else {
+	                modal.style.display = "none";
+	            }
+	        }, closeSailModal(){ // 항해 시작 모달 끄기
+	        	
+	        	var videoModal = document.getElementById("sailModal");
+	        	videoModal.style.display = "none";
+	        }, closeSailModal2(event){
+	        	
+	        	var modal = document.getElementById("sailModal");
+	        	
+	        	if (event.target === event.currentTarget) {
+	                modal.style.display = "none";
+	            }
+	        	
+	        }, toggleAutopilot() { // 자율운항 toggle
+	        	
+	        	var btn = document.getElementById("autoSift-btn");
+	        	console.log(btn.textContent);
+	        	btn.textContent = btn.textContent === '자율 운항 off' ? '자율 운항 on' : '자율 운항 off';
 	        }
 	    }
 	});
 	
     </script>
- 
+
 </body>
 </html>

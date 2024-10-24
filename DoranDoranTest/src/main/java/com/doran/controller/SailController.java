@@ -17,14 +17,19 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.doran.entity.Member;
 import com.doran.entity.Sail;
+import com.doran.entity.ShipGroup;
 import com.doran.entity.Weather;
 import com.doran.mapper.SailMapper;
+import com.doran.mapper.ShipGroupMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,6 +41,8 @@ public class SailController {
 
 	@Autowired
 	private SailMapper sailMapper;
+	@Autowired
+	private ShipGroupMapper shipGroupMapper;
 	@Autowired
 	private ShipController shipController;
 
@@ -49,9 +56,32 @@ public class SailController {
 	
 	// 0. 항해 정보 최초 생성 (Db 저장)
 	@PostMapping("/insert")
-	public String sailInsert(Sail sail, HttpSession session) {
+	public String sailInsert(Sail sail, RedirectAttributes rttr, HttpSession session) {
 
 		try {
+
+			Member user = (Member)session.getAttribute("user");
+			
+			// 0. 권한 확인
+			ShipGroup shipGroup = new ShipGroup();
+			shipGroup.setSiCode(sail.getSiCode());
+			shipGroup.setMemId(user.getMemId());
+			shipGroup = shipGroupMapper.authCheck(shipGroup);
+			
+			if(shipGroup == null) {
+				
+				rttr.addFlashAttribute("msgType", "실패");
+				rttr.addFlashAttribute("msg", "선박 관제 권한이 없습니다.");
+				System.out.println("선박 회원이 아닙니다");
+	        	return "redirect:/main";
+	        	
+			}else if(shipGroup.getAuthNum()!=0 && shipGroup.getAuthNum()!=2 && shipGroup.getAuthNum()!=3) {
+	            
+	        	rttr.addFlashAttribute("msgType", "실패");
+				rttr.addFlashAttribute("msg", "선박 관제 권한이 없습니다.");
+				System.out.println("선박 관제 권한이 없습니다 : "+shipGroup.getAuthNum());
+	        	return "redirect:/map2"; 
+	        }
 
 			// a. 출발지 목적지 geocoding(좌표계산)
 			sail = coordinates(sail);
@@ -60,8 +90,8 @@ public class SailController {
 			int sailNum = sailMapper.getSailNum(sail);
 			sail.setSailNum(sailNum);
 			sailMapper.insert(sail);
-			System.out.println(sail);
 			// 항해 정보 세션 저장
+			System.out.println(sail);
 			session.setAttribute("nowSail", sail);
 
 			// c. 항해 시작 메서드 실행(+운항 상태 변경)
@@ -147,7 +177,7 @@ public class SailController {
 		sail.setStartLng(startCoordinates[1]);
 		sail.setEndLat(endCoordinates[0]);
 		sail.setEndLng(endCoordinates[1]);
-
+		System.out.println(sail);
 		return sail;
 	}
 
