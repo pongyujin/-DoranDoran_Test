@@ -96,6 +96,8 @@ public class ShipController {
 		Member user = (Member)session.getAttribute("user");
 		ship.setMemId(user.getMemId());
 		ship = getShip(ship);
+		// 세션 생성 시 타임아웃 설정(1시간)
+		session.setMaxInactiveInterval(3600);
 		session.setAttribute("nowShip", ship);
 	}
 	
@@ -110,6 +112,8 @@ public class ShipController {
 		ship.setSailStatus('1');
 		int cnt = shipMapper.sailStatus(ship);
 		
+		// 세션 생성 시 타임아웃 설정(1시간)
+		session.setMaxInactiveInterval(3600);
 		session.setAttribute("nowShip", ship);
 	}
 	

@@ -74,7 +74,7 @@
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">선박 코드</td>
 								<td><input type="text" name="siCode" id="siCode"
-									placeholder="선박 코드를 입력해주세요" class="form-control"></td>
+									value="${sessionScope.nowShip.siCode }" readonly class="form-control"></td>
 							</tr>
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">출발지</td>
@@ -140,12 +140,10 @@
 			<div class="icon" @click="getInfo('온도')">🌡️</div>
 			<div class="icon" @click="getInfo('배터리')">🔋</div>
 			<div class="icon" @click="getInfo('통신 상태')">📶</div>
-			<div class="icon" @click="getInfo('속도')">🚤</div>
-			<div class="icon" @click="getInfo('남은 시간')">⏱️</div>
-			<div class="icon" @click="getInfo('남은 거리')">🛣️</div>
 			<div class="icon" @click="getInfo('현재 위치')">📍</div>
 			<div class="icon" @click="getInfo('방위')">🧭</div>
 			<div class="icon" @click="getInfo('주변 장애물 탐지')">🚧</div>
+			<div class="icon" @click="goMain()">🔙</div>			
 			<div class="icon" @click="toggleModal()">📷</div>
 		</div>
 
@@ -386,6 +384,7 @@
 	        	axios.get("http://localhost:8085/controller/sail/endSail")
 	        	.then(response => {
 	                console.log("Sail ended successfully.", response.data);
+	                window.location.href = "http://localhost:8085/controller/map2";
 	            })
 	            .catch(error => {
 	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
@@ -493,6 +492,8 @@
 	        	if (event.target === event.currentTarget) {
 	                modal.style.display = "none";
 	            }
+	        }, goMain(){
+	        	window.location.href = "http://localhost:8085/controller/main"; // 특정 페이지로 이동
 	        }
 	    }
 	});

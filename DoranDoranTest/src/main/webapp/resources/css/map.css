@@ -84,6 +84,7 @@ body {
 	position: absolute;
 	width: 130px;
 	height: 120px;
+	transition: transform 0.3s ease; /* 부드러운 변환 효과 */
 }
 
 .left-btn {
@@ -117,6 +118,11 @@ body {
 .left-btn:hover, .right-btn:hover, .up-btn:hover {
 	opacity: 0.3;
 	cursor: pointer;
+}
+
+.left-btn:active, .right-btn:active, .up-btn:active {
+	
+	transform: scale(1.1); /* 마우스를 올리면 10% 커짐 */
 }
 
 .stop-icon:hover {

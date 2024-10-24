@@ -91,7 +91,8 @@ public class SailController {
 			sail.setSailNum(sailNum);
 			sailMapper.insert(sail);
 			// 항해 정보 세션 저장
-			System.out.println(sail);
+			// 세션 생성 시 타임아웃 설정(1시간)
+			session.setMaxInactiveInterval(3600);
 			session.setAttribute("nowSail", sail);
 
 			// c. 항해 시작 메서드 실행(+운항 상태 변경)

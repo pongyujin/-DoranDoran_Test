@@ -169,7 +169,12 @@ public class InfoPanelController {
 	// 10. 방위
 	public String direction() {
 		
-		String direction = "방위각 " + 90;
+		if (latestGpsData.isEmpty()) {
+            return "GPS 데이터가 없습니다.";
+        }
+		
+		double heading = (double) latestGpsData.get("heading");
+		String direction = "방위각 " + heading;
 		return direction;
 	}
 
