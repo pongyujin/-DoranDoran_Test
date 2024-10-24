@@ -204,6 +204,16 @@
 		<!-- AJAX로 받아온 그룹 멤버 리스트가 이곳에 추가됩니다. -->
 	</ul>
 </div>
+
+<!-- 항해 리스트 모달 -->
+<div id="sailListModal" class="modal">
+    <span class="close" id="closeSailListModal">&times;</span>
+    <h2>항해 리스트</h2>
+    <div class="modal-content">
+        <ul id="sailList">
+            <!-- AJAX로 받아온 항해 리스트가 이곳에 표시됩니다. -->
+        </ul>
+    </div>
 </div>
 
 
