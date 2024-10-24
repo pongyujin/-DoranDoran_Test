@@ -7,11 +7,10 @@ import java.nio.charset.StandardCharsets;
 
 public class HwServoMotorController {
 
-	// 서보모터
+	// 서보모터(방향타)
 	public static void setServoMotorDegree(int degree) {
 		try {
 			// 라즈베리파이의 IP와 Flask 서버 포트에 맞게 URL 설정
-			// 예: http://<라즈베리파이-IP>:5000/set_speed
 			String targetUrl = "http://192.168.219.47:5001/set_degree";
 
 			// URL 객체 생성 (요청을 보낼 대상 URL)
@@ -49,6 +48,7 @@ public class HwServoMotorController {
 
 	public static void main(String[] args) {
 		
+		// 0 ~ 180 값
 		setServoMotorDegree(0);
 
 		
