@@ -92,18 +92,32 @@ public class ShipController {
 	// 4. 선박 운항 상태 변경
 	@PutMapping("/sailStatus")
 	public void sailStatus(Sail sail, HttpSession session) {
+
+	}
+	
+	// 4-1. 선박 운항 시작
+	@PutMapping("/startStatus")
+	public void startStatus(Sail sail, HttpSession session) {
 		
 		Member user = (Member)session.getAttribute("user");
 		Ship ship = new Ship();
 		ship.setMemId(user.getMemId());
 		ship.setSiCode(sail.getSiCode());
-		
-		ship.setSailStatus(ship.getSailStatus() == '0' ? '1' : '0');
+		ship.setSailStatus('1');
 		int cnt = shipMapper.sailStatus(ship);
 		
-		// session 저장
-		ship = getShip(ship);
 		session.setAttribute("nowShip", ship);
+	}
+	
+	// 4-2. 선박 운항 종료
+	@PutMapping("/endStatus")
+	public void endStatus(Sail sail, HttpSession session) {
+		
+		Ship ship = (Ship)session.getAttribute("nowShip");
+		ship.setSailStatus('0');
+		int cnt = shipMapper.sailStatus(ship);
+		
+		session.removeAttribute("nowShip");
 	}
 	
 	// 5. 선박 정보 불러오기
@@ -114,7 +128,7 @@ public class ShipController {
 	}
 	
 	// 6. 세션에서 운항상태 불러오기
-	@GetMapping("/sailStatus")
+	@GetMapping("/getSailStatus")
     public ResponseEntity<Map<String, Object>> getSailStatus(HttpSession session) {
 		
         Ship nowShip = (Ship) session.getAttribute("nowShip");

@@ -1,9 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ page pageEncoding="UTF-8"%>
+<%@ page import="com.doran.entity.Ship" %>
 <!DOCTYPE html>
 <html>
 <head>
 <title>map2</title>
+<meta charset="UTF-8">
 <!-- bootstrap -->
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -135,7 +136,7 @@
 
 		<!-- 아이콘 패널(우측) -->
 		<div class="icon-panel">
-			<div class="icon" @click="getInfo('날씨')">🌤️</div>
+			<div class="icon" @click="getInfo('선박 정보')">🚤</div>
 			<div class="icon" @click="getInfo('온도')">🌡️</div>
 			<div class="icon" @click="getInfo('배터리')">🔋</div>
 			<div class="icon" @click="getInfo('통신 상태')">📶</div>
@@ -154,7 +155,7 @@
 				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
 			</div>
 
-			<button class="startSail-btn" @click="toggleSailStart">항해 시작</button>
+			<button class="startSail-btn" @click="toggleSailStart" :disabled="sailStatus === 1">항해 시작</button>
 			<button class="destination-btn" @click="endSail">항해 완료</button>
 
 		</div>
@@ -171,13 +172,17 @@
 	<!-- 자동/수동, 운항중 상태 표시 패널 -->
 	<div class="status-overlay">
 		<div class="status-btn">
-			<button class="autoSift-btn" id="autoSift-btn" @click="toggleAutopilot"></button>
+			<button class="autoSift-btn" id="autoSift-btn" @click="toggleAutopilot()">auto "on"</button>
 			<img class="nowSail-btn"
-				:style="{ opacity: sailStatus === 0 ? 0.5 : 1 }"
 				src="<%=request.getContextPath()%>/resources/img/stop.png"
 				alt="STOP">
 		</div>
 	</div>
+
+	<% 
+		Ship nowShip = (Ship)session.getAttribute("nowShip");
+		char sailStatus = (nowShip != null) ? nowShip.getSailStatus() : '0'; 
+	%>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
 	<!-- GSAP Scripts -->
@@ -192,7 +197,8 @@
 	        return {
 	            map: null,    // Google Maps 객체를 저장할 변수
 	            marker: null, // 사용자 마커 객체를 저장할 변수
-	            flightPlanCoordinates: [] // Polyline 데이터를 저장할 곳
+	            flightPlanCoordinates: [], // Polyline 데이터를 저장할 곳
+	            sailStatus: '<%= String.valueOf(sailStatus) %>'
 	        };
 	    },
 	    mounted() {
@@ -201,6 +207,7 @@
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
+	        console.log(this.sailStatus);
 	    },
 	    methods: {
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
@@ -377,8 +384,6 @@
 	        	axios.get("http://localhost:8085/controller/sail/endSail")
 	        	.then(response => {
 	                console.log("Sail ended successfully.", response.data);
-	                // 페이지 이동
-	                window.location.href = "http://localhost:8085/controller/main";
 	            })
 	            .catch(error => {
 	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
@@ -491,7 +496,10 @@
 	        	
 	        	var btn = document.getElementById("autoSift-btn");
 	        	console.log(btn.textContent);
-	        	btn.textContent = btn.textContent === '자율 운항 off' ? '자율 운항 on' : '자율 운항 off';
+	        	btn.textContent = btn.textContent === 'auto "on"' ? 'auto "off"' : 'auto "on"';
+	        	if(btn.textContent === 'auto "off"'){
+	        		btn.style.opacity = 0.7;
+	        	}
 	        }
 	    }
 	});

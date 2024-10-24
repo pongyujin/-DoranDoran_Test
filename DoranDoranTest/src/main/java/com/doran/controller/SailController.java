@@ -146,7 +146,7 @@ public class SailController {
 		sailingStarted = true;
 		weatherController.startSail(); // (WeatherController에서)
 		Sail sail = (Sail)session.getAttribute("nowSail");
-		shipController.sailStatus(sail, session);
+		shipController.startStatus(sail, session);
 	}
 
 	@GetMapping("/endSail")
@@ -155,7 +155,7 @@ public class SailController {
 		sailingStarted = false;
 		weatherController.endSail(); // 항해 중단 알림
 		Sail sail = (Sail)session.getAttribute("nowSail");
-		shipController.sailStatus(sail, session);
+		shipController.endStatus(sail, session);
 		session.removeAttribute("nowSail"); // 항해 세션 삭제
 	}
 	
@@ -219,7 +219,7 @@ public class SailController {
 
 	// 3. 구글 장소 ID 반환 메서드
 	public String placeId(String address) throws UnsupportedEncodingException {
-
+		System.out.println(address);
 		// Places API 호출 URL 생성
 		String apiUrl = UriComponentsBuilder
 				.fromHttpUrl("https://maps.googleapis.com/maps/api/place/findplacefromtext/json")

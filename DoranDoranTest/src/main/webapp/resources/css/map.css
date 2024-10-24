@@ -343,11 +343,11 @@ body {
 /* 자동/수동, 운항중 상태 표시 패널 --------------------------------------------------------------------*/
 .status-overlay {
     position: fixed; 
-    top: 3%; 
+    top: 75%; 
     right: 5%; 
     background-color: rgba(255, 255, 255, 0.8);
-    width: 150px; 
-    height: 150px; 
+    width: 165px; 
+    height: 170px; 
     border-radius: 50%; 
     display: flex;
     flex-direction: column; 
@@ -382,7 +382,7 @@ body {
     font-size: 14px;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
+    margin-bottom: 5px; /* 버튼 간격 설정 */
     width: 60%; /* 버튼을 overlay의 너비에 맞춤 */
     height: auto; /* 버튼의 높이를 자동으로 설정 */
     opacity: 0.5px;

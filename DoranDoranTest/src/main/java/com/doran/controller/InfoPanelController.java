@@ -1,6 +1,9 @@
 package com.doran.controller;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,24 +14,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.doran.entity.Gps;
+import com.doran.entity.Ship;
 
 @Controller
 public class InfoPanelController {
 	
 	@Autowired
 	private WeatherController weatherController;
-
+	
 	// 1. infoTitle에 따라 정보받아오는 함수 실행
 	@GetMapping(value = "/getInfo", produces = "application/json;charset=UTF-8")
 	@ResponseBody
-	public String getInfo(@RequestParam String infoTitle) {
+	public String getInfo(@RequestParam String infoTitle, HttpSession session) {
 
 		String result = "";
 
 		switch (infoTitle) {
-		case "날씨":
-			result = weather();
+		case "선박 정보":
+			result = shipInfo(session);
 			break;
 		case "온도":
 			result = temperature();
@@ -49,7 +52,7 @@ public class InfoPanelController {
 			result = remainDistance();
 			break;
 		case "현재 위치":
-			result = location();
+			result = getLatestGpsLocation();
 			break;
 		case "방위":
 			result = direction();
@@ -64,11 +67,23 @@ public class InfoPanelController {
 		return result;
 	}
 
-	// 2. 날씨
-	public String weather() {
+	// 1. 전역 변수로 GPS 데이터를 저장할 수 있는 맵
+    private Map<String, Object> latestGpsData = new HashMap<>();
+	
+	// ------------------------------------------------------------------------//	
+
+	// 2. 선박 정보
+	public String shipInfo(HttpSession session) {
 		
-		String weather = "12 kn, SW(241°), 23°C";
-		return weather;
+		Ship ship = (Ship)session.getAttribute("nowShip");
+
+		if(ship!=null) {
+			String shipInfo= "선박 코드 [ " + ship.getSiCode() + " ]";
+			return shipInfo;
+		}else {
+			return "현재 선박 정보가 없습니다";
+		}
+		
 	}
 
 	// 3. 온도
@@ -123,6 +138,10 @@ public class InfoPanelController {
 	@RequestMapping(value = "/gps-data", method = RequestMethod.POST)
     @ResponseBody
     public String receiveGpsData(@RequestBody Map<String, Object> data) {
+		
+		// GPS 데이터를 최신 상태로 저장
+        latestGpsData.putAll(data);
+        
         // 개별 값 출력
         double latitude = (double) data.get("latitude"); // 위도
         double longitude = (double) data.get("longitude"); // 경도
@@ -133,6 +152,18 @@ public class InfoPanelController {
         String location = "위도: " + latitude + ", 경도: " + longitude;
 
         return location;
+    }
+	
+	// 최신 GPS 데이터를 반환하는 메서드
+    public String getLatestGpsLocation() {
+        if (latestGpsData.isEmpty()) {
+            return "GPS 데이터가 없습니다.";
+        }
+
+        double latitude = (double) latestGpsData.get("latitude");
+        double longitude = (double) latestGpsData.get("longitude");
+
+        return "위도: " + latitude + ", 경도: " + longitude;
     }
 
 	// 10. 방위
