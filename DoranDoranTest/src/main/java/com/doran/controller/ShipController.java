@@ -89,10 +89,14 @@ public class ShipController {
 		shipMapper.approveShip(ship);
 	}
 	
-	// 4. 선박 운항 상태 변경
-	@PutMapping("/sailStatus")
-	public void sailStatus(Sail sail, HttpSession session) {
-
+	// 4. 선박 세션 저장
+	@PostMapping("/setShipSession")
+	public @ResponseBody void sailStatus(@RequestBody Ship ship, HttpSession session) {
+		
+		Member user = (Member)session.getAttribute("user");
+		ship.setMemId(user.getMemId());
+		ship = getShip(ship);
+		session.setAttribute("nowShip", ship);
 	}
 	
 	// 4-1. 선박 운항 시작

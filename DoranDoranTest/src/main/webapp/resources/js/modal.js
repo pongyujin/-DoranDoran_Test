@@ -58,7 +58,7 @@ function loadShipList() {
                     <p>선박번호: ${ship.siCode}</p>
                     <p>선박명: ${ship.siName}</p>
                     <button onclick="openGroupInfo('${ship.siCode}')">그룹 정보</button>
-                    <button onclick="goToStatisticsPage('${ship.siCode}')">관제 화면</button>
+                    <button onclick="goToControllerPage('${ship.siCode}')">관제 화면</button>
   					<button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
                 `;
 				shipListElement.appendChild(listItem);
@@ -115,6 +115,25 @@ document.getElementById('closeSailListModal').onclick = function() {
 // 통계 페이지 이동
 function goToStatisticsPage(siCode) {
     window.location.href = `/controller/statistics?siCode=${siCode}`;  // 권한 확인 없이 바로 이동
+}
+
+// 관제 페이지 이동
+function goToControllerPage(siCode) {
+    
+    $.ajax({
+        url: '/controller/setShipSession', 
+        type: 'POST',
+        contentType: 'application/json', // JSON 형식으로 전송
+        data: JSON.stringify({ siCode: siCode }), // JSON 형태로 변환하여 전송
+        success: function(response) {
+            console.log('Success:', response);
+
+            window.location.href = `/controller/map2`;
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error:', textStatus, errorThrown); 
+        }
+    });
 }
 
 
