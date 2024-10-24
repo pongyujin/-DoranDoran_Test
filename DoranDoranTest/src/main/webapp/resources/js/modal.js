@@ -72,10 +72,7 @@ function loadShipList() {
 
 // ------------------------------------- shipgroup 가져오기 
 
-// 전역 변수로 선택된 siCode를 저장 (중복 선언 방지)
-if (typeof selectedSiCode === 'undefined') {
-    var selectedSiCode = null;
-}
+
 
 // 그룹 정보를 로드하고 siCode 설정
 function loadGroupInfo(siCode) {
@@ -116,68 +113,68 @@ function loadGroupInfo(siCode) {
 
 
 function inviteMember() {
-	if (!selectedSiCode) {
-		alert('선박이 선택되지 않았습니다.');
-		return;
-	}
+    if (!selectedSiCode) {
+        alert('선박이 선택되지 않았습니다.');
+        return;
+    }
 
-	var memberId = document.getElementById('invitememID').value;  // 초대할 사용자 ID 또는 이메일
-	var authNum = document.querySelector('.invite-section select').value;  // 선택된 권한 번호
+    var memberId = document.getElementById('invitememID').value;  // 초대할 사용자 ID 또는 이메일
+    var authNum = parseInt(document.querySelector('.invite-section select').value, 10);  // 선택된 권한 번호를 정수로 변환
 
-	console.log("초대할 사용자 ID:", memberId);
-	console.log("선택된 권한 번호:", authNum);
-	console.log("초대할 선박 코드:", selectedSiCode);
+    console.log("초대할 사용자 ID:", memberId);
+    console.log("선택된 권한 번호 (전송 전):", authNum);
+    console.log("초대할 선박 코드:", selectedSiCode);
 
-	if (!memberId) {
-		alert('초대할 사용자 ID 또는 이메일을 입력해주세요.');
-		return;
-	}
+    if (!memberId) {
+        alert('초대할 사용자 ID 또는 이메일을 입력해주세요.');
+        return;
+    }
 
-	// 소유자 여부 확인
-	$.ajax({
-		url: 'checkOwnership',
-		type: 'POST',
-		contentType: 'application/json',
-		data: JSON.stringify({ siCode: selectedSiCode }),
-		success: function(isOwner) {
-			console.log("소유자 여부:", isOwner);
+    // 소유자 여부 확인
+    $.ajax({
+        url: 'checkOwnership',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ siCode: selectedSiCode }),
+        success: function(isOwner) {
+            console.log("소유자 여부:", isOwner);
 
-			if (isOwner) {
-				authNum = 0;  // 소유자일 경우 관리자 권한 설정
-			}
+            // 여기에서 authNum을 변경하지 않고 그대로 유지
+            // 소유자인 경우에도 authNum을 변경하지 않음
+            console.log("최종 전송 권한 번호:", authNum);
 
-			// 초대 요청
-			$.ajax({
-				url: 'groupinvite',
-				type: 'POST',
-				contentType: 'application/json',
-				data: JSON.stringify({
-					memId: memberId,
-					siCode: selectedSiCode,
-					authNum: authNum  // 권한 번호
-				}),
-				success: function(response) {
-					console.log('초대 성공:');
-					alert('초대 성공:');  // 서버에서 반환된 메시지를 출력
-					loadGroupInfo(selectedSiCode);  // 그룹 정보를 다시 로드
-				},
-				error: function(xhr, status, error) {
-					if (xhr.status === 409) {
-						alert('해당 사용자는 이미 그룹에 속해 있습니다.');
-					} else {
-						console.error('초대 실패:');
-						alert('사용자가 없습니다.');
-					}
-				}
-			});
-
-		},
-		error: function(xhr, status, error) {
-			console.error('소유자 확인 실패:', error);
-			alert('소유자 확인 실패');
-		}
-	});
+            // 초대 요청
+            $.ajax({
+                url: 'groupinvite',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    memId: memberId,
+                    siCode: selectedSiCode,
+                    authNum: authNum  // 선택된 권한 번호 그대로 전송
+                }),
+                success: function(response) {
+                    console.log('초대 성공:');
+                    alert('초대 성공:');  // 서버에서 반환된 메시지를 출력
+                    loadGroupInfo(selectedSiCode);  // 그룹 정보를 다시 로드
+                },
+                error: function(xhr, status, error) {
+                    if (xhr.status === 409) {
+                        alert('해당 사용자는 이미 그룹에 속해 있습니다.');
+                    } else {
+                        console.error('초대 실패:');
+                        alert('사용자가 없습니다.');
+                    }
+                }
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('소유자 확인 실패:', error);
+            alert('소유자 확인 실패');
+        }
+    });
 }
+
 
 // 권한 수정 메서드
 function updateMemberRole(memberId, newRole) {
