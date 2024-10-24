@@ -2,12 +2,18 @@ package com.doran.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -94,5 +100,29 @@ public class ShipController {
 		
 		ship.setSailStatus(ship.getSailStatus() == '0' ? '1' : '0');
 		int cnt = shipMapper.sailStatus(ship);
+		
+		// session 저장
+		ship = getShip(ship);
+		session.setAttribute("nowShip", ship);
 	}
+	
+	// 5. 선박 정보 불러오기
+	public Ship getShip(Ship ship) {
+		
+		ship = shipMapper.getShip(ship);
+		return ship;
+	}
+	
+	// 6. 세션에서 운항상태 불러오기
+	@GetMapping("/sailStatus")
+    public ResponseEntity<Map<String, Object>> getSailStatus(HttpSession session) {
+		
+        Ship nowShip = (Ship) session.getAttribute("nowShip");
+        if (nowShip != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("sailStatus", nowShip.getSailStatus());
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap("error", "Ship not found"));
+    }
 }

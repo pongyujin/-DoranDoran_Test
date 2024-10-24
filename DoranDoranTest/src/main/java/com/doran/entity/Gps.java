@@ -18,7 +18,7 @@ public class Gps {
     private double gpsLat; // 위도
     private double gpsLng; // 경도
     private double gpsSpeed; // 속도
-    private String gpsDir; // 방향
+    private double gpsDir; // 방향
     private String gpsTime; // 등록 시간
     private int sailNum; // 항해 번호
 }
