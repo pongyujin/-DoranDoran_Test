@@ -72,43 +72,48 @@ function loadShipList() {
 
 // ------------------------------------- shipgroup 가져오기 
 
-// 전역 변수로 선택된 siCode를 저장
-let selectedSiCode = null;
+// 전역 변수로 선택된 siCode를 저장 (중복 선언 방지)
+if (typeof selectedSiCode === 'undefined') {
+    var selectedSiCode = null;
+}
 
 // 그룹 정보를 로드하고 siCode 설정
 function loadGroupInfo(siCode) {
-	selectedSiCode = siCode;  // 선택된 siCode를 전역 변수에 저장
-	console.log("선택된 선박 코드: ", selectedSiCode);
+    selectedSiCode = siCode;  // 선택된 siCode를 전역 변수에 저장
+    console.log("선택된 선박 코드: ", selectedSiCode);
 
-	// AJAX 요청을 통해 그룹 멤버 리스트 불러오기
-	$.ajax({
-		url: 'grouplist',  // 서버 API 경로
-		type: 'GET',
-		data: { siCode: siCode },  // 선택된 선박의 siCode 전달
-		dataType: 'json',
-		success: function(data) {
-			const userListElement = document.querySelector('.user-list');
-			userListElement.innerHTML = '';  // 기존 리스트 초기화
+    // AJAX 요청을 통해 그룹 멤버 리스트 불러오기
+    $.ajax({
+        url: 'grouplist',  // 서버 API 경로
+        type: 'GET',
+        data: { siCode: siCode },  // 선택된 선박의 siCode 전달
+        dataType: 'json',
+        success: function(data) {
+            const userListElement = document.querySelector('.user-list');
+            userListElement.innerHTML = '';  // 기존 리스트 초기화
 
-			// 그룹 멤버 리스트 동적으로 추가
-			data.forEach(function(member) {
-				const listItem = document.createElement('li');
-				listItem.innerHTML = `
+            // 그룹 멤버 리스트 동적으로 추가
+            data.forEach(function(member) {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `
                     <span>${member.memId}</span>
-                    <select>
-                        <option value="관리자" ${member.authNum === 1 ? 'selected' : ''}>관리자</option>
-                        <option value="관제보기전용" ${member.authNum === 2 ? 'selected' : ''}>관제페이지허용</option>
-                        <option value="통계이용" ${member.authNum === 3 ? 'selected' : ''}>통계페이지보기</option>
+                    <select onchange="updateMemberRole('${member.memId}', this.value)">
+                        <option value="1" ${member.authNum == 1 ? 'selected' : ''}>VIEWER</option>
+                        <option value="2" ${member.authNum == 2 ? 'selected' : ''}>CONTROLLER</option>
+                        <option value="3" ${member.authNum == 3 ? 'selected' : ''}>EDITOR</option>
+                        <option value="0" ${member.authNum == 0 ? 'selected' : ''}>ADMIN</option>
                     </select>
+                    <button onclick="deleteMember('${member.memId}')">삭제</button>
                 `;
-				userListElement.appendChild(listItem);
-			});
-		},
-		error: function(xhr, status, error) {
-			console.error('그룹 리스트 불러오기 실패:', error);
-		}
-	});
+                userListElement.appendChild(listItem);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('그룹 리스트 불러오기 실패:', error);
+        }
+    });
 }
+
 
 function inviteMember() {
 	if (!selectedSiCode) {
@@ -173,3 +178,59 @@ function inviteMember() {
 		}
 	});
 }
+
+// 권한 수정 메서드
+function updateMemberRole(memberId, newRole) {
+    if (!selectedSiCode) {
+        alert('선박이 선택되지 않았습니다.');
+        return;
+    }
+
+    // 권한 수정 요청
+    $.ajax({
+        url: 'groupupdate',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            memId: memberId,
+            siCode: selectedSiCode,
+            authNum: newRole  // 새로 선택된 권한 번호
+        }),
+        success: function(response) {
+            alert('권한이 성공적으로 수정되었습니다.');
+            loadGroupInfo(selectedSiCode);  // 수정 후 그룹 정보 다시 로드
+        },
+        error: function(xhr, status, error) {
+            console.error('권한 수정 실패:', error);
+            alert('권한 수정 실패');
+        }
+    });
+}
+
+// 그룹 삭제 메서드
+function deleteMember(memberId) {
+    if (!selectedSiCode) {
+        alert('선박이 선택되지 않았습니다.');
+        return;
+    }
+
+    // 사용자 삭제 요청
+    $.ajax({
+        url: 'groupdelete',
+        type: 'DELETE',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            memId: memberId,
+            siCode: selectedSiCode
+        }),
+        success: function(response) {
+            alert('사용자가 성공적으로 삭제되었습니다.');
+            loadGroupInfo(selectedSiCode);  // 삭제 후 그룹 정보 다시 로드
+        },
+        error: function(xhr, status, error) {
+            console.error('사용자 삭제 실패:', error);
+            alert('사용자 삭제 실패');
+        }
+    });
+}
+

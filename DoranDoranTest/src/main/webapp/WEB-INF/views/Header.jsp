@@ -3,9 +3,9 @@
 <% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); %>
 <% response.setHeader("Pragma", "no-cache"); %>
 <% response.setDateHeader("Expires", 0); %>
-<script src="<%=request.getContextPath()%>/resources/js/modal.js"></script>
 <!DOCTYPE html>
 <html>
+<script src="<%=request.getContextPath()%>/resources/js/modal.js"></script>
 <head>
     <style>
         body {
