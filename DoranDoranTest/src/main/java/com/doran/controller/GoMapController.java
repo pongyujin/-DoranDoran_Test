@@ -7,12 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class GoMapController {
 
-	// map.jsp 이동
-	@RequestMapping("/map")
-	public String showMap() {
-		return "Controller2";
-	}
-
 	// Controller.jsp 이동
 	@RequestMapping("/map2")
 	public String showController() {

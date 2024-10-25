@@ -28,7 +28,7 @@
 	href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
 	rel="stylesheet">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/resources/css/map2.css">
+	href="${pageContext.request.contextPath}/resources/css/map.css">
 </head>
 <body>
 	<div id="app">
@@ -66,12 +66,15 @@
 				<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4">
 					Sail Start</h3>
 
-				<button class="sail-close-btn" @click="closeSailModal">✖</button>
+				<button class="sail-close-btn" @click="closeSailModal" style="display:none;">✖</button>
 
-				<div>
-					<button type="submit" id="reset"
+				<div class="wayPoint">
+
+					<!-- 여기에 지도 추가 -->
+					<div id="sailModalMap" style="width: 100%; height: 300px; z-index:1000000"></div>
+					<button type="submit" id="addWaypoint"
 						class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
-						style="margin: 16px 0px 0px">경유지 추가</button>
+						style="margin: 16px 32px;">경유지 추가</button>
 				</div>
 
 				<div class="sailContainer form-floating mb-3">
@@ -99,7 +102,7 @@
 								<td colspan="2">
 									<button type="submit" id="reset"
 										class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
-										style="margin: 16px 0px 0px">항해 시작</button>
+										style="margin: 8px 0px">항해 시작</button>
 								</td>
 							</tr>
 						</table>
@@ -222,15 +225,14 @@
 
 					<p id="siName">${sessionScope.nowShip.siName}</p>
 
-					<p id="siCert">
-						인증 여부 :  ${sessionScope.nowShip.siCert == '1' ? '인증 승인 완료' : '인증 미승인'}
+					<p id="siCert">인증 여부 : ${sessionScope.nowShip.siCert == '1' ? '인증 승인 완료' : '인증 미승인'}
 					</p>
-					<p id="sailStatus">
-						운항 상태 :  ${sessionScope.nowShip.sailStatus == '1' ? '운항중' : '정박중'}
+					<p id="sailStatus">운항 상태 : ${sessionScope.nowShip.sailStatus == '1' ? '운항중' : '정박중'}
 					</p>
 
 					<h2>자율운항 이용약관</h2>
-					<ol style="margin-left: 20px; list-style-position: inside; list-style: numeric;">
+					<ol
+						style="margin-left: 20px; list-style-position: inside; list-style: numeric;">
 						<li>자율운항선박 운항해역의 지정·변경·해제(안 제2조) 해수부장관은 자율운항선박 운항해역 지정·변경·해제
 							절차 등 규정</li>
 						<li>자율운항선박 및 기자재 안전성 평가(안 제3조) 안전성 평가의 신청, 심사·평가 및 활용에 관한 사항
@@ -267,7 +269,11 @@
 	            map: null,    // Google Maps 객체를 저장할 변수
 	            marker: null, // 사용자 마커 객체를 저장할 변수
 	            flightPlanCoordinates: [], // Polyline 데이터를 저장할 곳
-	            sailStatus: '<%=String.valueOf(sailStatus)%>'
+	            sailStatus: '<%=String.valueOf(sailStatus)%>',
+	            
+	            sailMap: null, // sailModal에 들어갈 지도
+	            sailMarkers: [], // sailModal에서 표시된 마커들
+	            currentPositionMarker: null // 사용자 현재 위치 마커
 	        };
 	    },
 	    mounted() {
@@ -276,7 +282,8 @@
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
-	        console.log(this.sailStatus);
+	        
+	        this.initSailMap(); // 경유지 추가 지도 표시
 	    },
 	    methods: {
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
@@ -346,6 +353,25 @@
 	            flightPath.setMap(this.map);
 
 	        },
+	        initSailMap() { // 2-1. sailModal에 지도를 띄우는 새로운 로직
+	            
+	            this.sailMap = new google.maps.Map(document.getElementById('sailModalMap'), {
+	                center: { lat: 34.500000, lng: 128.730000 }, // 초기 중심 좌표 설정
+	                zoom: 13,
+	            });
+
+	            // sailModal 지도를 클릭할 때마다 마커를 추가하는 기능
+	            this.sailMap.addListener('click', (event) => {
+	                const position = { lat: event.latLng.lat(), lng: event.latLng.lng() };
+	                const marker = new google.maps.Marker({
+	                    position,
+	                    map: this.sailMap,
+	                });
+
+	                // 추가된 마커를 배열에 저장
+	                this.sailMarkers.push(marker);
+	            });
+	        },
 	        async updateLocation() { // 3. 사용자 현재 위치 표시(Google geolocation api)
 	            // 위치 업데이트를 위한 함수
 	            const updatePosition = () => {
@@ -387,6 +413,21 @@
 
 	            // 위치 업데이트 간격 설정(100초 간격)
 	            setInterval(updatePosition, 100000);
+	        },
+	        sendWaypoints() { // 3-1. sailMarkers에 저장된 좌표 정보를 Controller로 전송
+	            
+	            const waypoints = this.sailMarkers.map(marker => ({
+	                lat: marker.getPosition().lat(),
+	                lng: marker.getPosition().lng(),
+	            }));
+
+	            axios.post("/controller/saveWaypoints", waypoints)
+	                .then(response => {
+	                    console.log("Waypoints saved successfully:", response.data);
+	                })
+	                .catch(error => {
+	                    console.error("Error saving waypoints:", error);
+	                });
 	        },
 	        initSpeedControls() { // 4. 속도 조절 함수
 	            // 속도 조절 기능 초기화
@@ -582,13 +623,14 @@
 		el: '#shipModal',
 		data(){
 			return{
+				
 				sailStatus: '<%=String.valueOf(sailStatus)%>'
 			};
 		}, mounted(){
 			
 			// 이전 페이지가 main인지 확인
 	        if (document.referrer === "http://localhost:8085/controller/main") {
-	            this.toggleShipModal();
+	        	this.toggleShipModal();
 	        }
 		},
 		methods: {
@@ -614,6 +656,9 @@
 	        	if (event.target === event.currentTarget) {
 	                modal.style.display = "none";
 	            }
+	        }, goMain(){ // 3. 메인으로 이동
+	        	window.location.href = "http://localhost:8085/controller/main"; // 특정 페이지로 이동
+	        	
 	        }
 		}
 	});
