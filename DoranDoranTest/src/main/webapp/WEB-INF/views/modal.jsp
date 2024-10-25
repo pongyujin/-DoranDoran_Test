@@ -171,7 +171,7 @@
 			onsubmit="return validateForm();">
 			<input type="text" id="memId" name="memId"
 				value="${sessionScope.user.memId}" required readonly> <input
-				type="password" id="pwCheck" name="pwCheck" placeholder="Password"
+				type="password" id="pwCheck" name="pwCheck" placeholder="Current Password"
 				required> <input type="password" id="memPw" name="memPw"
 				placeholder="New Password" required onkeyup="passwordCheck();">
 			<input type="password" id="memPw2" name="memPw2"
@@ -438,4 +438,19 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .user-list li select:hover {
 	background-color: #34495E;
 }
+.edit-button {
+		display: block;
+		margin: 20px auto 0;
+		padding: 10px;
+		width: 150px;
+		background-color: #1C2933;
+		border: none;
+		color: white;
+		font-size: 16px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	.edit-button:hover {
+		background-color: #17293A;
+	}
 </style>

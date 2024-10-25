@@ -52,39 +52,40 @@
         }
 
         .menu {
-            display: none;
-            position: absolute;
-            top: 60px;
-            left: calc(100% - 220px);
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            width: 220px;
-            z-index: 1001;
-            max-height: 400px;
-            overflow-y: auto;
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: calc(100% - 220px);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    width: 220px;
+    z-index: 1001;
+    max-height: 400px;
+    overflow-y: auto;
+    /* 중앙 정렬 해제 및 왼쪽 정렬 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 리스트 항목 왼쪽 정렬 */
+    justify-content: flex-start;
+}
 
-            /* 메뉴 전체를 수직 정렬 */
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* 메뉴 아이템들을 왼쪽 정렬 */
-            justify-content: center;
-        }
+.menu a {
+    display: flex;
+    justify-content: flex-start; /* 기존 중앙 정렬에서 왼쪽 정렬로 변경 */
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    padding: 10px 10px;
+    font-size: 14px;
+    width: 100%;
+    transition: background-color 0.3s;
+    list-style-type: none;
+    border-left: none !important;
+    box-sizing: border-box;
+    text-align: left; /* 텍스트 왼쪽 정렬 */
+}
 
-        .menu a {
-            display: flex;
-            justify-content: flex-start; /* 가로 왼쪽 정렬 */
-            align-items: center; /* 세로 가운데 정렬 */
-            text-decoration: none;
-            color: black;
-            padding: 3px 10px;
-            font-size: 12px;
-            width: 100%; /* a 태그를 메뉴 너비에 맞춤 */
-            transition: background-color 0.3s;
-            list-style-type: none;
-            border-left: none !important;
-            box-sizing: border-box;
-        }
 
         .menu a::before, .menu a::after {
             content: none !important; /* 가상 요소 제거 */
@@ -102,6 +103,8 @@
             height: 20px;
             margin-right: 8px;
         }
+   
+        
     </style>
 </head>
 <body>
