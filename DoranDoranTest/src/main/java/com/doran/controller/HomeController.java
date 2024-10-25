@@ -37,6 +37,14 @@ public class HomeController {
 		model.addAttribute("googleClientId", googleClientId);
 		return "Main";
 
+	}	// 메인 페이지 이동
+	@GetMapping("/main2")
+	public String showMainPage2(Model model) {
+		System.out.println("야옹"+googleClientId);
+		
+		model.addAttribute("googleClientId", googleClientId);
+		return "Main2";
+
 	}
 
 	// Manager 관리자 페이지 추가
