@@ -14,3 +14,4 @@ DoranDoranTest/target/m2e-wtp/web-resources/META-INF/maven/com.doran/controller/
 *.log
 *.pt
 .env
+env.properties
