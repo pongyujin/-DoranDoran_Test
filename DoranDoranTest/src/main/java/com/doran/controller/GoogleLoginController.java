@@ -29,7 +29,7 @@ public class GoogleLoginController {
     @Value("${GOOGLE_REDIRECT_URI}")
     private String googleRedirectUri;
 
-    @GetMapping("/main/google-callback")
+    @GetMapping("/main2/google-callback")
     public String googleCallback(@RequestParam("code") String code, RedirectAttributes rttr, HttpSession session) {
         String googleTokenUrl = "https://oauth2.googleapis.com/token";
 
