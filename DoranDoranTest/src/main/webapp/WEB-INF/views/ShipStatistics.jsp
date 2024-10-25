@@ -428,6 +428,7 @@ body, html {
     mounted() {
       this.getSiCodeFromURL(); // URL에서 siCode 가져오기
       this.loadShipStats(); // siCode로 데이터를 로드
+      
       window.initMap = this.initMap; // Vue의 this.initMap을 전역으로 설정
     }
   });

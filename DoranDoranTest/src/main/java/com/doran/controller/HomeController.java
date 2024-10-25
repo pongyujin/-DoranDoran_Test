@@ -1,5 +1,6 @@
 package com.doran.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
+	
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String googleClientId;
 	
 
 	// 기본 홈 페이지
@@ -27,7 +31,10 @@ public class HomeController {
 
 	// 메인 페이지 이동
 	@GetMapping("/main")
-	public String showMainPage() {
+	public String showMainPage(Model model) {
+		System.out.println("야옹"+googleClientId);
+		
+		model.addAttribute("googleClientId", googleClientId);
 		return "Main";
 
 	}

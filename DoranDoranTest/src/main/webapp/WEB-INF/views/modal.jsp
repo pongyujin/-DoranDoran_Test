@@ -1,3 +1,4 @@
+<%@page import="org.apache.ibatis.reflection.SystemMetaObject"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page pageEncoding="UTF-8"%>
 
@@ -89,18 +90,39 @@
 			<button type="submit" class="join-button">Login</button>
 		</form>
 		<div class="social-login">
-			<a href="https://accounts.google.com/signin/oauth"
-				class="social-btn google"> <img
-				src="<%=request.getContextPath()%>/resources/img/google_logo.png"
-				alt="Google" />
-			</a> <a href="https://nid.naver.com/oauth2.0/authorize"
-				class="social-btn naver"> <img
-				src="<%=request.getContextPath()%>/resources/img/naver_logo.png"
-				alt="Naver" />
-			</a> <a href="https://kauth.kakao.com/oauth/authorize"
-				class="social-btn kakao"> <img
-				src="<%=request.getContextPath()%>/resources/img/kakao_logo.png"
-				alt="Kakao" />
+			<div class="social-login">
+				<%
+				String googleClientId = (String) request.getAttribute("googleClientId");
+				%>
+				<%
+				System.out.println(googleClientId);
+				%>
+
+				<a
+					href="https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=http://localhost:8085/controller/main/google-callback/&response_type=code&scope=email profile"
+					class="social-btn google"> <img
+					src="<%=request.getContextPath()%>/resources/img/google_logo.png"
+					alt="Google" />
+				</a>
+
+
+				<!-- Naver Login -->
+				<a
+					href="https://nid.naver.com/oauth2.0/authorize?client_id=<%=System.getenv("NAVER_CLIENT_ID")%>&redirect_uri=http://localhost:8085/controller/main/naver&response_type=code&state=STATE_STRING"
+					class="social-btn naver"> <img
+					src="<%=request.getContextPath()%>/resources/img/naver_logo.png"
+					alt="Naver" />
+				</a>
+
+				<!-- Kakao Login -->
+				<a
+					href="https://kauth.kakao.com/oauth/authorize?client_id=<%=System.getenv("KAKAO_REST_API_KEY")%>&redirect_uri=http://localhost:8085/controller/main/kakao&response_type=code"
+					class="social-btn kakao"> <img
+					src="<%=request.getContextPath()%>/resources/img/kakao_logo.png"
+					alt="Kakao" />
+				</a>
+			</div>
+
 			</a>
 		</div>
 	</div>
@@ -208,13 +230,13 @@
 
 <!-- 항해 리스트 모달 -->
 <div id="sailListModal" class="modal">
-    <span class="close" id="closeSailListModal">&times;</span>
-    <h2>항해 리스트</h2>
-    <div class="modal-content">
-        <ul id="sailList">
-            <!-- AJAX로 받아온 항해 리스트가 이곳에 표시됩니다. -->
-        </ul>
-    </div>
+	<span class="close" id="closeSailListModal">&times;</span>
+	<h2>항해 리스트</h2>
+	<div class="modal-content">
+		<ul id="sailList">
+			<!-- AJAX로 받아온 항해 리스트가 이곳에 표시됩니다. -->
+		</ul>
+	</div>
 </div>
 
 
