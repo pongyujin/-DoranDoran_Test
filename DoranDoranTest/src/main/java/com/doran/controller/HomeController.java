@@ -9,10 +9,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
-	
-    @Value("${GOOGLE_CLIENT_ID}")
-    private String googleClientId;
-	
+	// Client ID를 환경 변수에서 가져옵니다.
+	@Value("${GOOGLE_CLIENT_ID}")
+	private String googleClientId;
+
+	@Value("${KAKAO_CLIENT_ID}")
+	private String kakaoClientId;
+
+	@Value("${NAVER_CLIENT_ID}")
+	private String naverClientId;
 
 	// 기본 홈 페이지
 	@RequestMapping("/")
@@ -23,26 +28,33 @@ public class HomeController {
 	// 통계 페이지로 이동 (권한 확인 불필요)
 	@GetMapping("/statistics")
 	public String showStatisticsPage(@RequestParam String siCode, Model model) {
-	    // siCode를 전달하여 통계 페이지에서 사용할 수 있도록 설정
-	    model.addAttribute("siCode", siCode);
+		// siCode를 전달하여 통계 페이지에서 사용할 수 있도록 설정
+		model.addAttribute("siCode", siCode);
 
-	    return "ShipStatistics"; // ShipStatistics.jsp로 이동
+		return "ShipStatistics"; // ShipStatistics.jsp로 이동
 	}
 
 	// 메인 페이지 이동
 	@GetMapping("/main")
 	public String showMainPage(Model model) {
-		System.out.println("야옹"+googleClientId);
-		
-		model.addAttribute("googleClientId", googleClientId);
+
 		return "Main";
 
-	}	// 메인 페이지 이동
+	}
+
+	// 메인 페이지 이동
 	@GetMapping("/main2")
 	public String showMainPage2(Model model) {
-		System.out.println("야옹"+googleClientId);
-		
+
+		// OAuth 로그인에 필요한 Client ID를 모델에 추가하여 JSP로 전달
 		model.addAttribute("googleClientId", googleClientId);
+		model.addAttribute("kakaoClientId", kakaoClientId);
+		model.addAttribute("naverClientId", naverClientId);
+		
+		System.out.println("googleCientID" + googleClientId);
+		System.out.println("kakaoClientId" + kakaoClientId);
+		System.out.println("naverClientId" + naverClientId);
+
 		return "Main2";
 
 	}
@@ -52,7 +64,7 @@ public class HomeController {
 	public String showManagerPage() {
 		return "Manager";
 	}
-	
+
 	// motorControlTest.jsp 이동 (수동제어 테스트용입니당)
 	@GetMapping("/motorControlTest")
 	public String motorControlTestPage() {

@@ -5,7 +5,7 @@
 <% response.setDateHeader("Expires", 0); %>
 <!DOCTYPE html>
 <html>
-<script src="<%=request.getContextPath()%>/resources/js/modal.js"></script>
+<script src="<%=request.getContextPath()%>/resources/js/modal2.js"></script>
 <head>
     <style>
         body {

@@ -12,7 +12,7 @@
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-<script src="<%=request.getContextPath()%>/resources/js/modal.js"></script>
+<script src="<%=request.getContextPath()%>/resources/js/modal2.js"></script>
 
 <script type="text/javascript">
   // 3. 회원가입 실패 모달창 띄우기
@@ -91,36 +91,35 @@
 		</form>
 		<div class="social-login">
 			<div class="social-login">
-				<%
-				String googleClientId = (String) request.getAttribute("googleClientId");
-				%>
-				<%
-				System.out.println(googleClientId);
-				%>
 
+
+				<!-- Google Login -->
 				<a
-					href="https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=http://localhost:8085/controller/main/google-callback/&response_type=code&scope=email profile"
+					href="https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=http://localhost:8085/controller/main2/oauthcallback&response_type=code&scope=email profile&state=google"
 					class="social-btn google"> <img
 					src="<%=request.getContextPath()%>/resources/img/google_logo.png"
 					alt="Google" />
 				</a>
 
 
+				<!-- Kakao Login -->
+				<a
+					href="https://kauth.kakao.com/oauth/authorize?client_id=${kakaoClientId}&redirect_uri=http://localhost:8085/controller/main2/oauthcallback&response_type=code&state=kakao"
+					class="social-btn kakao"> <img
+					src="<%=request.getContextPath()%>/resources/img/kakao_logo.png"
+					alt="Kakao" />
+				</a>
+
 				<!-- Naver Login -->
 				<a
-					href="https://nid.naver.com/oauth2.0/authorize?client_id=<%=System.getenv("NAVER_CLIENT_ID")%>&redirect_uri=http://localhost:8085/controller/main/naver&response_type=code&state=STATE_STRING"
+					href="https://nid.naver.com/oauth2.0/authorize?client_id=${naverClientId}&redirect_uri=http://localhost:8085/controller/main2/oauthcallback&response_type=code&state=naver"
 					class="social-btn naver"> <img
 					src="<%=request.getContextPath()%>/resources/img/naver_logo.png"
 					alt="Naver" />
 				</a>
 
-				<!-- Kakao Login -->
-				<a
-					href="https://kauth.kakao.com/oauth/authorize?client_id=<%=System.getenv("KAKAO_REST_API_KEY")%>&redirect_uri=http://localhost:8085/controller/main/kakao&response_type=code"
-					class="social-btn kakao"> <img
-					src="<%=request.getContextPath()%>/resources/img/kakao_logo.png"
-					alt="Kakao" />
-				</a>
+
+
 			</div>
 
 			</a>
@@ -171,15 +170,15 @@
 			onsubmit="return validateForm();">
 			<input type="text" id="memId" name="memId"
 				value="${sessionScope.user.memId}" required readonly> <input
-				type="password" id="pwCheck" name="pwCheck" placeholder="Password"
-				required> <input type="password" id="memPw" name="memPw"
-				placeholder="New Password" required onkeyup="passwordCheck();">
-			<input type="password" id="memPw2" name="memPw2"
-				placeholder="Confirm New Password" required
-				onkeyup="passwordCheck();"> <span class="passMessage"></span>
-			<input type="text" id="memNick" name="memNick"
-				value="${sessionScope.user.memNick}" required> <input
-				type="email" id="memEmail" name="memEmail"
+				type="password" id="pwCheck" name="pwCheck"
+				placeholder="Current Password" required> <input
+				type="password" id="memPw" name="memPw" placeholder="New Password"
+				required onkeyup="passwordCheck();"> <input type="password"
+				id="memPw2" name="memPw2" placeholder="Confirm New Password"
+				required onkeyup="passwordCheck();"> <span
+				class="passMessage"></span> <input type="text" id="memNick"
+				name="memNick" value="${sessionScope.user.memNick}" required>
+			<input type="email" id="memEmail" name="memEmail"
 				value="${sessionScope.user.memEmail}" required> <input
 				type="text" id="memPhone" name="memPhone"
 				value="${sessionScope.user.memPhone}" required>
@@ -437,5 +436,22 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 
 .user-list li select:hover {
 	background-color: #34495E;
+}
+
+.edit-button {
+	display: block;
+	margin: 20px auto 0;
+	padding: 10px;
+	width: 150px;
+	background-color: #1C2933;
+	border: none;
+	color: white;
+	font-size: 16px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.edit-button:hover {
+	background-color: #17293A;
 }
 </style>

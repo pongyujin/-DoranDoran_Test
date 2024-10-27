@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ include file="modal.jsp"%>
-<%@ include file="Header.jsp" %>
+<%@ include file="modal2.jsp"%>
+<%@ include file="Header2.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>

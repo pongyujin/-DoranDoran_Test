@@ -23,4 +23,15 @@
 		where memId=#{memId}
 	</update>
 	
+	<!-- 구글 사용자가 이미 등록된 회원인지 이메일로 확인 -->
+    <select id="googleMemberCheck" parameterType="string" resultType="com.doran.entity.Member">
+        SELECT * FROM member WHERE memEmail = #{memEmail}
+    </select>
+
+    <!-- 구글 사용자가 회원이 아니면 회원가입 실행 -->
+    <insert id="googleMemberJoin" parameterType="com.doran.entity.Member">
+        INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
+        VALUES (#{memId}, #{memPw}, #{memNick}, #{memEmail}, #{memPhone})
+    </insert>
+	
 </mapper>
