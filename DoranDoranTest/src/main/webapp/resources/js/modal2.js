@@ -1,23 +1,23 @@
 // modal.js 파일로 이동할 스크립트
 console.log("modal.js 파일이 로드되었습니다.");
 
-$(document).ready(function () {
-    // msgType과 msg가 존재하면 알림창을 표시합니다.
-    if (msgType && msg) {
-        // 알림창에 표시할 메시지를 설정
-        $("#messageType").text(msgType);  // 성공 또는 실패 유형
-        $("#messageContent").text(msg);   // 메시지 내용
+$(document).ready(function() {
+	// msgType과 msg가 존재하면 알림창을 표시합니다.
+	if (msgType && msg) {
+		// 알림창에 표시할 메시지를 설정
+		$("#messageType").text(msgType);  // 성공 또는 실패 유형
+		$("#messageContent").text(msg);   // 메시지 내용
 
-        // msgType에 따라 모달 스타일을 변경
-        if (msgType == "성공" || msgType == "성공") {
-            $("#messageModal").attr("class", "modal-content panel-success");
-        } else {
-            $("#messageModal").attr("class", "modal-content panel-danger");
-        }
+		// msgType에 따라 모달 스타일을 변경
+		if (msgType == "성공" || msgType == "성공") {
+			$("#messageModal").attr("class", "modal-content panel-success");
+		} else {
+			$("#messageModal").attr("class", "modal-content panel-danger");
+		}
 
-        // 모달을 표시하여 메시지 출력
-        $("#messageModal").modal("show");
-    }
+		// 모달을 표시하여 메시지 출력
+		$("#messageModal").modal("show");
+	}
 });
 
 
@@ -89,12 +89,17 @@ function loadShipList() {
 
 			data.forEach(function(ship) {
 				const listItem = document.createElement('li');
+				listItem.classList.add('ship-info-row'); // 스타일 적용을 위해 클래스 추가
 				listItem.innerHTML = `
-                    <p>선박번호: ${ship.siCode}</p>
-                    <p>선박명: ${ship.siName}</p>
-                    <button onclick="openGroupInfo('${ship.siCode}')">그룹 정보</button>
-                    <button onclick="goToControllerPage('${ship.siCode}')">관제 화면</button>
-  					<button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
+                    <div class="ship-details">
+                        <p>선박번호: ${ship.siCode}</p>
+                        <p>선박명: ${ship.siName}</p>
+                    </div>
+                    <div class="button-container">
+                        <button onclick="openGroupInfo('${ship.siCode}')">그룹 정보</button>
+                        <button onclick="goToControllerPage('${ship.siCode}')">관제 화면</button>
+                        <button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
+                    </div>
                 `;
 				shipListElement.appendChild(listItem);
 			});
@@ -105,34 +110,28 @@ function loadShipList() {
 	});
 }
 
+let currentPage = 1; // 현재 페이지 번호
+const itemsPerPage = 3; // 페이지 당 표시할 항목 수
+
 // Ship - 3. 모달을 열 때 항해 리스트 로드
 function loadSailList(siCode) {
-	// siCode가 정상적으로 전달되었는지 콘솔에서 확인
-	console.log("전달된 siCode: ", siCode);
+	// 모달 제목에 siCode 설정
+	document.getElementById("sailListSiCode").textContent = siCode;
 
 	$.ajax({
-		// 이거 sailController 변경해야함 
-		url: '/controller/sail/all',  // 서버의 API 경로
+		url: '/controller/sailList?siCode=' + siCode,  // URL에 siCode를 직접 포함하여 전달
 		type: 'GET',
-		data: { siCode: siCode },  // siCode 전달
 		dataType: 'json',
 		success: function(data) {
 			console.log("항해 리스트 데이터:", data);
-			const sailListElement = document.getElementById('sailList');
-			sailListElement.innerHTML = ''; // 기존 리스트 초기화
 
-			data.forEach(function(sail) {
-				const listItem = document.createElement('li');
-				listItem.innerHTML = `
-                    <p>선박번호 (siCode): ${sail.siCode}</p>
-                    <p>등록일자: ${sail.registeredDate}</p>
-                    <p>운항상태: ${sail.status}</p>
-                    <p>코멘트: ${sail.comment}</p>
-                `;
-				sailListElement.appendChild(listItem);
-			});
+			// 초기 페이지를 1로 설정하고, 페이징 함수 호출
+			currentPage = 1;
+			paginateSailList(data, currentPage); // 페이징 함수 호출
+			createPaginationButtons(data); // 페이지 버튼 생성
 
 			// 모달을 화면에 표시
+			document.getElementById('listModal').style.display = 'none';
 			document.getElementById("sailListModal").style.display = "block";
 		},
 		error: function(xhr, status, error) {
@@ -141,15 +140,66 @@ function loadSailList(siCode) {
 	});
 }
 
-// 모달 닫기 기능
-document.getElementById('closeSailListModal').onclick = function() {
-	document.getElementById('sailListModal').style.display = 'none';
-};
+// 항해 리스트 데이터 페이징 처리 함수
+function paginateSailList(data, page) {
+	const sailListElement = document.getElementById('sailList');
+	sailListElement.innerHTML = ''; // 기존 리스트 초기화
+
+	const start = (page - 1) * itemsPerPage;
+	const end = start + itemsPerPage;
+	const paginatedData = data.slice(start, end); // 현재 페이지에 해당하는 데이터 가져오기
+
+	paginatedData.forEach(function(sail) {
+		const listItem = document.createElement('li');
+		listItem.classList.add('sail-info-card'); // 카드 스타일 클래스 추가
+
+		// 데이터가 없을 경우 '데이터 없음' 표시
+		const createdAt = sail.createdAt || '데이터 없음';
+		const status = sail.status || '데이터 없음';
+		const comment = sail.comment || '데이터 없음';
+
+		listItem.innerHTML = `
+			<div class="sail-details">
+				<p><strong>등록일자:</strong> ${createdAt}</p>
+				<p><strong>운항상태:</strong> ${status}</p>
+				<p><strong>코멘트:</strong> ${comment}</p>
+			</div>
+			<div class="button-container">
+				<button onclick="goToStatisticsPage('${sail.siCode}')">통계 페이지</button>
+			</div>
+		`;
+		sailListElement.appendChild(listItem);
+	});
+
+	createPaginationButtons(data);
+}
+
+// 페이지 버튼 생성 함수
+function createPaginationButtons(data) {
+	const paginationContainer = document.getElementById('paginationContainer');
+	paginationContainer.innerHTML = ''; // 기존 버튼 초기화
+
+	const pageCount = Math.ceil(data.length / itemsPerPage); // 총 페이지 수 계산
+
+	for (let i = 1; i <= pageCount; i++) {
+		const pageButton = document.createElement('button');
+		pageButton.textContent = i;
+		pageButton.classList.add('page-button');
+		if (i === currentPage) pageButton.classList.add('active'); // 현재 페이지 강조 표시
+		pageButton.onclick = function() {
+			currentPage = i;
+			paginateSailList(data, currentPage);
+		};
+		paginationContainer.appendChild(pageButton);
+	}
+}
 
 
-// 통계 페이지 이동
+
+
+// 통계 페이지 이동 함수
 function goToStatisticsPage(siCode) {
-	window.location.href = `/controller/statistics?siCode=${siCode}`;  // 권한 확인 없이 바로 이동
+	window.location.href = `/controller/statistics?siCode=${siCode}`;
 }
 
 // 관제 페이지 이동

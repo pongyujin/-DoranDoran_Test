@@ -1,0 +1,276 @@
+@charset "UTF-8";
+
+/* 기본 스타일 설정 */
+* {
+	font-family: Arial, sans-serif;
+}
+
+/* 모달 창 스타일 */
+.modal {
+	display: none;
+	position: fixed;
+	z-index: 1001; /* 모달을 최상단에 위치시킴 */
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 400px;
+	background-color: rgba(49, 63, 73, 0.9); /* 배경색 설정 */
+	padding: 20px;
+	border-radius: 10px;
+	color: white;
+}
+
+/* 모달 컨텐츠 스타일 */
+.modal-content {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+/* 제목 스타일 */
+h2 {
+	text-align: center;
+}
+
+/* 중복체크 버튼 스타일 */
+.duplicate-btn {
+	position: absolute;
+	right: 35px;
+	top: 26%;
+	transform: translateY(-50%);
+	padding: 5px 10px;
+	background-color: #1C2933;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	width: 80px;
+}
+
+.duplicate-btn:hover {
+	background-color: #17293A;
+}
+
+/* 텍스트 입력 필드 스타일 */
+input[type="text"], input[type="password"], input[type="email"], input[type="file"] {
+	width: 100%;
+	padding: 10px;
+	border: none;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+	background-color: transparent;
+	color: white;
+	font-size: 16px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="file"]:focus {
+	outline: none;
+	border-bottom-color: white;
+}
+
+/* 파일 업로드 버튼 스타일 */
+.custom-file-upload {
+	display: inline-block;
+	padding: 10px 20px;
+	cursor: pointer;
+	background-color: #1C2933;
+	color: white;
+	border-radius: 5px;
+	transition: background-color 0.3s ease;
+}
+
+.custom-file-upload:hover {
+	background-color: #17293A;
+}
+
+.custom-file-upload:active {
+	background-color: #0f1c28;
+}
+
+/* 닫기 버튼 스타일 */
+.close {
+	position: absolute;
+	top: 10px;
+	right: 20px;
+	color: white;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+/* 가입 및 등록 버튼 스타일 */
+.join-button, .register-button {
+	display: block;
+	margin: 20px auto 0;
+	padding: 10px;
+	width: 150px;
+	background-color: #1C2933;
+	border: none;
+	color: white;
+	font-size: 16px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.join-button:hover, .register-button:hover {
+	background-color: #17293A;
+}
+
+/* 소셜 로그인 버튼 스타일 */
+.social-login {
+	display: flex;
+	justify-content: center;
+	gap: 30px;
+	margin-top: 20px;
+}
+
+.social-btn img {
+	width: 40px;
+	height: 40px;
+}
+
+.social-btn.naver img {
+	width: 62px;
+	height: 60px;
+	margin-top: -12px;
+}
+
+/* 그룹 정보 모달의 초대 섹션 스타일 */
+.invite-section {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 20px;
+}
+
+.invite-section input {
+	width: 70%;
+	padding: 10px;
+	font-size: 14px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	background-color: white;
+	color: black;
+}
+
+.invite-section button {
+	width: 25%;
+	padding: 10px;
+	background-color: #5A77F9;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.invite-section button:hover {
+	background-color: #4763C8;
+}
+
+/* 그룹 정보 모달의 사용자 리스트 스타일 */
+.user-list {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+.user-list li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+	padding: 10px;
+	background-color: #1F2D3A;
+	border-radius: 8px;
+	color: white;
+	font-size: 14px;
+}
+
+.user-list li span {
+	font-size: 14px;
+	color: white;
+}
+
+.user-list li select {
+	width: 50%;
+	padding: 8px;
+	background-color: #2C3E50;
+	color: white;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	font-size: 14px;
+}
+
+.user-list li select:hover {
+	background-color: #34495E;
+}
+/* 기본 설정 */
+.ship-info-row, .sail-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: rgba(173, 216, 230, 0.2); /* 불투명한 파란색 배경 */
+    padding: 10px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+}
+
+/* 세부 정보 스타일 */
+.ship-details, .sail-details {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+/* 버튼 컨테이너 */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+}
+
+.button-container button {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #4763C8FF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 120px;
+}
+
+.button-container button:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+/* 페이징 버튼 스타일 */
+.pagination-container {
+	position: absolute;
+	bottom: 20px;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+}
+
+.page-button {
+	padding: 5px 10px;
+	background-color: #4763C8;
+	color: #fff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.page-button.active {
+	background-color: #17293A;
+}
+
+.page-button:hover {
+	background-color: #34495E;
+}

@@ -12,6 +12,8 @@
     var msgType = "<%= request.getAttribute("msgType") != null ? request.getAttribute("msgType") : "" %>";
     var msg = "<%= request.getAttribute("msg") != null ? request.getAttribute("msg") : "" %>";
 </script>
+<link rel="stylesheet" href="/DoranDoranTest/src/main/webapp/resources/css/modal2.css">
+
 <style>
 body, html {
     margin: 0;

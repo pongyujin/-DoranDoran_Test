@@ -6,6 +6,7 @@
 <!DOCTYPE html>
 <html>
 <script src="<%=request.getContextPath()%>/resources/js/modal2.js"></script>
+
 <head>
     <style>
         body {

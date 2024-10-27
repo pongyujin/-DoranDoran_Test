@@ -1,7 +1,6 @@
 <%@page import="org.apache.ibatis.reflection.SystemMetaObject"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ page pageEncoding="UTF-8"%>
-
 <!-- Google Fonts 로드 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +11,10 @@
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
+
 <script src="<%=request.getContextPath()%>/resources/js/modal2.js"></script>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/resources/css/modal2.css">
+
 
 <script type="text/javascript">
   // 3. 회원가입 실패 모달창 띄우기
@@ -52,9 +54,25 @@
   // 서버에서 전달된 msgType과 msg를 JavaScript 변수로 설정
   const msgType = "${msgType}";
   const msg = "${msg}";
+  
+  $(document).ready(function () {
+	    // 항해 리스트 모달 닫기 기능
+	    document.getElementById('closeSailListModal').onclick = function () {
+	        document.getElementById('sailListModal').style.display = 'none'; // 항해 리스트 모달 닫기
+	        document.getElementById('listModal').style.display = 'block'; // 선박 리스트 모달 다시 표시
+	    };
+
+	    // 선박 리스트 모달 닫기 기능
+	    document.getElementById('closeShipListModal').onclick = function () {
+	        document.getElementById('listModal').style.display = 'none'; // 선박 리스트 모달 닫기
+	    };
+	});
+
 
 </script>
+</head>
 
+<body>
 <!-- Join 모달 -->
 <div id="joinModal" class="modal">
 	<span class="close" id="closeJoinModal">&times;</span>
@@ -96,7 +114,6 @@
 		<div class="social-login">
 			<div class="social-login">
 
-
 				<!-- Google Login -->
 				<a
 					href="https://accounts.google.com/o/oauth2/v2/auth?client_id=${googleClientId}&redirect_uri=http://localhost:8085/controller/main2/oauthcallback&response_type=code&scope=email profile&state=google"
@@ -121,8 +138,6 @@
 					src="<%=request.getContextPath()%>/resources/img/naver_logo.png"
 					alt="Naver" />
 				</a>
-
-
 
 			</div>
 
@@ -233,247 +248,16 @@
 
 <!-- 항해 리스트 모달 -->
 <div id="sailListModal" class="modal">
-	<span class="close" id="closeSailListModal">&times;</span>
-	<h2>항해 리스트</h2>
-	<div class="modal-content">
-		<ul id="sailList">
-			<!-- AJAX로 받아온 항해 리스트가 이곳에 표시됩니다. -->
-		</ul>
-	</div>
+    <span class="close" id="closeSailListModal">&times;</span>
+    <h2>항해 리스트 - <span id="sailListSiCode"></span></h2>
+    <div class="modal-content">
+        <ul id="sailList">
+            <!-- AJAX로 받아온 항해 리스트가 이곳에 표시됩니다. -->
+        </ul>
+    </div>
+    <!-- 모달 안에 페이징 버튼 컨테이너를 추가하여 모달을 벗어나지 않도록 함 -->
+    <div id="paginationContainer" class="pagination-container"></div>
 </div>
 
-<!-- 알림창.. -->
-<div id="messageModal" class="modal">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 id="messageType" class="modal-title"></h5>
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-			</div>
-			<div class="modal-body">
-				<p id="messageContent"></p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-<!-- 모달 CSS 스타일 -->
-<style>
-* {
-	font-family: Arial, sans-serif;
-}
-
-.modal {
-	display: none;
-	position: fixed;
-	z-index: 1001; /* 높은 값을 유지 */
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	width: 400px;
-	background-color: rgba(49, 63, 73, 0.9);
-	padding: 20px;
-	border-radius: 10px;
-	color: white;
-}
-
-.modal-content {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-}
-
-h2 {
-	text-align: center;
-}
-
-/* 중복체크 버튼 스타일 */
-.duplicate-btn {
-	position: absolute;
-	right: 35px;
-	top: 26%;
-	transform: translateY(-50%);
-	padding: 5px 10px;
-	background-color: #1C2933;
-	color: white;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	width: 80px;
-}
-
-.duplicate-btn:hover {
-	background-color: #17293A;
-}
-
-input[type="text"], input[type="password"], input[type="email"], input[type="file"]
-	{
-	width: 100%;
-	padding: 10px;
-	border: none;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.7);
-	background-color: transparent;
-	color: white;
-	font-size: 16px;
-}
-
-input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus,
-	input[type="file"]:focus {
-	outline: none;
-	border-bottom-color: white;
-}
-
-/* 커스텀 파일 업로드 버튼 스타일 */
-.custom-file-upload {
-	display: inline-block;
-	padding: 10px 20px;
-	cursor: pointer;
-	background-color: #1C2933;
-	color: white;
-	border-radius: 5px;
-	transition: background-color 0.3s ease;
-}
-
-.custom-file-upload:hover {
-	background-color: #17293A;
-}
-
-.custom-file-upload:active {
-	background-color: #0f1c28;
-}
-
-.close {
-	position: absolute;
-	top: 10px;
-	right: 20px;
-	color: white;
-	font-size: 20px;
-	cursor: pointer;
-}
-
-.join-button, .register-button {
-	display: block;
-	margin: 20px auto 0;
-	padding: 10px;
-	width: 150px;
-	background-color: #1C2933;
-	border: none;
-	color: white;
-	font-size: 16px;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-.join-button:hover, .register-button:hover {
-	background-color: #17293A;
-}
-
-.social-login {
-	display: flex;
-	justify-content: center;
-	gap: 30px;
-	margin-top: 20px;
-}
-
-.social-btn img {
-	width: 40px;
-	height: 40px;
-}
-
-.social-btn.naver img {
-	width: 62px;
-	height: 60px;
-	margin-top: -12px;
-}
-
-/* 그룹 정보 모달의 초대 섹션 스타일 */
-.invite-section {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 20px;
-}
-
-.invite-section input {
-	width: 70%;
-	padding: 10px;
-	font-size: 14px;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	background-color: white;
-	color: black;
-}
-
-.invite-section button {
-	width: 25%;
-	padding: 10px;
-	background-color: #5A77F9;
-	color: white;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	font-size: 16px;
-}
-
-.invite-section button:hover {
-	background-color: #4763C8;
-}
-
-/* 그룹 정보 모달의 사용자 리스트 스타일 */
-.user-list {
-	list-style-type: none;
-	padding: 0;
-	margin: 0;
-}
-
-.user-list li {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
-	padding: 10px;
-	background-color: #1F2D3A;
-	border-radius: 8px;
-	color: white;
-	font-size: 14px;
-}
-
-.user-list li span {
-	font-size: 14px;
-	color: white;
-}
-
-.user-list li select {
-	width: 50%;
-	padding: 8px;
-	background-color: #2C3E50;
-	color: white;
-	border: 1px solid #ccc;
-	border-radius: 5px;
-	font-size: 14px;
-}
-
-.user-list li select:hover {
-	background-color: #34495E;
-}
-
-.edit-button {
-	display: block;
-	margin: 20px auto 0;
-	padding: 10px;
-	width: 150px;
-	background-color: #1C2933;
-	border: none;
-	color: white;
-	font-size: 16px;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-.edit-button:hover {
-	background-color: #17293A;
-}
-</style>
+</body>
+</html>
