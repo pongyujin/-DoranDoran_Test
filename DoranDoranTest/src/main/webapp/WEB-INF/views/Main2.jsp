@@ -8,7 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
-
+<script type="text/javascript">
+    var msgType = "<%= request.getAttribute("msgType") != null ? request.getAttribute("msgType") : "" %>";
+    var msg = "<%= request.getAttribute("msg") != null ? request.getAttribute("msg") : "" %>";
+</script>
 <style>
 body, html {
     margin: 0;

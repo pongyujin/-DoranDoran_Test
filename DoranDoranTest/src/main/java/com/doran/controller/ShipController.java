@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -48,6 +49,15 @@ public class ShipController {
 		
 		return shipList;
 	}
+
+	// 정유진 siCert 미승인 애들만 리스트 가져오기
+	@GetMapping("/AllShipList")
+	public @ResponseBody List<Ship> AllShipList() {
+	    List<Ship> shipList = shipMapper.getAllShips();  // 모든 선박 리스트를 가져오는 메서드 호출
+	    System.out.println("ShipController : " + shipList);
+	    return shipList;
+	}
+
 
 	// 2. 선박 등록 신청
 	@PostMapping("/shipRegister")
@@ -87,12 +97,20 @@ public class ShipController {
 
 	// 3. 선박 등록 승인
 	@PutMapping("/update")
-	public void approveShip(@RequestBody Ship ship) {
+	public ResponseEntity<String> approveShip(@RequestParam String siCode, @RequestParam String memId) {
+	    Ship ship = new Ship();
+	    ship.setSiCode(siCode);
+	    ship.setMemId(memId);
+	    ship.setSiCert('1'); // 승인 상태로 설정
+	    
+	    System.out.println("승인 처리된 siCode: " + siCode + ", memId: " + memId);
 
-		ship.setSiCert('1'); // 승인
-		shipMapper.approveShip(ship);
+	    shipMapper.approveShip(ship);
+	    
+	    return ResponseEntity.ok("승인되었습니다."); // 200 상태 코드와 함께 메시지 반환
 	}
-	
+
+
 	// 4. 선박 세션 저장
 	@PostMapping("/setShipSession")
 	public @ResponseBody void sailStatus(@RequestBody Ship ship, HttpSession session) {

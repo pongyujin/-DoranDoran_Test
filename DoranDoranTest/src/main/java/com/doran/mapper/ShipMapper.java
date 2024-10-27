@@ -23,5 +23,8 @@ public interface ShipMapper {
 	// 정유진이 만듬 
 	public Ship findShipBySiCode(String siCode);
 	
+	//정유진이 만듬 관리자페이지 리스트 뽑기
+	public List<Ship> getAllShips();
+	
 
 }

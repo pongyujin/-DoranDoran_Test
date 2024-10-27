@@ -103,10 +103,10 @@ public class OAuthLoginController {
 
             if (existingMember == null) {
                 memberMapper.googleMemberJoin(member);
-                rttr.addFlashAttribute("msgType", "회원가입 및 로그인 성공");
+                rttr.addFlashAttribute("msgType", "성공");
                 rttr.addFlashAttribute("msg", platform + " 회원가입이 완료되었습니다.");
             } else {
-                rttr.addFlashAttribute("msgType", "로그인 성공");
+                rttr.addFlashAttribute("msgType", "성공");
                 rttr.addFlashAttribute("msg", platform + " 로그인 성공!");
             }
 
@@ -117,7 +117,7 @@ public class OAuthLoginController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            rttr.addFlashAttribute("msgType", "로그인 실패");
+            rttr.addFlashAttribute("msgType", "실패");
             rttr.addFlashAttribute("msg", platform + " 로그인 처리 중 오류가 발생했습니다.");
             return "redirect:/error";
         }

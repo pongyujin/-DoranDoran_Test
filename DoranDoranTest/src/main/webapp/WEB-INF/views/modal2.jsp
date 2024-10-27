@@ -48,6 +48,10 @@
       document.getElementById("groupInfoModal").style.display = "block"; // 그룹 정보 모달 열기
       loadGroupInfo(siCode); // 그룹 리스트 로드 함수 호출
   }
+  
+  // 서버에서 전달된 msgType과 msg를 JavaScript 변수로 설정
+  const msgType = "${msgType}";
+  const msg = "${msg}";
 
 </script>
 
@@ -235,6 +239,24 @@
 		<ul id="sailList">
 			<!-- AJAX로 받아온 항해 리스트가 이곳에 표시됩니다. -->
 		</ul>
+	</div>
+</div>
+
+<!-- 알림창.. -->
+<div id="messageModal" class="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 id="messageType" class="modal-title"></h5>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<div class="modal-body">
+				<p id="messageContent"></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">확인</button>
+			</div>
+		</div>
 	</div>
 </div>
 

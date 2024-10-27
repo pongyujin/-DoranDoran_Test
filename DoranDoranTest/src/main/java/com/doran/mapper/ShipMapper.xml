@@ -38,5 +38,11 @@
 		SELECT * FROM ship WHERE siCode=#{siCode}
 	</select>
 
+	<!-- 정유진 관리자페이지 -->	
+	<select id="getAllShips" resultType="com.doran.entity.Ship">
+     SELECT * FROM ship WHERE siCert = '0'  <!-- 전체 ships 테이블을 조회 -->
+</select>
+	
+
 
 </mapper>
