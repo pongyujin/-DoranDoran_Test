@@ -29,6 +29,12 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/map.css">
+
+<!-- Include a required theme -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
 	<div id="app">
@@ -108,15 +114,17 @@
 					<!-- 여기에 지도 추가 -->
 					<div id="sailModalMap"
 						style="width: 100%; height: 300px; z-index: 1000000"></div>
-					
+
 					<div class="sailSetAlert">
 						<ol style="list-style-position: inside;">
 							<p>경유지를 추가할 경우 경로 재탐색이 필요합니다</p>
 						</ol>
 					</div>
-					
+
 					<button type="button" id="addWaypoint" @click="startSailInsert"
-						:disabled="waypointsUpdated"
+						class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
+						style="margin: 16px 32px;">경로 재탐색 🚤</button>
+					<button type="button" id="addWaypoint" @click="showAlert"
 						class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
 						style="margin: 16px 32px;">항해 시작 🚤</button>
 				</div>
@@ -285,7 +293,6 @@
 	            sailMarkers: [], // sailModal에서 표시된 마커들
 	            currentPositionMarker: null, // 사용자 현재 위치 마커
 	            waypoints: [],
-	            waypointsUpdated: false, // 경로 변경 여부
 	            
 	            formData: { // 항해 시작 설정 form 데이터 저장
 	                siCode: "<%=siCode%>",
@@ -301,21 +308,13 @@
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
 	    },
-	    watch: {
-	        waypoints: {
-	            deep: true,
-	            handler() {
-	                // waypoints 변경시 경로 변경됨을 표시
-	                this.waypointsUpdated = true;
-	            }
-	        }
-	    },
 	    methods: {
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
 	            axios.get("http://localhost:8085/controller/flightPlanCoordinates")
 	            .then(response => {
 	              this.flightPlanCoordinates = response.data;  // 데이터를 Vue 데이터 속성에 할당
 	              this.initMap();
+	              this.initSailMap();
 	            })
 	            .catch(error => {
 	              console.error("Error fetching coordinates:", error);
@@ -383,8 +382,7 @@
 	            const updatePosition = () => {
 	                // Geolocation API를 사용하여 현재 위치 가져오기
 	                navigator.geolocation.getCurrentPosition(async (position) => {
-	                    const { latitude, longitude } = position.coords; // 위도, 경도 추출
-	                    console.log(`위도: ${latitude}, 경도: ${longitude}`);
+	                    const { latitude, longitude } = position.coords;
 
 	                    // Google Maps에 사용자 마커 표시
 	                    if (!this.marker) {
@@ -577,8 +575,6 @@
 	            if (modal.style.display === "none" || modal.style.display === "") {
 	               
 	            	modal.style.display = "block"; // 모달 표시
-	    	        this.initSailMap(); // 경유지 추가 지도 표시
-	    	        
 	            } else {
 	                modal.style.display = "none";
 	            }
@@ -586,11 +582,43 @@
 	        initSailMap() { // 2. sailModal에 지도를 띄우는 새로운 로직(마커 정보를 변수에 저장하고 좌표 정보도 저장)
 	            
 	            this.sailMap = new google.maps.Map(document.getElementById('sailModalMap'), {
-	                center: { lat: 34.7744, lng: 126.3664}, // 초기 중심 좌표 설정
+	                center: { lat: 34.500000, lng: 128.730000}, // 초기 중심 좌표 설정
 	                zoom: 9
 	            });
 	        
-	        	this.updateLocation();
+	            // 사용자의 현재 위치 마커 표시
+	            const updatePosition = () => {
+	                navigator.geolocation.getCurrentPosition(async (position) => {
+	                    const { latitude, longitude } = position.coords;
+
+	                    if (!this.marker) {
+	                        this.marker = new google.maps.Marker({
+	                            position: { lat: latitude, lng: longitude }, 
+	                            map: this.sailMap, // 표시할 지도
+	                            icon: {
+	                                url: '<%=request.getContextPath()%>/resources/img/icon.png', // 마커 아이콘 경로
+	                                scaledSize: new google.maps.Size(100, 100) // 아이콘 크기 조정
+	                            }
+	                        });
+
+	                        this.sailMap.setCenter({ lat: latitude, lng: longitude });
+	                    } else {
+	                        this.marker.setPosition({ lat: latitude, lng: longitude });
+	                    }
+
+	                    try {
+	                        const response = await fetch(`/api/location?latitude=${latitude}&longitude=${longitude}`);
+	                        const data = await response.json();
+	                    } catch (error) {
+	                        console.error('Error fetching location info:', error);
+	                    }
+	                }, (error) => {
+	                    console.error('Geolocation error:', error); 
+	                });
+	            };
+
+	            // 위치 업데이트 간격 설정(100초 간격)
+	            setInterval(updatePosition, 100000);
 	        	
 	            // sailModal 지도를 클릭할 때마다 마커를 추가하는 기능
 	            this.sailMap.addListener('click', (event) => {
@@ -603,63 +631,19 @@
 	                // 추가된 마커를 배열에 저장
 	                this.sailMarkers.push(marker);
 	                
-	                const waypoints = this.sailMarkers.map(marker => ({
+	                this.waypoints = this.sailMarkers.map(marker => ({
 		                lat: marker.getPosition().lat(),
 		                lng: marker.getPosition().lng(),
 		            }));
-	                
-	                console.log(waypoints);
-
 	            });
 	            
-	            // 사용자의 현재 위치 마커 표시
-	            const updatePosition = () => {
-	                navigator.geolocation.getCurrentPosition(async (position) => {
-	                    const { latitude, longitude } = position.coords;
-
-	                    if (!this.marker) {
-	                        // 마커가 없는 경우 새로 생성
-	                        this.marker = new google.maps.Marker({
-	                            position: { lat: latitude, lng: longitude }, 
-	                            map: this.sailMap, // 표시할 지도
-	                            icon: {
-	                                url: '<%=request.getContextPath()%>/resources/img/icon.png', // 마커 아이콘 경로
-	                                scaledSize: new google.maps.Size(100, 100) // 아이콘 크기 조정
-	                            }
-	                        });
-
-	                        // 마커의 위치로 지도의 중심 이동
-	                        this.sailMap.setCenter({ lat: latitude, lng: longitude });
-	                    } else {
-	                        // 마커가 이미 있는 경우 위치 업데이트
-	                        this.marker.setPosition({ lat: latitude, lng: longitude });
-	                    }
-
-	                    // 서버에 위치 정보 요청
-	                    try {
-	                        const response = await fetch(`/api/location?latitude=${latitude}&longitude=${longitude}`);
-	                        const data = await response.json();
-	                    } catch (error) {
-	                        console.error('Error fetching location info:', error);
-	                    }
-	                }, (error) => {
-	                    console.error('Geolocation error:', error); // 오류 처리
-	                });
-	            };
-
-	            // 위치 업데이트 간격 설정(100초 간격)
-	            setInterval(updatePosition, 100000);
-	            
 	        }, 
-	        getFirstPoly() { // 3. 목적지 설정 버튼 누르면 비동기 방식으로 경로 받아오기(GoogleMapController)
-	        
-	            console.log("제출 데이터 vue data에 저장 확인 : ", this.formData);
+	        getFirstPoly() { // 3. 목적지 설정 버튼 누르면 비동기 방식으로 경로 받아오기(GoogleMapController에서 a*알고리즘과 통신)
 
 	            // axios POST 요청
 	            axios.post('http://localhost:8085/controller/flightPlanCoordinates')
 	                .then(response => {
 	                	this.flightPlanCoordinates = response.data;
-	  	              	this.initMap();
 	  	              	
 	  	           		// Polyline 생성 및 지도에 추가
 	  		            const flightPath = new google.maps.Polyline({
@@ -670,46 +654,49 @@
 	  		                strokeWeight: 3,
 	  		            });
 	  		            flightPath.setMap(this.sailMap);
-	  		            
-	  		       		// waypoints에 변동이 없도록 설정
-	  		            this.waypointsUpdated = false;
-	                    console.log("목적지 설정 성공:", response.data);
+	  		       		
 	                })
 	                .catch(error => {
 	                    console.error("목적지 설정 실패:", error);
 	                });
-	    	},
-	        sendWaypoints() { // 4. sailMarkers에 저장된 좌표 정보를 Controller로 전송
+	    	}, startSailInsert(){ // 5. sailController에 데이터 보내고 항해시작db저장
+	        	
+	    		document.getElementById("sailForm").submit(); 
+                this.startSail();
+	        	
+	        }, showAlert() { // 6. 항해 확정 alert 창 
+	        	
+	            const waypointsList = this.waypoints.map(waypoint => 
+	            	waypoint.lat + " " + waypoint.lng
+	        	).join('<br>');
+	        	console.log("waypointsList : "+waypointsList);
+	        
+	            Swal.fire({
+	                title: "<strong>Waypoints</strong>",
+	                icon: "info",
+	                html: "Here are the waypoints:<br>"
+	                    + waypointsList,
+	                showCloseButton: true,
+	                showCancelButton: true,
+	                focusConfirm: false,
+	                confirmButtonText: `
+	                    <i class="fa fa-thumbs-up">Great!</i>
+	                `,
+	                confirmButtonAriaLabel: "Thumbs up, great!",
+	                cancelButtonText: `
+	                    <i class="fa fa-thumbs-down">Cancel</i>
+	                `,
+	                cancelButtonAriaLabel: "Thumbs down"
+	            }).then((result) => {
+	                if (result.isConfirmed) {
+	                    this.startSailInsert(); // 버튼 클릭 시 메소드 호출
+	                }
+	            });
 	            
-	            const waypoints = this.sailMarkers.map(marker => ({
-	                lat: marker.getPosition().lat(),
-	                lng: marker.getPosition().lng(),
-	            }));
-	        
-	        
-	        	console.log(waypoints);
-
-	            axios.post("http://localhost:8085/controller", waypoints)
-	                .then(response => {
-	                    console.log("Waypoints saved successfully:", response.data);
-	                })
-	                .catch(error => {
-	                    console.error("Error saving waypoints:", error);
-	                });
-	        }, startSailInsert(){ // 5. sailController에 데이터 보내고 항해시작db저장
-	        	
-	        	if (!this.waypointsUpdated) {
-	                document.getElementById("sailForm").submit(); 
-	                this.startSail();
-	            } else {
-	                alert("먼저 경로 설정이 완료되어야 합니다.");
-	            }
-	        	
-	        }, closeSailModal(){ // 항해 시작 모달 끄기
-	        	
+	        }, closeSailModal(){ // 항해 시작 모달 끄기(x 클릭)1
 	        	var videoModal = document.getElementById("sailModal");
 	        	videoModal.style.display = "none";
-	        }, closeSailModal2(event){
+	        }, closeSailModal2(event){ // 항해 시작 모달 끄기(레이아웃 클릭)2---------------------------------------------------------------------------
 	        	
 	        	var modal = document.getElementById("sailModal");
 	        	
@@ -792,7 +779,6 @@
 	    	toggleAutopilot() { // 자율운항 toggle
 
 	        	var btn = document.getElementById("autoSift-btn");
-	        	console.log(btn.textContent);
 	        	btn.textContent = btn.textContent === 'auto "on"' ? 'auto "off"' : 'auto "on"';
 	        	
 	        	if(btn.textContent === 'auto "off"'){
@@ -817,6 +803,7 @@
         	}
 	    }
 	});
+
     </script>
 
 </body>
