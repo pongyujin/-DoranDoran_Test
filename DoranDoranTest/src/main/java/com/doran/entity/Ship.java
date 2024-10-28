@@ -25,4 +25,5 @@ public class Ship {
     private String shipId;
     private String ownerId; // 선박 소유자 정보
     private String filePath; // 파일 경로
+    private String siCertReason; //승인 거절 이유
 }
