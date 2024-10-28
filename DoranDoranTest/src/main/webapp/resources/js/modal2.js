@@ -56,38 +56,129 @@ function validateForm() {
 }
 // Ship - 3. 모달을 열 때 선박 리스트 로드
 function loadShipList() {
+    $.ajax({
+        url: 'shipList',
+        type: 'GET',
+        dataType: 'json', // 서버로부터 받는 데이터의 형식
+        success: function(data) {
+            console.log("선박리스트 데이터:", data);
+            const shipListElement = document.getElementById('shipList');
+            const rejectReasonListElement = document.getElementById('rejectReasonList');
+            
+            // 기존 리스트 초기화
+            shipListElement.innerHTML = ''; 
+            rejectReasonListElement.innerHTML = '';
 
-	$.ajax({
-		url: 'shipList',
-		type: 'GET',
-		dataType: 'json', // 서버로부터 받는 데이터의 형식
-		success: function(data) {
-			console.log("선박리스트 데이터 : " + data);
-			const shipListElement = document.getElementById('shipList');
-			shipListElement.innerHTML = ''; // 기존 리스트 초기화
+            let siCertCount = 0; // siCert가 2인 선박의 개수
 
-			data.forEach(function(ship) {
-				const listItem = document.createElement('li');
-				listItem.classList.add('ship-info-row'); // 스타일 적용을 위해 클래스 추가
-				listItem.innerHTML = `
-                    <div class="ship-details">
+            data.forEach(function(ship) {
+                // siCert 값이 2인 경우 거절 모달 리스트에 추가
+                if (ship.siCert === '2') {
+                    siCertCount++;
+
+                    // 거절된 선박 정보 및 재신청 버튼 추가
+                    const rejectListItem = document.createElement('li');
+                    rejectListItem.innerHTML = `
                         <p>선박번호: ${ship.siCode}</p>
                         <p>선박명: ${ship.siName}</p>
-                    </div>
-                    <div class="button-container">
-                        <button onclick="openGroupInfo('${ship.siCode}')">그룹 정보</button>
-                        <button onclick="goToControllerPage('${ship.siCode}')">관제 화면</button>
-                        <button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
-                    </div>
-                `;
-				shipListElement.appendChild(listItem);
-			});
-		},
-		error: function(xhr, status, error) {
-			console.error('Error fetching ship list:', error);
-		}
-	});
+                        <p>거절 사유: ${ship.siCertReason || '사유가 없습니다.'}</p>
+                        <div class="button-container">
+                            <button class="reapply-btn" onclick="reapply('${ship.siCode}','${ship.siName}')">재신청</button>
+                        </div>
+                    `;
+                    rejectReasonListElement.appendChild(rejectListItem);
+                }
+
+                // siCert 값이 1인 선박만 메인 리스트에 표시
+                if (ship.siCert === '1') {
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('ship-info-row'); // 스타일 적용을 위해 클래스 추가
+                    listItem.innerHTML = `
+                        <div class="ship-details">
+                            <p>선박번호: ${ship.siCode}</p>
+                            <p>선박명: ${ship.siName}</p>
+                        </div>
+                        <div class="button-container">
+                            <button onclick="openGroupInfo('${ship.siCode}')">그룹 정보</button>
+                            <button onclick="goToControllerPage('${ship.siCode}')">관제 화면</button>
+                            <button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
+                        </div>
+                    `;
+                    shipListElement.appendChild(listItem);
+                }
+            });
+
+            // siCert가 2인 선박이 있을 때만 알림 아이콘 표시 및 개수 업데이트
+            const alertIcon = document.getElementById('alertIcon');
+            if (siCertCount > 0) {
+                alertIcon.style.display = 'flex';
+                document.querySelector('.notification-count').textContent = siCertCount; // siCert가 2인 개수 표시
+            } else {
+                alertIcon.style.display = 'none';
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching ship list:', error);
+        }
+    });
 }
+
+
+// 재신청 버튼 클릭 시 호출되는 함수
+function reapply(siCode, siName) {
+    // 기존의 선박등록 거절 모달을 닫기
+    document.getElementById("rejectModal").style.display = "none";
+
+    // Ship ID와 Ship Name을 입력 필드에 직접 설정
+    document.getElementById("siCode").value = siCode;
+    document.getElementById("siName").value = siName;
+
+    // Ship ID는 readonly로 설정하여 수정 불가
+    document.getElementById("siCode").setAttribute("readonly", true);
+
+    // 재신청 시 form action을 "shipReapply"로 설정
+    document.querySelector("#shipRegisterModal form").setAttribute("action", "shipReapply");
+
+    // 파일 선택 초기화 및 파일명 표시 초기화
+    document.getElementById("siDocsFile").value = ""; // 기존 파일 제거
+    document.getElementById("fileName").textContent = "파일이 선택되지 않았습니다";
+
+    // submit 버튼 텍스트를 "재신청"으로 설정
+    document.querySelector("#shipRegisterModal .register-button").textContent = "재신청";
+
+    // shipRegisterModal 모달 표시
+    document.getElementById("shipRegisterModal").style.display = "block";
+}
+
+
+
+
+//선박리스트의 벨아이콘 누르면 선박등록거부 모달창 뜨는거
+document.addEventListener('DOMContentLoaded', function() {
+    const alertIcon = document.getElementById('alertIcon');
+    
+    // 벨 아이콘을 클릭하면 rejectModal을 열기
+    alertIcon.addEventListener('click', function() {
+		document.getElementById("listModal").style.display = "none";
+        document.getElementById('rejectModal').style.display = 'block';
+    });
+    
+    // 모달의 닫기 버튼을 클릭하면 모달을 닫기
+    document.getElementById('closeRejectModal').addEventListener('click', function() {
+        document.getElementById('rejectModal').style.display = 'none';
+		document.getElementById("listModal").style.display = "block";
+		loadShipList(); // 리스트 로드 함수 호출
+    });
+    
+    // 모달 외부를 클릭하면 모달 닫기
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('rejectModal');
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
 
 let currentPage = 1; // 현재 페이지 번호
 const itemsPerPage = 3; // 페이지 당 표시할 항목 수

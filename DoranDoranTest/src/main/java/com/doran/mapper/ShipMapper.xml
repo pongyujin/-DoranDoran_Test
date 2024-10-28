@@ -48,7 +48,19 @@
 	<update id="rejectShip">
 		UPDATE ship
 		SET siCert = #{siCert},
-		siCertReason = #{siCertReason}
+		siCertReason =
+		#{siCertReason}
+		WHERE siCode = #{siCode} AND memId = #{memId}
+	</update>
+
+
+	<!-- 정유진 재신청 -->
+	<update id="updateApplication" parameterType="com.doran.entity.Ship">
+		UPDATE ship
+		SET siName = #{siName},
+		siDocs = #{siDocs},
+		siCert = #{siCert},
+		sailStatus = #{sailStatus}
 		WHERE siCode = #{siCode} AND memId = #{memId}
 	</update>
 

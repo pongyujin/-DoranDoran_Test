@@ -33,5 +33,8 @@ public interface ShipMapper {
             @Param("siCert") String siCert, 
             @Param("siCertReason") String siCertReason);
 	
+	//정유진이 만듬 재신청
+	public int updateApplication(Ship ship);
+	
 
 }

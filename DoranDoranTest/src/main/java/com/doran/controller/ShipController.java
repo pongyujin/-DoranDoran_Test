@@ -94,6 +94,45 @@ public class ShipController {
 		}
 		return "redirect:/main";
 	}
+	
+	// 2. 선박 재신청
+	@PostMapping("/shipReapply")
+	public String updateShipApplication(Ship ship, RedirectAttributes rttr, HttpSession session) throws IllegalStateException, IOException {
+
+	    Member user = (Member) session.getAttribute("user");
+
+	    // 기존의 선박 ID와 이름을 유지하면서 업데이트
+	    ship.setMemId(user.getMemId()); // 로그인 사용자 아이디 유지
+	    ship.setSiCert('0'); // 재신청 시 승인 상태를 미승인으로 설정
+	    ship.setSailStatus('0'); // 운항 상태 초기화
+	    System.out.println("야옹아아아아아"+ship);
+
+	    // 파일이 업로드되었는지 확인
+	    if (!ship.getSiDocsFile().isEmpty()) {
+	        String fileName = ship.getSiDocsFile().getOriginalFilename();
+	        // 파일을 서버에 저장하는 로직
+	        File destinationFile = new File("src/main/resources/siDocsFile/" + fileName);
+	        ship.getSiDocsFile().transferTo(destinationFile);
+
+	        // 파일 경로를 데이터베이스에 저장
+	        ship.setSiDocs("src/main/resources/siDocsFile/" + fileName); // 경로를 setter로 설정
+	    }
+	    
+
+	    // 기존 등록된 선박 정보를 업데이트
+	    int cnt = shipMapper.updateApplication(ship);
+
+	    if (cnt > 0) {
+	        rttr.addFlashAttribute("msgType", "성공");
+	        rttr.addFlashAttribute("msg", "선박 재신청이 완료되었습니다. 관리자 승인을 기다려주세요.");
+	    } else {
+	        rttr.addFlashAttribute("msgType", "실패");
+	        rttr.addFlashAttribute("msg", "선박 재신청에 실패했습니다. 다시 시도해주세요.");
+	        session.setAttribute("openShipRegisterModal", true);
+	    }
+	    return "redirect:/main";
+	}
+
 
 	// 3. 선박 등록 승인
 	@PutMapping("/update")

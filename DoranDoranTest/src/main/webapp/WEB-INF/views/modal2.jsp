@@ -24,62 +24,57 @@
 
 
 <script type="text/javascript">
+	$(document).ready(function() {
+		const msgType = "${msgType}";
+		const msg = "${msg}";
+		const msgDetail = "${msgDetail}";
 
-$(document).ready(function() {
-    const msgType = "${msgType}";
-    const msg = "${msg}";
-    const msgDetail = "${msgDetail}";
-
-    if (msgType && msg) {
-        Swal.fire({
-            icon: msgType === 'success' ? 'success' : 'error',
-            title: msg + (msgType === 'success' ? ' 성공' : ' 실패'),
-            text: msgDetail,
-            confirmButtonText: '확인'
-        });
-    }
-});
-
-
-  // 현재 비밀번호를 세션에서 가져온 값으로 설정
-  const currentPassword = `${sessionScope.user.memPw}`; // 세션의 현재 비밀번호
-  
-  // 4. 비밀번호 검사
-  function validateForm() {
-      var pwCheckValue = $("#pwCheck").val();
-      
-      // 현재 비밀번호 확인
-      if (pwCheckValue !== currentPassword) {
-          alert("기존 비밀번호를 올바르게 작성해주세요.");
-          return false; // 폼 제출 방지
-      }
-      
-      return true; // 폼 제출 허용
-  }
-
-  // 이아이는 왜 여기있을까요? 모달을 열고 닫는건 header에 모여져있는데???????????"?????"
-  // 그룹 정보 모달 열기 함수
-  function openGroupInfo(siCode) {
-      document.getElementById("listModal").style.display = "none"; // 선박 리스트 모달 닫기
-      document.getElementById("groupInfoModal").style.display = "block"; // 그룹 정보 모달 열기
-      loadGroupInfo(siCode); // 그룹 리스트 로드 함수 호출
-  }
-  
-
-  $(document).ready(function () {
-	    // 항해 리스트 모달 닫기 기능
-	    document.getElementById('closeSailListModal').onclick = function () {
-	        document.getElementById('sailListModal').style.display = 'none'; // 항해 리스트 모달 닫기
-	        document.getElementById('listModal').style.display = 'block'; // 선박 리스트 모달 다시 표시
-	    };
-
-	    // 선박 리스트 모달 닫기 기능
-	    document.getElementById('closeShipListModal').onclick = function () {
-	        document.getElementById('listModal').style.display = 'none'; // 선박 리스트 모달 닫기
-	    };
+		if (msgType && msg) {
+			Swal.fire({
+				icon : msgType === 'success' ? 'success' : 'error',
+				title : msg + (msgType === 'success' ? ' 성공' : ' 실패'),
+				text : msgDetail,
+				confirmButtonText : '확인'
+			});
+		}
 	});
 
+	// 현재 비밀번호를 세션에서 가져온 값으로 설정
+	const currentPassword = `${sessionScope.user.memPw}`; // 세션의 현재 비밀번호
 
+	// 4. 비밀번호 검사
+	function validateForm() {
+		var pwCheckValue = $("#pwCheck").val();
+
+		// 현재 비밀번호 확인
+		if (pwCheckValue !== currentPassword) {
+			alert("기존 비밀번호를 올바르게 작성해주세요.");
+			return false; // 폼 제출 방지
+		}
+
+		return true; // 폼 제출 허용
+	}
+
+	// 이아이는 왜 여기있을까요? 모달을 열고 닫는건 header에 모여져있는데???????????"?????"
+	// 그룹 정보 모달 열기 함수
+	function openGroupInfo(siCode) {
+		document.getElementById("listModal").style.display = "none"; // 선박 리스트 모달 닫기
+		document.getElementById("groupInfoModal").style.display = "block"; // 그룹 정보 모달 열기
+		loadGroupInfo(siCode); // 그룹 리스트 로드 함수 호출
+	}
+
+	$(document).ready(function() {
+		// 항해 리스트 모달 닫기 기능
+		document.getElementById('closeSailListModal').onclick = function() {
+			document.getElementById('sailListModal').style.display = 'none'; // 항해 리스트 모달 닫기
+			document.getElementById('listModal').style.display = 'block'; // 선박 리스트 모달 다시 표시
+		};
+
+		// 선박 리스트 모달 닫기 기능
+		document.getElementById('closeShipListModal').onclick = function() {
+			document.getElementById('listModal').style.display = 'none'; // 선박 리스트 모달 닫기
+		};
+	});
 </script>
 </head>
 
@@ -157,39 +152,41 @@ $(document).ready(function() {
 		</div>
 	</div>
 
-	<!-- 선박 등록 모달 -->
-	<div id="shipRegisterModal" class="modal">
-		<span class="close" id="closeShipRegisterModal">&times;</span>
-		<h2>Ship registration</h2>
-		<div class="modal-content">
-			<form action="shipRegister" method="post"
-				enctype="multipart/form-data">
-				<input type="text" id="siCode" name="siCode" placeholder="Ship ID"
-					pattern="[A-Za-z0-9]+" required title="영문자와 숫자만 입력 가능"
-					maxlength="20"> <input type="text" id="siName"
-					name="siName" placeholder="Ship Name" maxlength="30">
-				<!-- 커스텀 파일 업로드 버튼 -->
+<!-- 선박 등록 모달 -->
+<div id="shipRegisterModal" class="modal" style="display: none;">
+    <span class="close" id="closeShipRegisterModal">&times;</span>
+    <h2>Ship registration</h2>
+    <div class="modal-content">
+        <form action="shipRegister" method="post" enctype="multipart/form-data">
+            <!-- Ship ID는 readonly 속성을 추가 -->
+            <input type="text" id="siCode" name="siCode" placeholder="Ship ID"
+                pattern="[A-Za-z0-9]+" required title="영문자와 숫자만 입력 가능"
+                maxlength="20" readonly> 
+                
+            <!-- Ship Name 필드 -->
+            <input type="text" id="siName" name="siName" placeholder="Ship Name" maxlength="30">
+            
+            <!-- 파일 선택 -->
+            <label for="siDocsFile" class="custom-file-upload" style="margin-top: 10px;">파일 선택</label>
+            <input id="siDocsFile" type="file" name="siDocsFile" style="display: none;"> 
+            <span id="fileName" style="color: white; margin-left: 10px;">파일이 선택되지 않았습니다</span>
 
-				<label for="siDocsFile" class="custom-file-upload"
-					style="margin-top: 10px;">파일 선택</label> <input id="siDocsFile"
-					type="file" name="siDocsFile" style="display: none;"> <span
-					id="fileName" style="color: white; margin-left: 10px;"></span>
-				<!-- 파일 이름 표시 -->
+            <!-- 파일 선택 시 파일 이름 표시 -->
+            <script>
+                $(document).ready(function() {
+                    $("#siDocsFile").change(function() {
+                        var fileName = this.files[0] ? this.files[0].name : "파일이 선택되지 않았습니다";
+                        $("#fileName").text(fileName); // 파일 이름을 span에 표시
+                    });
+                });
+            </script>
 
-				<!-- 파일 선택 시 파일 이름 표시하는 스크립트 -->
-				<script>
-  $(document).ready(function(){
-      $("#siDocsFile").change(function(){
-          var fileName = this.files[0] ? this.files[0].name : "파일이 선택되지 않았습니다";
-          $("#fileName").text(fileName); // 파일 이름을 span에 표시
-      });
-  });
-</script>
+            <!-- submit 버튼 텍스트 변경 가능 -->
+            <button type="submit" class="register-button">Registration</button>
+        </form>
+    </div>
+</div>
 
-				<button type="submit" class="register-button">Registration</button>
-			</form>
-		</div>
-	</div>
 
 	<!-- 회원정보 수정 모달 -->
 	<div id="editModal" class="modal">
@@ -218,20 +215,44 @@ $(document).ready(function() {
 	</div>
 
 	<!-- 10/23 정유진이 손대기 시작 -->
-	<!-- 선박 리스트 모달 -->
-	<div id="listModal" class="modal" style="width: 500px;">
-		<span class="close" id="closeShipListModal">&times;</span>
+<!-- 선박 리스트 모달 -->
+<div id="listModal" class="modal" style="width: 500px;">
+    <span class="close" id="closeShipListModal">&times;</span>
 
-		<h2>선박 리스트</h2>
-		<div class="modal-content">
-			<!-- 선박 리스트 표시 부분 -->
+    <!-- 제목과 벨 아이콘을 감싸는 컨테이너 -->
+    <div class="title-container">
+        <div class="notification-box" id="alertIcon" style="display: none;">
+            <span class="notification-count">0</span>
+            <div class="notification-bell">
+                <span class="bell-top"></span>
+                <span class="bell-middle"></span>
+                <span class="bell-bottom"></span>
+                <span class="bell-rad"></span>
+            </div>
+        </div>
+        <h2 class="ship-list-title">선박 리스트</h2>
+    </div>
 
-			<ul id="shipList">
-				<!-- 여기에서 AJAX로 받아온 선박 리스트가 표시됨 -->
-			</ul>
-		</div>
-	</div>
+    <div class="modal-content">
+        <!-- 선박 리스트 표시 부분 -->
+        <ul id="shipList">
+            <!-- AJAX로 받아온 선박 리스트가 표시됩니다. -->
+        </ul>
+    </div>
+</div>
 
+<!-- 선박 등록 거절 모달 -->
+<div id="rejectModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" id="closeRejectModal">&times;</span>
+        <h2 class="ship-list-title" id="rejectModalH">선박 등록 거절</h2>
+        <p id="rejectModalP">선박 등록이 거절된 사유를 확인하세요.</p>
+        <!-- 거절 사유 목록 -->
+        <ul id="rejectReasonList">
+            <!-- 서버에서 거절 사유를 받아와 표시 -->
+        </ul>
+    </div>
+</div>
 
 	<!-- 그룹 정보 모달 -->
 	<div id="groupInfoModal" class="modal">

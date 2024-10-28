@@ -1,218 +1,166 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
-<%@ include file="modal2.jsp"%>
-<%@ include file="Header2.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="com.doran.entity.Member"%>
+
+<%
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Pragma", "no-cache");
+response.setDateHeader("Expires", 0);
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
-<title>선박 메인 화면</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
-<script type="text/javascript">
-    var msgType = "<%= request.getAttribute("msgType") != null ? request.getAttribute("msgType") : "" %>";
-    var msg = "<%= request.getAttribute("msg") != null ? request.getAttribute("msg") : "" %>";
-</script>
-<link rel="stylesheet" href="/DoranDoranTest/src/main/webapp/resources/css/modal2.css">
+  <meta charset="UTF-8">
+  <title>Header Navigation</title>
+  <style>
+    /* 기본 스타일 */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-<style>
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow-x: hidden;
-    font-family: 'Roboto Slab', serif;
-}
+    /* 헤더 스타일 */
+    .header {
+      background-color: rgba(51, 51, 51, 0.8);
+      padding: 20px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-.background-image {
-    position: relative;
-    width: 100vw;
-    height: 200vh;
-    background-image: linear-gradient(to bottom, rgba(4, 27, 35, 0) 0%, rgba(4, 27, 35, 0.5) 50%, rgba(4, 27, 35, 1) 100%), 
-        url('<%=request.getContextPath()%>/resources/img/선박.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+    /* 햄버거 메뉴 스타일 */
+    .hamburger {
+      font-size: 37px;
+      padding: 10px;
+      cursor: pointer;
+      color: white;
+    }
 
-.header {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 50px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0); /* 헤더를 투명하게 설정 */
-}
+    /* 오른쪽에서 나오는 메뉴 스타일 */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -250px; /* 숨겨진 상태 */
+      background-color: rgba(255, 255, 255, 0.9);
+      width: 250px;
+      height: 100vh;
+      padding-top: 20px;
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+      border-radius: 5px 0 0 5px;
+      transition: right 0.3s ease; /* 슬라이드 애니메이션 */
+      z-index: 1001;
+    }
 
-.header a {
-    color: white;
-    margin-left: 20px;
-    text-decoration: none;
-    font-size: 18px;
-    padding: 0 10px;
-    position: relative;
-    padding-top: 10px;
-}
+    /* 메뉴가 열렸을 때 위치 */
+    .menu.open {
+      right: 0;
+    }
 
-.header a:not(:first-child)::before {
-    content: '';
-    position: absolute;
-    left: -10px;
-    top: 10px;
-    bottom: 0;
-    width: 1px;
-    background-color: white;
-}
+    /* 메뉴 항목 스타일 */
+    .menu a {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+      color: black;
+      padding: 15px 20px;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
 
-.header a:first-child {
-    border-left: none;
-}
+    /* 아이콘 스타일 */
+    .menu-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
 
-.header a:hover {
-    text-decoration: underline;
-}
+    .menu a:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
 
-/* 햄버거 메뉴 리스트 스타일 */
-.menu {
-    display: none;
-    position: absolute;
-    top: 50px;
-    right: 10px; /* right 값을 조정하여 위치 설정 */
-    background-color: rgba(255, 255, 255, 0.9); /* 메뉴 배경에 약간의 투명도 */
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    width: 200px; /* 메뉴의 너비를 충분히 설정 */
-    z-index: 1001; /* 헤더보다 앞에 나오도록 설정 */
-    overflow: visible; /* 메뉴가 화면 밖으로 나가는 것을 방지 */
-}
-
-
-.menu a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-size: 14px;
-}
-
-.menu a:hover {
-    background-color: #ddd;
-}
-.main-content {
-    padding-top: 100px; /* 헤더 높이만큼 위쪽에 공간을 확보 */
-}
-
-/* 스크롤 섹션 */
-.scroll-section {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(to bottom, rgba(4, 27, 35, 1) 0%, rgba(4, 27, 35, 0.98) 15%, rgba(4, 27, 35, 0.95) 30%, 
-        rgba(4, 27, 35, 0.9) 50%, rgba(4, 27, 35, 0.85) 70%, rgba(4, 27, 35, 0.8) 100%);
-    color: white;
-    font-size: 24px;
-}
-</style>
-
+  <!-- SweetAlert2 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <!-- SweetAlert2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
-<div class="background-image"></div>
-<div class="scroll-section"></div>
+<%
+Object user = session.getAttribute("user");
+System.out.println("세션 유저: " + user);
+%>
+
+<div class="header">
+  <% if (user != null) { %>
+    <!-- 로그인된 경우 햄버거 메뉴 표시 -->
+    <a href="#" id="hamburgerMenu" class="hamburger">&#9776;</a>
+  <% } else { %>
+    <!-- 비로그인 상태 Join 및 Login 버튼 표시 -->
+    <a href="#" id="openJoinModal" style="font-size: 20px; font-weight: bold;">Join</a>
+    <a href="#" id="openLoginModal" style="font-size: 20px; font-weight: bold;">Login</a>
+  <% } %>
+</div>
+
+<!-- 오른쪽 슬라이드 메뉴 -->
+<div class="menu" id="menu">
+  <a href="#" id="openShipRegisterModal">
+    <img src="<%=request.getContextPath()%>/resources/img/ship.png" alt="선박 등록" class="menu-icon"> 선박 등록
+  </a>
+  <a href="#" id="openShipListModal">
+    <img src="<%=request.getContextPath()%>/resources/img/list.png" alt="선박 리스트" class="menu-icon"> 선박 리스트
+  </a>
+  <a href="#" id="openEditModal">
+    <img src="<%=request.getContextPath()%>/resources/img/user.png" alt="회원정보 수정" class="menu-icon"> 회원정보 수정
+  </a>
+  <a href="<%=request.getContextPath()%>/logout">
+    <img src="<%=request.getContextPath()%>/resources/img/logout.png" alt="로그아웃" class="menu-icon"> 로그아웃
+  </a>
+  <!-- 관리자 전용 메뉴 -->
+  <c:if test="${user.memId eq 'admin'}">
+    <a href="<%=request.getContextPath()%>/manager" id="adminOnly">
+      <img src="<%=request.getContextPath()%>/resources/img/admin.png" alt="관리자 전용" class="menu-icon"> 관리자 전용
+    </a>
+  </c:if>
+</div>
 
 <script>
-    // Join 모달 열기
-    document.getElementById("openJoinModal").addEventListener("click", function(e) {
-        e.preventDefault();
-        document.getElementById("joinModal").style.display = "block"; // Join 모달 열기
-        document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
-        document.getElementById("openJoinModal").style.display = "none"; // Join 버튼 숨기기
-        document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 보이기
-    });
+  // 햄버거 버튼 클릭 시 메뉴 열기/닫기
+  document.getElementById("hamburgerMenu")?.addEventListener("click", function(e) {
+    e.preventDefault();
+    const menu = document.getElementById("menu");
+    menu.classList.toggle("open"); // 메뉴 열림/닫힘 토글
+  });
 
-    // Login 모달 열기
-    document.getElementById("openLoginModal").addEventListener("click", function(e) {
-        e.preventDefault();
-        document.getElementById("loginModal").style.display = "block"; // Login 모달 열기
-        document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
-        document.getElementById("openLoginModal").style.display = "none"; // Login 버튼 숨기기
-        document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
-    });
-
-    // Join 모달 닫기
-    document.getElementById("closeJoinModal").addEventListener("click", function() {
-        document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
-        document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
-        document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
-    });
-
-    // Login 모달 닫기
-    document.getElementById("closeLoginModal").addEventListener("click", function() {
-        document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
-        document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
-        document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
-    });
-
-
-    // 햄버거 메뉴 클릭 시 메뉴 리스트 토글
-    document.getElementById("hamburgerMenu")?.addEventListener("click", function(e) {
-        e.preventDefault();
-        console.log("햄버거 메뉴 클릭");
-        var menu = document.getElementById("menu");
-        menu.style.display = (menu.style.display === "block") ? "none" : "block";
-    });
-
-
-
-        // Login 모달 닫기
-        document.getElementById("closeLoginModal").addEventListener("click", function() {
-            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
-            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 복원
-            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 복원
-        });
-        
-    
-     
-
-        
-        
-        </script>  
-    
-    <%
-    Boolean openLoginModal = (Boolean) session.getAttribute("openLoginModal");
-    if (openLoginModal != null && openLoginModal) {
-        // 세션에서 로그인 모달을 열라는 신호가 있으면
-        session.removeAttribute("openLoginModal"); // 신호 제거
-	%>
-        <script>
-            document.getElementById("loginModal").style.display = "block"; // Login 모달 열기
-            document.getElementById("joinModal").style.display = "none"; // Join 모달 닫기
-            document.getElementById("openLoginModal").style.display = "none"; // Login 버튼 숨기기
-            document.getElementById("openJoinModal").style.display = "block"; // Join 버튼 보이기
-        </script>
-	<%
+  // 외부 클릭 시 메뉴 닫기
+  window.addEventListener("click", function(event) {
+    const menu = document.getElementById("menu");
+    const hamburger = document.getElementById("hamburgerMenu");
+    if (event.target !== menu && event.target !== hamburger && !menu.contains(event.target)) {
+      menu.classList.remove("open");
     }
-	%>
-	
-	<%
-    Boolean openJoinModal = (Boolean) session.getAttribute("openJoinModal");
-    if (openJoinModal != null && openJoinModal) {
-        // 세션에서 회원가입 모달을 열라는 신호가 있으면
-        session.removeAttribute("openJoinModal"); // 신호 제거
-	%>
-        <script>
-            document.getElementById("joinModal").style.display = "block"; // Join 모달 열기
-            document.getElementById("loginModal").style.display = "none"; // Login 모달 닫기
-            document.getElementById("openJoinModal").style.display = "none"; // Join 버튼 숨기기
-            document.getElementById("openLoginModal").style.display = "block"; // Login 버튼 보이기
-        </script>
-	<%
-    }
-	%>
-	
+  });
+
+  // 회원정보 수정 모달 열기 이벤트 리스너
+  document.getElementById("openEditModal")?.addEventListener("click", function(e) {
+    e.preventDefault();
+    closeAllModals();
+    document.getElementById("editModal").style.display = "block";
+  });
+
+  function closeAllModals() {
+    document.getElementById("shipRegisterModal").style.display = "none";
+    document.getElementById("editModal").style.display = "none";
+    document.getElementById("listModal").style.display = "none";
+    document.getElementById("groupInfoModal").style.display = "none";
+  }
+</script>
+
 </body>
 </html>

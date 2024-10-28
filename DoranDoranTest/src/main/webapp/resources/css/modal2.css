@@ -245,7 +245,10 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
     transform: translateY(-4px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
+/* 선박리스트 */
+#shipList{
+	padding: 0px !important;
+}
 
 /* 페이징 버튼 스타일 */
 .pagination-container {
@@ -274,3 +277,204 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focu
 .page-button:hover {
 	background-color: #34495E;
 }
+
+/* 벨벨벨 *//* 제목과 벨 아이콘을 감싸는 컨테이너 */
+/* 제목과 벨 아이콘을 감싸는 컨테이너 */
+.title-container {
+    display: flex;
+    align-items: center; /* 세로 가운데 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 */
+    margin-bottom: 10px;
+    position: relative;
+}
+
+/* 알림 아이콘 박스 스타일 */
+.notification-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: 10px; /* 제목과 아이콘 사이 간격 */
+    position: absolute;
+    left: 0; /* 제목 왼쪽에 고정 */
+}
+
+/* 알림 카운트 (빨간 동그라미) */
+.notification-count {
+    position: absolute;
+    z-index: 1;
+    top: -8px;
+    right: -8px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 50%;
+    background-color: #ff4927;
+    color: #fff;
+    text-align: center;
+    animation: zoom 1s ease-in-out infinite alternate; /* 애니메이션 추가 */
+}
+
+/* h2 제목을 중앙 정렬 */
+.ship-list-title {
+    text-align: center;
+    flex-grow: 1;
+}
+
+/* 알림 아이콘 박스 스타일 */
+/* 알림 아이콘 박스 스타일 */
+.notification-box {
+    position: fixed; /* 화면에 고정 */
+    z-index: 99; /* 다른 요소보다 위에 표시 */
+    top: 40px; /* 화면 상단에서 30px 아래 */
+    left: 42px; /* 화면 왼쪽에서 20px 오른쪽으로 이동 */
+    width: 35px; /* 아이콘 크기 */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.notification-bell {
+  animation: bell 1s 1s both infinite;
+}
+.notification-bell * {
+  display: block;
+  margin: 0 auto;
+  background-color: #fff;
+  box-shadow: 0px 0px 15px #fff;
+}
+.bell-top {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px 3px 0 0;
+}
+.bell-middle {
+  width: 25px;
+  height: 25px;
+  margin-top: -1px;
+  border-radius: 12.5px 12.5px 0 0;
+}
+.bell-bottom {
+  position: relative;
+  z-index: 0;
+  width: 32px;
+  height: 2px;
+}
+.bell-bottom::before,
+.bell-bottom::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+}
+.bell-bottom::before {
+  left: 1px;
+  border-bottom: 4px solid #fff;
+  border-right: 0 solid transparent;
+  border-left: 4px solid transparent;
+}
+.bell-bottom::after {
+  right: 1px;
+  border-bottom: 4px solid #fff;
+  border-right: 4px solid transparent;
+  border-left: 0 solid transparent;
+}
+.bell-rad {
+  width: 8px;
+  height: 4px;
+  margin-top: 2px;
+  border-radius: 0 0 4px 4px;
+  animation: rad 1s 2s both infinite;
+}
+/* 알림 카운트 (빨간 동그라미) */
+.notification-count {
+    position: absolute;
+    z-index: 1;
+    top: -4px;
+    right: -4px;
+    width: 20px; /* 동그라미 크기 줄이기 */
+    height: 20px;
+    line-height: 20px;
+    font-size: 14px; /* 폰트 크기도 함께 조정 */
+    border-radius: 50%;
+    background-color: #ff4927;
+    color: #fff;
+    animation: zoom 3s 3s both infinite;
+}
+@keyframes bell {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(30deg); }
+  20% { transform: rotate(0); }
+  80% { transform: rotate(0); }
+  90% { transform: rotate(-30deg); }
+  100% { transform: rotate(0); }
+}
+@keyframes rad {
+  0% { transform: translateX(0); }
+  10% { transform: translateX(6px); }
+  20% { transform: translateX(0); }
+  80% { transform: translateX(0); }
+  90% { transform: translateX(-6px); }
+  100% { transform: translateX(0); }
+}
+@keyframes zoom {
+  0% { opacity: 0; transform: scale(0); }
+  10% { opacity: 1; transform: scale(1); }
+  50% { opacity: 1; }
+  51% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+
+/* 선박등록거절 모달창 */
+#rejectModal.modal{
+	width: 500px;
+}
+
+
+#rejectModalP {
+    text-align: center !important; /* 텍스트 정렬 */
+    margin: 0px;
+}
+
+
+#rejectReasonList {
+    list-style: none;
+    padding: 0;
+}
+#rejectModalH{
+	margin-bottom: 0px !important;
+}
+
+#rejectReasonList li {
+    padding: 10px;
+    margin-bottom: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.reapply-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.reapply-btn:hover {
+    background-color: #45a049;
+}
+
