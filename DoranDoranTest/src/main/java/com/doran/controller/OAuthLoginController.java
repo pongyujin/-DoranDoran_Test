@@ -103,11 +103,13 @@ public class OAuthLoginController {
 
             if (existingMember == null) {
                 memberMapper.googleMemberJoin(member);
-                rttr.addFlashAttribute("msgType", "성공");
-                rttr.addFlashAttribute("msg", platform + " 회원가입이 완료되었습니다.");
+                rttr.addFlashAttribute("msgType", "success");
+                rttr.addFlashAttribute("msg", "로그인 및 회원가입");
+                rttr.addFlashAttribute("msgDetail", platform + " 로그인 및 회원가입이 완료되었습니다.");
             } else {
-                rttr.addFlashAttribute("msgType", "성공");
-                rttr.addFlashAttribute("msg", platform + " 로그인 성공!");
+            	rttr.addFlashAttribute("msgType", "success");
+                rttr.addFlashAttribute("msg", "로그인");
+                rttr.addFlashAttribute("msgDetail", platform + " 로그인 성공!");
             }
 
             // 세션에 MEMBER 객체 저장
@@ -117,8 +119,9 @@ public class OAuthLoginController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            rttr.addFlashAttribute("msgType", "실패");
-            rttr.addFlashAttribute("msg", platform + " 로그인 처리 중 오류가 발생했습니다.");
+            rttr.addFlashAttribute("msgType", "error");
+            rttr.addFlashAttribute("msg", "로그인");
+            rttr.addFlashAttribute("msgDetail", platform + " 로그인 처리 중 오류가 발생했습니다.");
             return "redirect:/error";
         }
     }
@@ -165,7 +168,7 @@ public class OAuthLoginController {
         switch (platform.toLowerCase()) {
             case "google":
                 member.setMemId(userInfoNode.get("id").asText());
-                member.setMemNick(userInfoNode.get("name").asText());
+                member.setMemNick("GoogleUser");  // Google 사용자 닉네임 설정
                 member.setMemEmail(userInfoNode.get("email").asText());
                 member.setMemPw(userInfoNode.get("id").asText());
                 member.setMemPhone("01012341234");

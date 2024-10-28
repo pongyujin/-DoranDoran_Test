@@ -3,6 +3,7 @@ package com.doran.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.doran.entity.Ship;
 
@@ -25,6 +26,12 @@ public interface ShipMapper {
 	
 	//정유진이 만듬 관리자페이지 리스트 뽑기
 	public List<Ship> getAllShips();
+	
+	//정유진이 만듬 관리자 거절하기
+	public void rejectShip(@Param("siCode") String siCode, 
+            @Param("memId") String memId, 
+            @Param("siCert") String siCert, 
+            @Param("siCertReason") String siCertReason);
 	
 
 }

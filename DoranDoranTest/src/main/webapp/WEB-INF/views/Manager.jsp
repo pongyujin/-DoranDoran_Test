@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <!-- SweetAlert2 CSS 및 JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         /* 스타일 설정 */
         body {
@@ -56,7 +61,7 @@
         }
         .button-group {
             display: inline-flex;
-            gap: 10px; /* 버튼 간의 간격 */
+            gap: 10px;
             justify-content: center;
         }
         .approve-btn, .reject-btn {
@@ -76,16 +81,15 @@
 <body>
 
 <script>
+// 승인 안된 선박 리스트 불러오기
 $(document).ready(function() {
-    // 페이지 로드 시 전체 선박 리스트를 AJAX로 가져오기
     $.ajax({
-        url: "/controller/AllShipList", // 전체 shipList 메서드 호출
+        url: "/controller/AllShipList",
         method: "GET",
         success: function(data) {
             let tbody = $("#shipListBody");
             tbody.empty();
 
-            // 각 선박 데이터 행 생성
             for (let i = 0; i < data.length; i++) {
                 let ship = data[i];
                 let row = 
@@ -104,7 +108,11 @@ $(document).ready(function() {
             }
         },
         error: function(err) {
-            console.error("Error fetching ship list:", err);
+            Swal.fire({
+                icon: 'error',
+                title: '오류',
+                text: '선박 리스트를 불러오는 중 오류가 발생했습니다.'
+            });
         }
     });
 });
@@ -115,33 +123,69 @@ function approveShip(siCode, memId) {
         url: "/controller/update?siCode=" + siCode + "&memId=" + memId,
         method: "PUT",
         success: function(response) {
-            alert("선박이 승인되었습니다.");
-            location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: '승인 완료',
+                text: '선박이 승인되었습니다.'
+            }).then(() => {
+                location.reload();
+            });
         },
         error: function(err) {
-            console.error("Error approving ship:", err);
-            alert("선박 승인에 실패했습니다.");
+            Swal.fire({
+                icon: 'error',
+                title: '승인 실패',
+                text: '선박 승인에 실패했습니다.'
+            });
         }
     });
 }
 
-// 선박 거절 요청 함수 (참고로 추가)
+//선박 거절 요청 함수
 function rejectShip(siCode, memId) {
-    $.ajax({
-        url: "/controller/reject", // rejectShip 메서드 URL (구현 필요)
-        method: "PUT",
-        contentType: "application/json",
-        data: JSON.stringify({ siCode: siCode, memId: memId, siCert: '0' }), // 거절 코드 전송
-        success: function() {
-            alert("선박이 거절되었습니다.");
-            location.reload();
-        },
-        error: function(err) {
-            console.error("Error rejecting ship:", err);
-            alert("선박 거절에 실패했습니다.");
+    Swal.fire({
+        title: '거절 사유 입력',
+        input: 'textarea',
+        inputPlaceholder: '거절 사유를 입력하세요...',
+        showCancelButton: true,
+        confirmButtonText: '거절',
+        cancelButtonText: '취소',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const reason = result.value;
+
+            // 요청 데이터 확인
+            const requestData = { siCode: siCode, memId: memId, siCert: '2', siCertReason: reason };
+            console.log("전송 데이터:", requestData);
+            
+            $.ajax({
+                url: "/controller/reject",
+                method: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify(requestData), // 거절 코드와 사유 전송
+                success: function(response) {
+                    console.log("응답 데이터:", response);
+                    Swal.fire({
+                        icon: 'success',
+                        title: '거절 완료',
+                        text: '선박이 거절되었습니다.'
+                    }).then(() => {
+                        location.reload();
+                    });
+                },
+                error: function(err) {
+                    console.error("에러 응답:", err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: '거절 실패',
+                        text: '선박 거절에 실패했습니다.'
+                    });
+                }
+            });
         }
     });
 }
+
 </script>
 
 <div class="manager-page">

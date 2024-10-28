@@ -109,6 +109,23 @@ public class ShipController {
 	    
 	    return ResponseEntity.ok("승인되었습니다."); // 200 상태 코드와 함께 메시지 반환
 	}
+	
+	// 선박 거절
+	@PutMapping("/reject")
+	public ResponseEntity<?> rejectShip(@RequestBody Map<String, Object> requestData) {
+	    // Map에서 데이터 추출
+	    String siCode = (String) requestData.get("siCode");
+	    String memId = (String) requestData.get("memId");
+	    String siCert = (String) requestData.get("siCert");
+	    String siCertReason = (String) requestData.get("siCertReason");
+	    
+	    System.out.println(siCertReason);
+
+	    // Mapper 호출하여 데이터베이스 업데이트
+	    shipMapper.rejectShip(siCode, memId, siCert, siCertReason);
+
+	    return ResponseEntity.ok().build();
+	}
 
 
 	// 4. 선박 세션 저장

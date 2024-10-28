@@ -1,27 +1,6 @@
 // modal.js 파일로 이동할 스크립트
 console.log("modal.js 파일이 로드되었습니다.");
 
-$(document).ready(function() {
-	// msgType과 msg가 존재하면 알림창을 표시합니다.
-	if (msgType && msg) {
-		// 알림창에 표시할 메시지를 설정
-		$("#messageType").text(msgType);  // 성공 또는 실패 유형
-		$("#messageContent").text(msg);   // 메시지 내용
-
-		// msgType에 따라 모달 스타일을 변경
-		if (msgType == "성공" || msgType == "성공") {
-			$("#messageModal").attr("class", "modal-content panel-success");
-		} else {
-			$("#messageModal").attr("class", "modal-content panel-danger");
-		}
-
-		// 모달을 표시하여 메시지 출력
-		$("#messageModal").modal("show");
-	}
-});
-
-
-
 // Member - 1. 아이디 중복 체크
 function registerCheck() {
 	var memId = $("#memIdJoin").val();

@@ -26,8 +26,9 @@
 		sailStatus=#{sailStatus}
 		where memId=#{memId} and siCode=#{siCode}
 	</update>
-	
-	<select id="getShip" parameterType="com.doran.entity.Ship" resultType="com.doran.entity.Ship">
+
+	<select id="getShip" parameterType="com.doran.entity.Ship"
+		resultType="com.doran.entity.Ship">
 		select * from ship
 		where memId=#{memId} and siCode=#{siCode}
 	</select>
@@ -38,11 +39,20 @@
 		SELECT * FROM ship WHERE siCode=#{siCode}
 	</select>
 
-	<!-- 정유진 관리자페이지 -->	
+	<!-- 정유진 관리자페이지 -->
 	<select id="getAllShips" resultType="com.doran.entity.Ship">
-     SELECT * FROM ship WHERE siCert = '0'  <!-- 전체 ships 테이블을 조회 -->
-</select>
-	
+		SELECT * FROM ship WHERE siCert = '0'  <!-- 전체 ships 테이블을 조회 -->
+	</select>
+
+	<!-- 정유진 관리자 거절하기 -->
+	<update id="rejectShip">
+		UPDATE ship
+		SET siCert = #{siCert},
+		siCertReason = #{siCertReason}
+		WHERE siCode = #{siCode} AND memId = #{memId}
+	</update>
+
+
 
 
 </mapper>
