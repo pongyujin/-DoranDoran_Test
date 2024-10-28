@@ -466,7 +466,7 @@
 	            const infoPanel = document.getElementById('infoPanel');
 	            infoPanel.classList.remove('active'); // 패널 숨김
 	            
-	        }, startSail(){ // 8. 항해 시작 함수
+	        }, startSail(){ // 8. startSail 메서드 실행 함수
 	        	
 	        	axios.get("http://localhost:8085/controller/sail/startSail")
 	        	.then(response => {
@@ -476,7 +476,7 @@
 	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
 	            });
 	        	
-	        }, endSail() { // 9. 항해 종료 함수
+	        }, endSail() { // 9. endSail 메서드 실행 함수
 	        	
 	        	axios.get("http://localhost:8085/controller/sail/endSail")
 	        	.then(response => {
@@ -659,11 +659,32 @@
 	                .catch(error => {
 	                    console.error("목적지 설정 실패:", error);
 	                });
-	    	}, startSailInsert(){ // 5. sailController에 데이터 보내고 항해시작db저장
+	    	},
+	        sendWaypoints() { // 4. sailMarkers에 저장된 좌표 정보를 Controller로 전송(db 저장)
+	        
+	        	console.log(waypoints);
+
+	            axios.post("http://localhost:8085/controller", this.waypoints)
+	                .then(response => {
+	                    console.log("Waypoints saved successfully:", response.data);
+	                })
+	                .catch(error => {
+	                    console.error("Error saving waypoints:", error);
+	                });
+	            
+	        }, startSailInsert(){ // 5. sailController에 데이터 보내고 항해시작db저장
 	        	
-	    		document.getElementById("sailForm").submit(); 
+	    		document.getElementById("sailForm").submit(); // 항해 시작 Controller 연결
                 this.startSail();
-	        	
+	        	// 경유지 저장 비동기 방식
+                axios.post("http://localhost:8085/controller/saveWaypoint", this.waypoints)
+                .then(response => {
+                	
+                })
+                .catch(error => {
+                    console.error("Error saving waypoints:", error);
+                });
+                
 	        }, showAlert() { // 6. 항해 확정 alert 창 
 	        	
 	            const waypointsList = this.waypoints.map(waypoint => 
