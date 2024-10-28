@@ -1,6 +1,124 @@
 // modal.js 파일로 이동할 스크립트
 console.log("modal.js 파일이 로드되었습니다.");
 
+console.log("modal.js 파일이 로드되었습니다.");
+
+// 모달 드래그 기능
+function makeModalDraggable(modalId, headerId) {
+    const modal = document.getElementById(modalId);
+    const header = document.getElementById(headerId);
+
+    if (!modal) {
+        console.error("Modal not found with ID:", modalId);
+        return;
+    }
+    if (!header) {
+        console.error("Header not found with ID:", headerId);
+        return;
+    }
+
+    let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+
+    header.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // 마우스 초기 위치 저장
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        // 커서가 이동한 거리 계산
+        posX = mouseX - e.clientX;
+        posY = mouseY - e.clientY;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        // 모달 창의 위치 조정
+        modal.style.top = (modal.offsetTop - posY) + "px";
+        modal.style.left = (modal.offsetLeft - posX) + "px";
+    }
+
+    function closeDragElement() {
+        // 이벤트 리스너 제거
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
+
+// 모달 리사이즈 기능
+function makeModalResizable(modalId) {
+    const modal = document.getElementById(modalId);
+    const resizeHandle = modal.querySelector('.resize-handle');
+
+    if (!modal) {
+        console.error("Modal not found with ID:", modalId);
+        return;
+    }
+    if (!resizeHandle) {
+        console.error("Resize handle not found in modal:", modalId);
+        return;
+    }
+
+    resizeHandle.addEventListener('mousedown', initResize, false);
+
+    function initResize(e) {
+        e.preventDefault();
+        window.addEventListener('mousemove', Resize, false);
+        window.addEventListener('mouseup', stopResize, false);
+    }
+
+    function Resize(e) {
+        const minWidth = 300;
+        const minHeight = 200;
+        const maxWidth = window.innerWidth - modal.offsetLeft;
+        const maxHeight = window.innerHeight - modal.offsetTop;
+
+        let newWidth = e.clientX - modal.offsetLeft;
+        let newHeight = e.clientY - modal.offsetTop;
+
+        newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+        newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+
+        modal.style.width = newWidth + 'px';
+        modal.style.height = newHeight + 'px';
+    }
+
+    function stopResize(e) {
+        window.removeEventListener('mousemove', Resize, false);
+        window.removeEventListener('mouseup', stopResize, false);
+    }
+}
+
+// 모든 모달 창에 적용
+document.addEventListener('DOMContentLoaded', function() {
+    makeModalDraggable("joinModal", "joinModalHeader");
+    makeModalDraggable("loginModal", "loginModalHeader");
+    makeModalDraggable("shipRegisterModal", "shipRegisterModalHeader");
+    makeModalDraggable("editModal", "editModalHeader");
+    makeModalDraggable("listModal", "listModalHeader");
+    makeModalDraggable("rejectModal", "rejectModalHeader");
+    makeModalDraggable("groupInfoModal", "groupInfoModalHeader");
+    makeModalDraggable("sailListModal", "sailListModalHeader");
+
+    makeModalResizable("joinModal");
+    makeModalResizable("loginModal");
+    makeModalResizable("shipRegisterModal");
+    makeModalResizable("editModal");
+    makeModalResizable("listModal");
+    makeModalResizable("rejectModal");
+    makeModalResizable("groupInfoModal");
+    makeModalResizable("sailListModal");
+});
+
+// 그 외의 기존 코드들은 그대로 유지
+
+
 // Member - 1. 아이디 중복 체크
 function registerCheck() {
 	var memId = $("#memIdJoin").val();
@@ -56,29 +174,29 @@ function validateForm() {
 }
 // Ship - 3. 모달을 열 때 선박 리스트 로드
 function loadShipList() {
-    $.ajax({
-        url: 'shipList',
-        type: 'GET',
-        dataType: 'json', // 서버로부터 받는 데이터의 형식
-        success: function(data) {
-            console.log("선박리스트 데이터:", data);
-            const shipListElement = document.getElementById('shipList');
-            const rejectReasonListElement = document.getElementById('rejectReasonList');
-            
-            // 기존 리스트 초기화
-            shipListElement.innerHTML = ''; 
-            rejectReasonListElement.innerHTML = '';
+	$.ajax({
+		url: 'shipList',
+		type: 'GET',
+		dataType: 'json', // 서버로부터 받는 데이터의 형식
+		success: function(data) {
+			console.log("선박리스트 데이터:", data);
+			const shipListElement = document.getElementById('shipList');
+			const rejectReasonListElement = document.getElementById('rejectReasonList');
 
-            let siCertCount = 0; // siCert가 2인 선박의 개수
+			// 기존 리스트 초기화
+			shipListElement.innerHTML = '';
+			rejectReasonListElement.innerHTML = '';
 
-            data.forEach(function(ship) {
-                // siCert 값이 2인 경우 거절 모달 리스트에 추가
-                if (ship.siCert === '2') {
-                    siCertCount++;
+			let siCertCount = 0; // siCert가 2인 선박의 개수
 
-                    // 거절된 선박 정보 및 재신청 버튼 추가
-                    const rejectListItem = document.createElement('li');
-                    rejectListItem.innerHTML = `
+			data.forEach(function(ship) {
+				// siCert 값이 2인 경우 거절 모달 리스트에 추가
+				if (ship.siCert === '2') {
+					siCertCount++;
+
+					// 거절된 선박 정보 및 재신청 버튼 추가
+					const rejectListItem = document.createElement('li');
+					rejectListItem.innerHTML = `
                         <p>선박번호: ${ship.siCode}</p>
                         <p>선박명: ${ship.siName}</p>
                         <p>거절 사유: ${ship.siCertReason || '사유가 없습니다.'}</p>
@@ -86,14 +204,14 @@ function loadShipList() {
                             <button class="reapply-btn" onclick="reapply('${ship.siCode}','${ship.siName}')">재신청</button>
                         </div>
                     `;
-                    rejectReasonListElement.appendChild(rejectListItem);
-                }
+					rejectReasonListElement.appendChild(rejectListItem);
+				}
 
-                // siCert 값이 1인 선박만 메인 리스트에 표시
-                if (ship.siCert === '1') {
-                    const listItem = document.createElement('li');
-                    listItem.classList.add('ship-info-row'); // 스타일 적용을 위해 클래스 추가
-                    listItem.innerHTML = `
+				// siCert 값이 1인 선박만 메인 리스트에 표시
+				if (ship.siCert === '1') {
+					const listItem = document.createElement('li');
+					listItem.classList.add('ship-info-row'); // 스타일 적용을 위해 클래스 추가
+					listItem.innerHTML = `
                         <div class="ship-details">
                             <p>선박번호: ${ship.siCode}</p>
                             <p>선박명: ${ship.siName}</p>
@@ -104,50 +222,50 @@ function loadShipList() {
                             <button onclick="loadSailList('${ship.siCode}')">항해 리스트</button>
                         </div>
                     `;
-                    shipListElement.appendChild(listItem);
-                }
-            });
+					shipListElement.appendChild(listItem);
+				}
+			});
 
-            // siCert가 2인 선박이 있을 때만 알림 아이콘 표시 및 개수 업데이트
-            const alertIcon = document.getElementById('alertIcon');
-            if (siCertCount > 0) {
-                alertIcon.style.display = 'flex';
-                document.querySelector('.notification-count').textContent = siCertCount; // siCert가 2인 개수 표시
-            } else {
-                alertIcon.style.display = 'none';
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching ship list:', error);
-        }
-    });
+			// siCert가 2인 선박이 있을 때만 알림 아이콘 표시 및 개수 업데이트
+			const alertIcon = document.getElementById('alertIcon');
+			if (siCertCount > 0) {
+				alertIcon.style.display = 'flex';
+				document.querySelector('.notification-count').textContent = siCertCount; // siCert가 2인 개수 표시
+			} else {
+				alertIcon.style.display = 'none';
+			}
+		},
+		error: function(xhr, status, error) {
+			console.error('Error fetching ship list:', error);
+		}
+	});
 }
 
 
 // 재신청 버튼 클릭 시 호출되는 함수
 function reapply(siCode, siName) {
-    // 기존의 선박등록 거절 모달을 닫기
-    document.getElementById("rejectModal").style.display = "none";
+	// 기존의 선박등록 거절 모달을 닫기
+	document.getElementById("rejectModal").style.display = "none";
 
-    // Ship ID와 Ship Name을 입력 필드에 직접 설정
-    document.getElementById("siCode").value = siCode;
-    document.getElementById("siName").value = siName;
+	// Ship ID와 Ship Name을 입력 필드에 직접 설정
+	document.getElementById("siCode").value = siCode;
+	document.getElementById("siName").value = siName;
 
-    // Ship ID는 readonly로 설정하여 수정 불가
-    document.getElementById("siCode").setAttribute("readonly", true);
+	// Ship ID는 readonly로 설정하여 수정 불가
+	document.getElementById("siCode").setAttribute("readonly", true);
 
-    // 재신청 시 form action을 "shipReapply"로 설정
-    document.querySelector("#shipRegisterModal form").setAttribute("action", "shipReapply");
+	// 재신청 시 form action을 "shipReapply"로 설정
+	document.querySelector("#shipRegisterModal form").setAttribute("action", "shipReapply");
 
-    // 파일 선택 초기화 및 파일명 표시 초기화
-    document.getElementById("siDocsFile").value = ""; // 기존 파일 제거
-    document.getElementById("fileName").textContent = "파일이 선택되지 않았습니다";
+	// 파일 선택 초기화 및 파일명 표시 초기화
+	document.getElementById("siDocsFile").value = ""; // 기존 파일 제거
+	document.getElementById("fileName").textContent = "파일이 선택되지 않았습니다";
 
-    // submit 버튼 텍스트를 "재신청"으로 설정
-    document.querySelector("#shipRegisterModal .register-button").textContent = "재신청";
+	// submit 버튼 텍스트를 "재신청"으로 설정
+	document.querySelector("#shipRegisterModal .register-button").textContent = "재신청";
 
-    // shipRegisterModal 모달 표시
-    document.getElementById("shipRegisterModal").style.display = "block";
+	// shipRegisterModal 모달 표시
+	document.getElementById("shipRegisterModal").style.display = "block";
 }
 
 
@@ -155,28 +273,28 @@ function reapply(siCode, siName) {
 
 //선박리스트의 벨아이콘 누르면 선박등록거부 모달창 뜨는거
 document.addEventListener('DOMContentLoaded', function() {
-    const alertIcon = document.getElementById('alertIcon');
-    
-    // 벨 아이콘을 클릭하면 rejectModal을 열기
-    alertIcon.addEventListener('click', function() {
+	const alertIcon = document.getElementById('alertIcon');
+
+	// 벨 아이콘을 클릭하면 rejectModal을 열기
+	alertIcon.addEventListener('click', function() {
 		document.getElementById("listModal").style.display = "none";
-        document.getElementById('rejectModal').style.display = 'block';
-    });
-    
-    // 모달의 닫기 버튼을 클릭하면 모달을 닫기
-    document.getElementById('closeRejectModal').addEventListener('click', function() {
-        document.getElementById('rejectModal').style.display = 'none';
+		document.getElementById('rejectModal').style.display = 'block';
+	});
+
+	// 모달의 닫기 버튼을 클릭하면 모달을 닫기
+	document.getElementById('closeRejectModal').addEventListener('click', function() {
+		document.getElementById('rejectModal').style.display = 'none';
 		document.getElementById("listModal").style.display = "block";
 		loadShipList(); // 리스트 로드 함수 호출
-    });
-    
-    // 모달 외부를 클릭하면 모달 닫기
-    window.addEventListener('click', function(event) {
-        const modal = document.getElementById('rejectModal');
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
+	});
+
+	// 모달 외부를 클릭하면 모달 닫기
+	window.addEventListener('click', function(event) {
+		const modal = document.getElementById('rejectModal');
+		if (event.target === modal) {
+			modal.style.display = 'none';
+		}
+	});
 });
 
 
