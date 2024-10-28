@@ -1,5 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page contentType="text/html;charset=UTF-8" language="java"
+	pageEncoding="UTF-8"%>
 <%@ page import="com.doran.entity.Ship"%>
+<%@ page import="com.doran.controller.HwMotorController"%>
+<%@ page import="com.doran.controller.HwServoMotorController"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,6 +32,77 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/resources/css/map.css">
+
+<!-- 수동제어 버튼 스타일 /  허재혁 -->
+<style type="text/css">
+.control-panel {
+	height: 500px; /* 컨테이너의 높이를 500px로 설정합니다. */
+	background-color: #2a3b4c;
+}
+
+.arrow-buttons {
+	position: absolute; /* 절대 위치로 설정하여 화면에서 고정된 위치에 배치합니다. */
+	top: 75px;
+	left: 45%;
+	width: 300px;
+	height: 300px;
+}
+
+/* 각 방향 버튼의 기본 스타일입니다. 버튼 크기와 색상, 모양을 지정합니다. */
+.control-button {
+	position: absolute; /* 각 버튼을 arrow-buttons 안에서 절대 위치로 배치합니다. */
+	width: 150px; /* 버튼 너비를 70px로 설정합니다. */
+	height: 150px; /* 버튼 높이를 70px로 설정합니다. */
+	border: none; /* 버튼의 기본 테두리를 제거합니다. */
+	border-radius: 10px; /* 버튼 모서리를 10px 반경으로 둥글게 처리합니다. */
+	cursor: pointer; /* 버튼 위에 마우스를 올리면 포인터 모양이 나타나도록 설정합니다. */
+}
+
+/* 위쪽 버튼을 배치하는 클래스입니다. */
+.up-btn {
+	top: 0; /* 컨테이너의 위쪽에 위치시킵니다. */
+	left: 50%; /* 수평 중앙에 위치하도록 합니다. */
+	transform: translate(-50%, -50%); /* 버튼을 -50%씩 이동하여 정확한 중앙에 배치합니다. */
+}
+
+/* 아래쪽 버튼을 배치하는 클래스입니다. */
+.down-btn {
+	bottom: 0; /* 컨테이너의 아래쪽에 위치시킵니다. */
+	left: 50%; /* 수평 중앙에 위치하도록 합니다. */
+	transform: translate(-50%, 50%) rotate(180deg);
+	/* 버튼을 수평 중앙으로 이동하고 180도 회전시킵니다. */
+}
+
+/* 왼쪽 버튼을 배치하는 클래스입니다. */
+.left-btn {
+	left: 0; /* 컨테이너의 왼쪽에 위치시킵니다. */
+	top: 50%; /* 수직 중앙에 위치하도록 합니다. */
+	transform: translate(-50%, -50%) rotate(-90deg);
+	/* 버튼을 수직 중앙으로 이동하고 -90도 회전시킵니다. */
+}
+
+/* 오른쪽 버튼을 배치하는 클래스입니다. */
+.right-btn {
+	right: 0; /* 컨테이너의 오른쪽에 위치시킵니다. */
+	top: 50%; /* 수직 중앙에 위치하도록 합니다. */
+	transform: translate(45%, -50%) rotate(90deg);
+	/* 버튼을 수직 중앙으로 이동하고 90도 회전시킵니다. */
+}
+
+.stop-btn {
+    position: absolute; /* 부모 요소를 기준으로 절대 위치를 설정합니다. */
+    top: 50%; /* 화면의 세로 중앙으로 배치합니다. */
+    left: 50%; /* 화면의 가로 중앙으로 배치합니다. */
+    transform: translate(-50%, -50%); /* 요소의 중심이 정확히 중앙에 오도록 조정합니다. */
+}
+
+/* 각 버튼 안에 들어갈 이미지를 설정하는 스타일입니다. */
+.control-button img {
+	width: 100%; /* 이미지 너비를 버튼 크기에 맞춥니다. */
+	height: 100%; /* 이미지 높이를 버튼 크기에 맞춥니다. */
+	object-fit: cover; /* 이미지 크기 조정 방식으로 cover를 사용하여 버튼에 꽉 차게 만듭니다. */
+}
+</style>
 </head>
 <body>
 	<div id="app">
@@ -134,52 +208,73 @@
 		</div>
 
 		<!-- 수동 제어 패널 -->
+		<!-- 허재혁 -->
 		<div class="control-panel">
 			<div class="arrow-buttons">
-				<img src="<%=request.getContextPath()%>/resources/img/left.png"
-					alt="left" class="left-btn"> <img
-					src="<%=request.getContextPath()%>/resources/img/top.png" alt="up"
-					class="up-btn"> <img
-					src="<%=request.getContextPath()%>/resources/img/right.png"
-					alt="right" class="right-btn">
-			</div>
-			<img class="stop-icon"
-				src="<%=request.getContextPath()%>/resources/img/stop.png"
-				alt="STOP">
-		</div>
-
-		<!-- 아이콘 패널(우측) -->
-		<div class="icon-panel">
-			<div class="icon" @click="toggleShipModal()">🚤</div>
-			<div class="icon" @click="getInfo('온도')">🌡️</div>
-			<div class="icon" @click="getInfo('배터리')">🔋</div>
-			<div class="icon" @click="getInfo('통신 상태')">📶</div>
-			<div class="icon" @click="getInfo('현재 위치')">📍</div>
-			<div class="icon" @click="getInfo('방위')">🧭</div>
-			<div class="icon" @click="getInfo('주변 장애물 탐지')">🚧</div>
-			<div class="icon" @click="goMain()">🔙</div>
-			<div class="icon" @click="toggleModal()">📷</div>
-		</div>
-
-		<!-- 남은 시간 거리 패널 -->
-		<div class="info-overlay">
-			<div class="time-distance">
-				<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
+				<button onclick="move('up')" class="control-button up-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="up">
+				</button>
+				<button onclick="moveServo('left')" class="control-button left-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="left">
+				</button>
+				<button onclick="moveServo('right')"
+					class="control-button right-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="right">
+				</button>
+				<button onclick="move('down')" class="control-button down-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="down">
+				</button>
+				<button onclick="motorStop()" class="control-button stop-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/stop.png"
+						alt="STOP">
+				</button>
 			</div>
 
-			<button class="startSail-btn" @click="toggleSailStart"
-				:disabled="sailStatus === '1'">항해 시작</button>
-			<button class="destination-btn" @click="endSail"
-				:disabled="sailStatus === '0'">항해 완료</button>
 
 		</div>
+	</div>
 
-		<!-- 아이콘 정보 상세 패널 -->
-		<div class="info-panel" id="infoPanel">
-			<button class="close-btn" @click="closeInfoPanel">✖</button>
-			<h3 id="infoTitle">정보</h3>
-			<p id="infoContent">상세 내용</p>
+	<!-- 아이콘 패널(우측) -->
+	<div class="icon-panel">
+		<div class="icon" @click="toggleShipModal()">🚤</div>
+		<div class="icon" @click="getInfo('온도')">🌡️</div>
+		<div class="icon" @click="getInfo('배터리')">🔋</div>
+		<div class="icon" @click="getInfo('통신 상태')">📶</div>
+		<div class="icon" @click="getInfo('현재 위치')">📍</div>
+		<div class="icon" @click="getInfo('방위')">🧭</div>
+		<div class="icon" @click="getInfo('주변 장애물 탐지')">🚧</div>
+		<div class="icon" @click="goMain()">🔙</div>
+		<div class="icon" @click="toggleModal()">📷</div>
+	</div>
+
+	<!-- 남은 시간 거리 패널 -->
+	<div class="info-overlay">
+		<div class="time-distance">
+			<span id="remainingTime">9분</span> <span id="remainingDistance">4.1km</span>
 		</div>
+
+		<button class="startSail-btn" @click="toggleSailStart"
+			:disabled="sailStatus === '1'">항해 시작</button>
+		<button class="destination-btn" @click="endSail"
+			:disabled="sailStatus === '0'">항해 완료</button>
+
+	</div>
+
+	<!-- 아이콘 정보 상세 패널 -->
+	<div class="info-panel" id="infoPanel">
+		<button class="close-btn" @click="closeInfoPanel">✖</button>
+		<h3 id="infoTitle">정보</h3>
+		<p id="infoContent">상세 내용</p>
+	</div>
 
 	</div>
 
@@ -730,6 +825,119 @@
         	}
 	    }
 	});
+    </script>
+	<!-- 수동제어 관련 / 허재혁 -->
+	<script>
+        var speed = 0; //초기값
+        var maxSpeed = 100;
+        var minSpeed = 0;
+
+        var degree = 90;  // 서보 모터 기본 각도
+        var maxDegree = 180;
+        var minDegree = 0;
+        
+        // 속도 ↑ ↓
+        function move(direction) {
+            if (direction === 'up') {
+                speed += 10;
+                if (speed > maxSpeed) {
+                    speed = maxSpeed;
+                }
+            } else if (direction === 'down') {
+                speed -= 10;
+                if (speed < minSpeed) {
+                    speed = minSpeed;
+                }
+            }
+
+            // AJAX 요청으로 서버에 속도 값 전달
+            fetch('/controller/updateSpeed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ speed: speed })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Speed updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating speed:', error);
+            });
+        }
+		
+        // 방향타 ← →
+        function moveServo(direction) {
+            if (direction === 'left') {
+                degree -= 10;
+                if (degree < minDegree) {
+                    degree = minDegree;
+                }
+            } else if (direction === 'right') {
+                degree += 10;
+                if (degree > maxDegree) {
+                    degree = maxDegree;
+                }
+            }
+
+            console.log('Sending degree to server:', degree);
+
+            // AJAX 요청으로 서버에 각도 값 전달
+            fetch('/controller/updateServoDegree', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ degree: degree })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Degree updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating degree:', error);
+            });
+        }
+        
+        // 모터 스탑 속도값 0
+        function motorStop() {
+        	speed = 0;
+        	fetch('/controller/updateSpeed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ speed: speed })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Speed updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating speed:', error);
+            });
+        }        	
+         
+        // 서보 중앙고정 90도 값
+        function servoReset() {
+        	degree = 90;
+        	fetch('/controller/updateServoDegree', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ degree: degree })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Degree updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating degree:', error);
+            });
+        }
+        
     </script>
 
 </body>

@@ -192,6 +192,7 @@ public class ShipController {
 		
 		// 세션 생성 시 타임아웃 설정(1시간)
 		session.setMaxInactiveInterval(3600);
+		System.out.println(ship);
 		session.setAttribute("nowShip", ship);
 	}
 	
