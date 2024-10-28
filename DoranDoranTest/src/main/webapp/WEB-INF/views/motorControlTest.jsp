@@ -75,7 +75,7 @@
     </div>
 	
     <script>
-        var speed = 0;
+        var speed = 0; //초기값
         var maxSpeed = 100;
         var minSpeed = 0;
 
