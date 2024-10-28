@@ -353,16 +353,13 @@ body {
     align-items: center; /* 수평 중앙 정렬 */
 }
 
-.sail-close-btn {
-	z-index: 10002;
-	position: absolute;
-	top: 10px;
-	right: 20px;
-	cursor: pointer;
-	font-size: 20px;
-	color: black;
-	background-color: transparent;
-	border: none;
+.sailSetAlert {
+	color: #c1c1c1;
+	margin-top: 20px;
+}
+
+.sailSetAlert p {
+	margin: 0px 100px;
 }
 
 /* 자동/수동, 운항중 상태 표시 패널 --------------------------------------------------------------------*/

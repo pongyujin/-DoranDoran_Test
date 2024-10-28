@@ -58,7 +58,7 @@
 
 		<!-- 항해 시작 설정 모달 -->
 		<div class="modal-overlay" id="sailModal" style="display: none;"
-			@click.self="closeSailModal2">
+			@click="closeSailModal2">
 			<div
 				class="sailModal w-[80%] max-w-screen-md rounded-3xl bg-neutral-50 text-center antialiased px-5 md:px-20 py-10 shadow-2xl shadow-zinc-900 relative top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
 				style="padding: 10px 30px;">
@@ -66,38 +66,32 @@
 				<h3 class="text-2xl lg:text-3xl font-bold text-neutral-900 my-4"
 					style="margin: 25px 0px;">Sail Start</h3>
 
-				<button class="sail-close-btn" @click="closeSailModal"
-					style="display: none;">✖</button>
-
 				<div class="sailContainer form-floating mb-3">
 
-					<form @submit.prevent>
+					<form id="sailForm" action="sail/insert" method="post">
 						<table class="table table-bordered" style="text-align: center;">
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">선박 코드</td>
-								<td><input type="text" v-model="formData.siCode"
-									name="siCode" id="siCode" 
+								<td><input type="text" name="siCode" id="siCode"
 									value="${sessionScope.nowShip.siCode }" readonly
 									class="form-control"></td>
 							</tr>
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">출발지</td>
-								<td><input type="text" v-model="formData.startSail"
-									name="startSail" id="startSail" placeholder="출발지를 입력해주세요"
-									class="form-control"></td>
+								<td><input type="text" name="startSail" id="startSail"
+									placeholder="출발지를 입력해주세요" class="form-control"></td>
 							</tr>
 							<tr>
 								<td style="vertical-align: middle; width: 110px;">목적지</td>
-								<td><input type="text" v-model="formData.endSail"
-									name="endSail" id="endSail" placeholder="목적지를 입력해주세요"
-									class="form-control"></td>
+								<td><input type="text" name="endSail" id="endSail"
+									placeholder="목적지를 입력해주세요" class="form-control"></td>
 							</tr>
 
 							<tr>
 								<td colspan="2">
 									<button type="button" id="routeSet" @click="getFirstPoly"
 										class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
-										style="margin: 8px 0px">목적지 설정</button>
+										style="margin: 8px 0px">경로 탐색</button>
 								</td>
 							</tr>
 						</table>
@@ -105,19 +99,28 @@
 				</div>
 
 				<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"
-					class="w-[16px] h-[16px] absolute right-6 top-6">
+					class="w-[16px] h-[16px] absolute right-6 top-6"
+					@click="closeSailModal" style="cursor: pointer;">
 					<path d="m2 2 12 12m0-12-12 12" class="stroke-2 stroke-current" /></svg>
-
 
 				<div class="wayPoint">
 
 					<!-- 여기에 지도 추가 -->
 					<div id="sailModalMap"
 						style="width: 100%; height: 300px; z-index: 1000000"></div>
+					
+					<div class="sailSetAlert">
+						<ol style="list-style-position: inside;">
+							<p>경유지를 추가할 경우 경로 재탐색이 필요합니다</p>
+						</ol>
+					</div>
+					
 					<button type="button" id="addWaypoint" @click="startSailInsert"
+						:disabled="waypointsUpdated"
 						class="px-8 py-4 mt-8 rounded-2xl text-neutral-50 bg-violet-800 hover:bg-violet-600 active:bg-violet-900 disabled:bg-neutral-900 disabled:cursor-not-allowed transition-colors"
 						style="margin: 16px 32px;">항해 시작 🚤</button>
 				</div>
+
 			</div>
 		</div>
 
@@ -259,6 +262,7 @@
 	<%
 	Ship nowShip = (Ship) session.getAttribute("nowShip");
 	char sailStatus = (nowShip != null) ? nowShip.getSailStatus() : '0';
+	String siCode = (nowShip != null) ? nowShip.getSiCode() : "siCode is null";
 	%>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
@@ -281,23 +285,30 @@
 	            sailMarkers: [], // sailModal에서 표시된 마커들
 	            currentPositionMarker: null, // 사용자 현재 위치 마커
 	            waypoints: [],
+	            waypointsUpdated: false, // 경로 변경 여부
 	            
 	            formData: { // 항해 시작 설정 form 데이터 저장
-	                siCode: '<%= (nowShip != null) ? nowShip.getSiCode() : "" %>',
-	                startSail: '',
-	                endSail: ''
+	                siCode: "<%=siCode%>",
+	                startSail: "",
+	                endSail: ""
 	            }
 	        };
 	    },
 	    mounted() {
-	    	
 	        this.loadPoly(); // 경로 데이터 받아오기
 	        this.updateLocation(); // 위치 업데이트 시작
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
-	        
-	        this.initSailMap(); // 경유지 추가 지도 표시
+	    },
+	    watch: {
+	        waypoints: {
+	            deep: true,
+	            handler() {
+	                // waypoints 변경시 경로 변경됨을 표시
+	                this.waypointsUpdated = true;
+	            }
+	        }
 	    },
 	    methods: {
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
@@ -368,7 +379,7 @@
 
 	        },
 	        async updateLocation() { // 3. 사용자 현재 위치 표시(Google geolocation api)
-	            
+	            // 위치 업데이트를 위한 함수
 	            const updatePosition = () => {
 	                // Geolocation API를 사용하여 현재 위치 가져오기
 	                navigator.geolocation.getCurrentPosition(async (position) => {
@@ -410,7 +421,7 @@
 	            setInterval(updatePosition, 100000);
 	        },
 	        initSpeedControls() { // 4. 속도 조절 함수
-	            // 속도 조절 기능 초기화
+	            
 	            document.getElementById('speedRange1').addEventListener('input', function () {
 	                document.getElementById('speedDisplay1').textContent = this.value;
 	            });
@@ -461,9 +472,7 @@
 	        	
 	        	axios.get("http://localhost:8085/controller/sail/startSail")
 	        	.then(response => {
-	                console.log("Sail started successfully.", response.data);
-	                // 페이지 이동
-	                window.location.href = "http://localhost:8085/controller/map2";
+	                console.log("Sail started successfully.");
 	            })
 	            .catch(error => {
 	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
@@ -485,7 +494,7 @@
 	        	var videoModal = document.getElementById("videoModal");
 	        	videoModal.style.display = "none";
 	        	 
-	        }, toggleModal() {
+	        }, toggleModal() { // 11. 실시간 카메라 모달 켜기 함수
 	            var modal = document.getElementById("videoModal");
 	            var mapDiv = document.getElementById("map");
 
@@ -509,7 +518,7 @@
 	                modal.style.display = "none";
 	            }
 	        },
-	        initDraggable() { // 11. 실시간 카메라 모달 드래그 함수
+	        initDraggable() { // 12. 실시간 카메라 모달 드래그 함수
 	            const modal = document.getElementById('videoModal');
 	            const wrapper = document.getElementById('map');
 	            const reset = document.getElementById('reset');
@@ -568,6 +577,8 @@
 	            if (modal.style.display === "none" || modal.style.display === "") {
 	               
 	            	modal.style.display = "block"; // 모달 표시
+	    	        this.initSailMap(); // 경유지 추가 지도 표시
+	    	        
 	            } else {
 	                modal.style.display = "none";
 	            }
@@ -637,7 +648,8 @@
 	            };
 
 	            // 위치 업데이트 간격 설정(100초 간격)
-	            setInterval(updatePosition, 10000);
+	            setInterval(updatePosition, 100000);
+	            
 	        }, 
 	        getFirstPoly() { // 3. 목적지 설정 버튼 누르면 비동기 방식으로 경로 받아오기(GoogleMapController)
 	        
@@ -659,6 +671,8 @@
 	  		            });
 	  		            flightPath.setMap(this.sailMap);
 	  		            
+	  		       		// waypoints에 변동이 없도록 설정
+	  		            this.waypointsUpdated = false;
 	                    console.log("목적지 설정 성공:", response.data);
 	                })
 	                .catch(error => {
@@ -684,20 +698,18 @@
 	                });
 	        }, startSailInsert(){ // 5. sailController에 데이터 보내고 항해시작db저장
 	        	
-	        	axios.post('http://localhost:8085/controller/sail/insert', this.formData)
-	            .then(response => {
-	                console.log("formData 데이터 전송 성공:", response.data);
-	            })
-	            .catch(error => {
-	                console.error("formData 데이터 전송 실패:", error);
-	            });
+	        	if (!this.waypointsUpdated) {
+	                document.getElementById("sailForm").submit(); 
+	                this.startSail();
+	            } else {
+	                alert("먼저 경로 설정이 완료되어야 합니다.");
+	            }
 	        	
-	        }, closeSailModal(){ // 5. sailModal 끄기(x버튼으로)
+	        }, closeSailModal(){ // 항해 시작 모달 끄기
 	        	
-	        	var sailModal = document.getElementById("sailModal");
-	        	sailModal.style.display = "none";
-	        	
-	        }, closeSailModal2(event){// 5. 항해 시작 모달 끄기(레이아웃클릭)------------------------------------------------------------------------------------------------------
+	        	var videoModal = document.getElementById("sailModal");
+	        	videoModal.style.display = "none";
+	        }, closeSailModal2(event){
 	        	
 	        	var modal = document.getElementById("sailModal");
 	        	
