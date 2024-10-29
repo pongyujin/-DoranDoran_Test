@@ -33,7 +33,7 @@ public class HwGpsController {
 	private Map<String, Object> latestGpsData = new ConcurrentHashMap<>();
 
 	// 현재 항해 정보 저장하는 전역 변수
-	private Sail currentSail;
+	private Sail currentSail = null;
 
 	// 1. 하드웨어에서 gps 정보 받아오기
 	@RequestMapping(value = "/gps-data", method = RequestMethod.POST)
@@ -81,7 +81,6 @@ public class HwGpsController {
 	}
 	
 	// 4. 항해 시작 시 세션에서 nowSail 데이터 가져와 설정
-    @PostMapping("/gpsStartSail")
     public void gpsStartSail(HttpSession session) {
         this.currentSail = (Sail) session.getAttribute("nowSail");
     }

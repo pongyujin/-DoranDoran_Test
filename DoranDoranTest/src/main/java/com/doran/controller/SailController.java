@@ -160,10 +160,10 @@ public class SailController {
 	public @ResponseBody void endSail(HttpSession session) {
 
 		sailingStarted = false;
-		weatherController.endSail(); // 항해 중단 알림
+		weatherController.endSail(); // weathereController 항해 중단 알림
 		Sail sail = (Sail)session.getAttribute("nowSail");
-		shipController.endStatus(sail, session);
 		session.removeAttribute("nowSail"); // 항해 세션 삭제
+		shipController.endStatus(sail, session);
 	}
 	
 	// -------------------------------------------------------------(api 메서드)-------------------
