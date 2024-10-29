@@ -140,26 +140,24 @@ body, html {
 }
 .main-content {
     position: absolute;
-    top: -30vh; /* 음수 값을 사용하여 전체를 위로 이동 */
+    top: -30vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     z-index: 3;
-    padding-top: 150vh; /* 선박 이미지 높이의 일부 공간만 확보 */
-     background: rgba(0, 0, 0, 0); /* 완전 투명 배경 */
+    padding-top: 200vh;
+    padding-bottom: 100vh;
+    /* 배경을 항상 설정하고, 투명도를 변경하여 전환 */
+    background: linear-gradient(
+        to bottom,
+        rgba(4, 27, 35, 1) 0%, rgba(4, 27, 35, 0.98) 15%, rgba(4, 27, 35, 0.95) 30%, 
+        rgba(4, 27, 35, 0.9) 50%, rgba(4, 27, 35, 0.85) 70%, rgba(4, 27, 35, 0.8) 100%
+    );
+    opacity: 0; /* 초기 투명도 설정 */
+    transition: opacity 0.5s ease; /* 부드러운 전환 */
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -170,9 +168,10 @@ body, html {
 .photo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    gap: 0px;
     justify-items: center;
     width: 100%;
+    grid-row-gap: 90px; 
     opacity: 0;
     transform: translateY(50px);
     transition: opacity 0.5s ease, transform 0.5s ease;
@@ -327,6 +326,22 @@ window.addEventListener("load", () => {
         transform: "translateY(0)"
     });
 });
+
+//JavaScript로 스크롤 위치에 따라 opacity 조정
+window.addEventListener('scroll', function () {
+    const mainContent = document.querySelector('.main-content');
+    const scrollPosition = window.scrollY;
+
+    // 스크롤 위치에 따라 opacity 값을 점진적으로 증가
+    if (scrollPosition > 100) {
+        const opacityValue = Math.min((scrollPosition - 100) / 300, 1);
+        mainContent.style.opacity = opacityValue;
+    } else {
+        mainContent.style.opacity = 0; // 스크롤이 100px 이하일 때는 완전 투명
+    }
+});
+
+
 
 // Join 모달 열기
 document.getElementById("openJoinModal").addEventListener("click", function(e) {
