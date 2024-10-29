@@ -120,43 +120,71 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Member - 1. 아이디 중복 체크
+
+
+// Member - 1. 아이디 중복 체크
+var isIdAvailable = false; // 아이디 사용 가능 여부를 저장하는 변수
+
 function registerCheck() {
-	var memId = $("#memIdJoin").val();
-	console.log(memId);
-	$.ajax({
-		url: "registerCheck",
-		type: "get",
-		data: { "memId": memId },
-		success: function(data) {
-			if (data == 0) {
-				$("#checkMessage").text("사용 불가능한 아이디 입니다.");
-				$("#messageType").attr("class", "modal-content panel-danger");
-			} else {
-				$("#checkMessage").text("사용 가능한 아이디 입니다.");
-				$("#messageType").attr("class", "modal-content panel-success");
-			}
-		},
-		error: function() {
-			console.log("error");
-		}
-	});
-	// 모달창 띄우기
-	$("#myModal").modal("show");
+    var memId = $("#memIdJoin").val();
+    console.log(memId);
+    $.ajax({
+        url: "registerCheck",
+        type: "get",
+        data: { "memId": memId },
+        success: function(data) {
+            if (data == 0) {
+                // 사용 불가능한 아이디
+                $("#memIdJoin").removeClass("input-success").addClass("input-error");
+                isIdAvailable = false;
+            } else {
+                // 사용 가능한 아이디
+                $("#memIdJoin").removeClass("input-error").addClass("input-success");
+                isIdAvailable = true;
+            }
+            toggleJoinButton();
+        },
+        error: function() {
+            console.log("error");
+        }
+    });
 }
+
+// 아이디 입력 필드 변경 시 스타일 초기화
+$(document).ready(function() {
+    $("#memIdJoin").on('input', function() {
+        $("#memIdJoin").removeClass("input-success input-error");
+        isIdAvailable = false;
+        toggleJoinButton();
+    });
+});
+
 
 // Member - 2. 비밀번호 확인
 function passwordCheck() {
-	var pw1 = $("#memPw").val();
-	var pw2 = $("#memPw2").val();
-	if (pw1 == pw2) {
-		$(".passMessage").attr("style", "color:green; vertical-align:middle; margin-top:10px;");
-		$("#memPwJoin").attr("value", pw1);
-		$(".passMessage").text("비밀 번호가 일치합니다");
-	} else {
-		$(".passMessage").attr("style", "color:#ff5656; vertical-align:middle; margin-top:10px;");
-		$(".passMessage").text("비밀 번호가 일치하지 않습니다");
-	}
+    var pw1 = $("#memPw").val();
+    var pw2 = $("#memPw2").val();
+    if (pw1 === pw2 && pw1 !== "") {
+        // 비밀번호가 일치할 때
+        $(".passMessage").css({ "color": "green", "vertical-align": "middle", "margin-top": "10px" });
+        $(".passMessage").text("비밀 번호가 일치합니다");
+        $("#memPw, #memPw2").removeClass("input-error").addClass("input-success");
+    } else {
+        // 비밀번호가 일치하지 않을 때
+        $(".passMessage").css({ "color": "#ff5656", "vertical-align": "middle", "margin-top": "10px" });
+        $(".passMessage").text("비밀 번호가 일치하지 않습니다");
+        $("#memPw, #memPw2").removeClass("input-success").addClass("input-error");
+    }
 }
+
+// 비밀번호 입력 필드 변경 시 스타일 초기화
+$(document).ready(function() {
+    $("#memPw, #memPw2").on('input', function() {
+        $("#memPw, #memPw2").removeClass("input-success input-error");
+        $(".passMessage").text("");
+    });
+});
+
 
 // 4. 비밀번호 검사
 function validateForm() {

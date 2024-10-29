@@ -71,8 +71,8 @@ h2 {
 /* 중복체크 버튼 스타일 */
 .duplicate-btn {
     position: absolute;
-    right: 35px;
-    top: 26%;
+    right: 10px; /* 기존 35px에서 조정 */
+    top: 50%; /* 수직 중앙 정렬 */
     transform: translateY(-50%);
     padding: 5px 10px;
     background-color: #1C2933;
@@ -82,11 +82,28 @@ h2 {
     cursor: pointer;
     width: 80px;
 }
+/* 성공 상태 스타일 */
+.input-success {
+    border-bottom-color: green !important;
+}
+
+/* 오류 상태 스타일 */
+.input-error {
+    border-bottom-color: red !important;
+}
+
+input[type="text"]:focus:not(.input-success):not(.input-error),
+input[type="password"]:focus:not(.input-success):not(.input-error),
+input[type="email"]:focus:not(.input-success):not(.input-error),
+input[type="file"]:focus:not(.input-success):not(.input-error) {
+    outline: none;
+    border-bottom-color: white;
+}
+
 
 .duplicate-btn:hover {
     background-color: #17293A;
 }
-
 /* 텍스트 입력 필드 스타일 */
 input[type="text"], input[type="password"], input[type="email"], input[type="file"] {
     width: 100%;
