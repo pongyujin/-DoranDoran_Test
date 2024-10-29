@@ -166,11 +166,13 @@ body, html {
 
 /* 사진 애니메이션 스타일 */
 .photo-grid {
+
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0px;
+    gap: 0px; /* 모든 사진 간격을 최소화 */
     justify-items: center;
-    width: 100%;
+    justify-content: center; /* 그리드 내부 요소들을 중앙에 밀착 */
+    width: 1400px;
     grid-row-gap: 90px; 
     opacity: 0;
     transform: translateY(50px);
@@ -178,8 +180,7 @@ body, html {
     margin-top: -150px; /* 음수 값으로 설정하여 사진들을 위로 올림 */
 }
 
-
-.photo-item {
+.photo-item { 
     width: 360px;
     height: 350px;
     background-color: #ccc;
