@@ -178,7 +178,7 @@
 				<!-- Ship ID는 readonly 속성을 추가 -->
 				<input type="text" id="siCode" name="siCode" placeholder="Ship ID"
 					pattern="[A-Za-z0-9]+" required title="영문자와 숫자만 입력 가능"
-					maxlength="20" readonly>
+					maxlength="20">
 
 				<!-- Ship Name 필드 -->
 				<input type="text" id="siName" name="siName" placeholder="Ship Name"
