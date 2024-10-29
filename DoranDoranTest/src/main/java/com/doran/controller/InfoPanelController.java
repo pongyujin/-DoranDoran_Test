@@ -133,24 +133,24 @@ public class InfoPanelController {
 		return remainDistance;
 	}
 	
-	@RequestMapping(value = "/gps-data", method = RequestMethod.POST)
-    @ResponseBody
-    public String receiveGpsData(@RequestBody Map<String, Object> data) {
-		
-		// GPS 데이터를 최신 상태로 저장
-        latestGpsData.putAll(data);
-        
-        // 개별 값 출력
-        double latitude = (double) data.get("latitude"); // 위도
-        double longitude = (double) data.get("longitude"); // 경도
-        double speed = (double) data.get("speed"); // 속도
-        double heading = (double) data.get("heading"); // 북쪽기준 방위각
-        String time = (String) data.get("time"); // 시간
-
-        String location = "위도: " + latitude + ", 경도: " + longitude;
-
-        return location;
-    }
+//	@RequestMapping(value = "/gps-data", method = RequestMethod.POST)
+//    @ResponseBody
+//    public String receiveGpsData(@RequestBody Map<String, Object> data) {
+//		
+//		// GPS 데이터를 최신 상태로 저장
+//        latestGpsData.putAll(data);
+//        
+//        // 개별 값 출력
+//        double latitude = (double) data.get("latitude"); // 위도
+//        double longitude = (double) data.get("longitude"); // 경도
+//        double speed = (double) data.get("speed"); // 속도
+//        double heading = (double) data.get("heading"); // 북쪽기준 방위각
+//        String time = (String) data.get("time"); // 시간
+//
+//        String location = "위도: " + latitude + ", 경도: " + longitude;
+//
+//        return location;
+//    }
 	
 	// 9. 최신 GPS 데이터를 반환하는 메서드(현재 위도 경도)
     public String getLatestGpsLocation() {

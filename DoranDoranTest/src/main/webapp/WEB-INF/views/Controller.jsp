@@ -148,18 +148,35 @@
 		</div>
 
 		<!-- 수동 제어 패널 -->
+		<!-- 허재혁 -->
 		<div class="control-panel">
 			<div class="arrow-buttons">
-				<img src="<%=request.getContextPath()%>/resources/img/left.png"
-					alt="left" class="left-btn"> <img
-					src="<%=request.getContextPath()%>/resources/img/top.png" alt="up"
-					class="up-btn"> <img
-					src="<%=request.getContextPath()%>/resources/img/right.png"
-					alt="right" class="right-btn">
+				<button onclick="move('up')" class="control-button up-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="up">
+				</button>
+				<button onclick="moveServo('left')" class="control-button left-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="left">
+				</button>
+				<button onclick="moveServo('right')"
+					class="control-button right-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="right">
+				</button>
+				<button onclick="move('down')" class="control-button down-btn">
+					<img
+						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
+						alt="down">
+				</button>
+				<button onclick="motorStop()" class="control-button stop-btn">
+					<img src="<%=request.getContextPath()%>/resources/img/stop.png"
+						alt="STOP">
+				</button>
 			</div>
-			<img class="stop-icon"
-				src="<%=request.getContextPath()%>/resources/img/stop.png"
-				alt="STOP">
 		</div>
 
 		<!-- 아이콘 패널(우측) -->
@@ -815,6 +832,120 @@
 	    }
 	});
 
+    </script>
+
+	<!-- 수동제어 관련 / 허재혁 -->
+	<script>
+        var speed = 0; //초기값
+        var maxSpeed = 100;
+        var minSpeed = 0;
+
+        var degree = 90;  // 서보 모터 기본 각도
+        var maxDegree = 180;
+        var minDegree = 0;
+        
+        // 속도 ↑ ↓
+        function move(direction) {
+            if (direction === 'up') {
+                speed += 10;
+                if (speed > maxSpeed) {
+                    speed = maxSpeed;
+                }
+            } else if (direction === 'down') {
+                speed -= 10;
+                if (speed < minSpeed) {
+                    speed = minSpeed;
+                }
+            }
+
+            // AJAX 요청으로 서버에 속도 값 전달
+            fetch('/controller/updateSpeed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ speed: speed })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Speed updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating speed:', error);
+            });
+        }
+		
+        // 방향타 ← →
+        function moveServo(direction) {
+            if (direction === 'left') {
+                degree -= 10;
+                if (degree < minDegree) {
+                    degree = minDegree;
+                }
+            } else if (direction === 'right') {
+                degree += 10;
+                if (degree > maxDegree) {
+                    degree = maxDegree;
+                }
+            }
+
+            console.log('Sending degree to server:', degree);
+
+            // AJAX 요청으로 서버에 각도 값 전달
+            fetch('/controller/updateServoDegree', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ degree: degree })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Degree updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating degree:', error);
+            });
+        }
+        
+        // 모터 스탑 속도값 0
+        function motorStop() {
+        	speed = 0;
+        	fetch('/controller/updateSpeed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ speed: speed })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Speed updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating speed:', error);
+            });
+        }        	
+         
+        // 서보 중앙고정 90도 값
+        function servoReset() {
+        	degree = 90;
+        	fetch('/controller/updateServoDegree', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ degree: degree })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Degree updated on server:', data);
+            })
+            .catch(error => {
+                console.error('Error updating degree:', error);
+            });
+        }
+        
     </script>
 
 </body>
