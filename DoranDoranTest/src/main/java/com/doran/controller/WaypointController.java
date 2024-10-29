@@ -1,6 +1,5 @@
 package com.doran.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -8,12 +7,14 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.doran.entity.Coordinate;
 import com.doran.entity.Sail;
 import com.doran.entity.Waypoint;
 import com.doran.mapper.WaypointMapper;
+import com.google.gson.Gson;
 
 @RestController
 public class WaypointController {
@@ -25,6 +26,7 @@ public class WaypointController {
 	@PostMapping("saveWaypoint")
 	public void saveWaypoint(@RequestBody List<Coordinate> waypoints, HttpSession session) {
 		
+		waypointSession(waypoints, session);
 		Sail nowSail = (Sail)session.getAttribute("nowSail");
 		int index = 1;
 		
@@ -44,5 +46,15 @@ public class WaypointController {
 			index++;
 		}
 		System.out.println("경유지 저장 완료");
+	}
+	
+	// 2. 경유지 세션 저장(json 형태 변환)
+	@RequestMapping("/waypointSession")
+	public void waypointSession(List<Coordinate> waypoints, HttpSession session) {
+		
+		Gson gson = new Gson();
+		String waypointsJson = gson.toJson(waypoints);
+		System.out.println(waypointsJson);
+		session.setAttribute("waypoints", waypointsJson);
 	}
 }

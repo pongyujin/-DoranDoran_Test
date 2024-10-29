@@ -168,7 +168,7 @@ public class ShipController {
         Ship ship = (Ship)session.getAttribute("nowShip");
         ship.setSailStatus('0');
         shipMapper.sailStatus(ship);
-        session.removeAttribute("nowShip");
+        //session.removeAttribute("nowShip");
         System.out.println("운항 종료된 선박: " + ship);
     }
 

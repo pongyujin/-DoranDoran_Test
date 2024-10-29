@@ -412,13 +412,7 @@ previous_lat, previous_lon = initial_lat, initial_lon
 # 시뮬레이션 설정
 if simulation_mode:
     # 경유점 리스트
-    waypoints = [
-        (34.6, 128.7),
-        (34.8, 128.7),
-        (34.8, 128.95),
-        (35.0, 128.85),
-        (destination_lat, destination_lon)
-    ]
+    waypoints = inputWaypoints
 
     # 고정 장애물 리스트 (5곳)
     fixed_obstacles = [

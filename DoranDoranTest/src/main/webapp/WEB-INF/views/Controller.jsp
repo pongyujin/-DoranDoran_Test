@@ -356,6 +356,8 @@
 	Ship nowShip = (Ship) session.getAttribute("nowShip");
 	char sailStatus = (nowShip != null) ? nowShip.getSailStatus() : '0';
 	String siCode = (nowShip != null) ? nowShip.getSiCode() : "siCode is null";
+	String msgType = (String) request.getAttribute("msgType");
+	String waypoints = (String) session.getAttribute("waypoints");
 	%>
 
 	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
@@ -377,13 +379,14 @@
 	            sailMap: null, // sailModal에 들어갈 지도
 	            sailMarkers: [], // sailModal에서 표시된 마커들
 	            currentPositionMarker: null, // 사용자 현재 위치 마커
-	            waypoints: [],
+	            waypoints: <%=(waypoints != null) ? waypoints : "[]"%>,
 	            
 	            formData: { // 항해 시작 설정 form 데이터 저장
 	                siCode: "<%=siCode%>",
 	                startSail: "",
 	                endSail: ""
-	            }
+	            },
+	            msgType: '<%= msgType %>'
 	        };
 	    },
 	    mounted() {
@@ -392,6 +395,7 @@
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
 	        this.toggleModal(); // 실시간 비디오 모달 켜기
 	        this.initDraggable(); // 모달 드래그 기능 초기화
+	        this.afterStartSail(); // 항해 시작 후 (경유지 추가)
 	    },
 	    methods: {
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
@@ -558,7 +562,7 @@
 	                console.log("Sail started successfully.");
 	            })
 	            .catch(error => {
-	                console.error('Error in endSail:', error.response ? error.response.data : error.message);
+	                console.error('Error in startSail:', error.response ? error.response.data : error.message);
 	            });
 	        	
 	        }, endSail() { // 9. endSail 메서드 실행 함수
@@ -756,10 +760,22 @@
 	            
 	        }, startSailInsert(){ // 5. sailController에 데이터 보내고(form submit) 항해시작db저장
 	        	
+	        	axios.post("http://localhost:8085/controller/waypointSession", this.waypoints)
+                .then(response => {
+                })
+                .catch(error => {
+                    console.error("Error waypointSession waypoints:", error);
+                });
+	        	
 	    		document.getElementById("sailForm").submit(); // 항해 시작 Controller 연결
-                this.startSail();
-	    		this.sendWaypoints();
-                
+
+	        }, afterStartSail(){
+	        	
+	        	console.log(msgType);
+	        	if (this.msgType === "성공") {
+		    		this.sendWaypoints();
+	            }
+	        	
 	        }, showAlert() { // 6. 항해 확정 alert 창 
 	        	
 	            const waypointsList = this.waypoints.map(waypoint => 

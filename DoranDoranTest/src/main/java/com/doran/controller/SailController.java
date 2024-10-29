@@ -112,6 +112,7 @@ public class SailController {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
+		rttr.addFlashAttribute("msgType", "성공");
 		return "redirect:/map2";
 	}
 	
