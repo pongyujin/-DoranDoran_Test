@@ -662,28 +662,18 @@
 	    	},
 	        sendWaypoints() { // 4. sailMarkers에 저장된 좌표 정보를 Controller로 전송(db 저장)
 	        
-	        	console.log(waypoints);
-
-	            axios.post("http://localhost:8085/controller", this.waypoints)
+	            axios.post("http://localhost:8085/controller/saveWaypoint", this.waypoints)
 	                .then(response => {
-	                    console.log("Waypoints saved successfully:", response.data);
 	                })
 	                .catch(error => {
 	                    console.error("Error saving waypoints:", error);
 	                });
 	            
-	        }, startSailInsert(){ // 5. sailController에 데이터 보내고 항해시작db저장
+	        }, startSailInsert(){ // 5. sailController에 데이터 보내고(form submit) 항해시작db저장
 	        	
 	    		document.getElementById("sailForm").submit(); // 항해 시작 Controller 연결
                 this.startSail();
-	        	// 경유지 저장 비동기 방식
-                axios.post("http://localhost:8085/controller/saveWaypoint", this.waypoints)
-                .then(response => {
-                	
-                })
-                .catch(error => {
-                    console.error("Error saving waypoints:", error);
-                });
+	    		this.sendWaypoints();
                 
 	        }, showAlert() { // 6. 항해 확정 alert 창 
 	        	
@@ -691,8 +681,8 @@
 	            	waypoint.lat + " " + waypoint.lng
 	        	).join('<br>');
 	        	console.log("waypointsList : "+waypointsList);
-	        
-	            Swal.fire({
+
+	        	Swal.fire({
 	                title: "<strong>Waypoints</strong>",
 	                icon: "info",
 	                html: "Here are the waypoints:<br>"
