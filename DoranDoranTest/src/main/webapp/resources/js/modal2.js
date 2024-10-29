@@ -1,7 +1,44 @@
 // modal.js 파일로 이동할 스크립트
 console.log("modal.js 파일이 로드되었습니다.");
 
-console.log("modal.js 파일이 로드되었습니다.");
+// 모달 이동을 위한 변수
+var isDragging = false;
+var offsetX = 0;
+var offsetY = 0;
+
+// 모든 모달 헤더에 대해 이벤트 리스너를 추가합니다.
+$(document).ready(function() {
+    $('.modal-header').on('mousedown', function(e) {
+        var $modal = $(this).closest('.modal');
+        isDragging = true;
+        offsetX = e.clientX - $modal.offset().left;
+        offsetY = e.clientY - $modal.offset().top;
+
+        // 드래그 중인 상태를 나타내는 클래스 추가
+        $(this).addClass('dragging');
+
+        // 마우스 이동 이벤트 바인딩
+        $(document).on('mousemove.modalDrag', function(e) {
+            if (isDragging) {
+                $modal.offset({
+                    top: e.clientY - offsetY,
+                    left: e.clientX - offsetX
+                });
+            }
+        });
+
+        // 마우스 업 이벤트 바인딩
+        $(document).on('mouseup.modalDrag', function() {
+            isDragging = false;
+
+            // 드래그 중인 상태 클래스를 제거
+            $('.modal-header').removeClass('dragging');
+
+            // 이벤트 언바인딩
+            $(document).off('mousemove.modalDrag mouseup.modalDrag');
+        });
+    });
+});
 
 // 모달 드래그 기능
 function makeModalDraggable(modalId, headerId) {

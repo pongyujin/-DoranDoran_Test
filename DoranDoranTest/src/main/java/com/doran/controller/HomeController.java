@@ -58,6 +58,14 @@ public class HomeController {
 		return "Main2";
 
 	}
+	
+	// 메인 페이지 이동
+	@GetMapping("/main3")
+	public String showMainPage3(Model model) {
+
+		return "Main3";
+
+	}
 
 	// Manager 관리자 페이지 추가
 	@GetMapping("/manager")

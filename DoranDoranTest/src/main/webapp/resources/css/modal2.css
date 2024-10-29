@@ -14,38 +14,44 @@
     top: 50%;
     transform: translate(-50%, -50%);
     width: 400px;
-    background-color: rgba(49, 63, 73, 0.9);
-    padding: 0; /* 패딩을 0으로 설정하여 모달 헤더와 콘텐츠의 패딩을 개별적으로 관리 */
+    background-color: rgb(49, 63, 73);
+    padding: 0;
     border-radius: 10px;
     color: white;
     max-width: 90%;
     max-height: 90%;
-    overflow: auto; /* 콘텐츠가 많을 경우 스크롤 가능하도록 설정 */
+    overflow: auto;
 }
-
 /* 모달 헤더 스타일 */
 .modal-header {
     cursor: move;
     padding: 10px;
-    background-color: rgba(49, 63, 73, 0.9);
+    background-color: #3e4951; /* 헤더 배경색 변경 */
     display: flex;
     align-items: center;
+    justify-content: center; /* 제목을 중앙에 배치 */
+    position: relative; /* 닫기 버튼을 절대 위치로 배치하기 위해 설정 */
+}
+
+/* 드래그 중인 상태의 모달 헤더 스타일 */
+.modal-header.dragging {
+    background-color: #7c858c; /* 드래그 중일 때의 배경색 */
+    cursor: grabbing;
 }
 
 .modal-header h2 {
-    flex-grow: 1;
     margin: 0;
-    text-align: center;
     color: white;
 }
 
 .modal-header .close {
-    position: relative;
-    top: 0;
-    right: 0;
-    margin-left: auto;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
 }
-
 /* 모달 컨텐츠 스타일 */
 .modal-content {
     padding: 20px;
@@ -70,8 +76,8 @@ h2 {
 /* 중복체크 버튼 스타일 */
 .duplicate-btn {
     position: absolute;
-    right: 10px; /* 기존 35px에서 조정 */
-    top: 50%; /* 수직 중앙 정렬 */
+    right: 10px;
+    top: 50%;
     transform: translateY(-50%);
     padding: 5px 10px;
     background-color: #1C2933;

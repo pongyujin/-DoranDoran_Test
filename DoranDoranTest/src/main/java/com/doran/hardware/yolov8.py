@@ -11,7 +11,7 @@ model = YOLO('yolov8s.pt')
 stream_url = "http://192.168.219.47:8080/video_feed"
 
 # Java 서버 주소
-java_server_url = "http://192.168.219.120:8085/controller/receive-data"
+java_server_url = "http://192.168.219.101:8085/controller/receive-data"
 
 # 스트림 열기
 cap = cv2.VideoCapture(stream_url)
