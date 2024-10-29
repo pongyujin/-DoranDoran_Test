@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -45,6 +44,8 @@ public class SailController {
 	private ShipGroupMapper shipGroupMapper;
 	@Autowired
 	private ShipController shipController;
+	@Autowired
+	private HwGpsController hwGpsController;
 
 	private final String apiKey = "AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg";
 	private final String placeKey = "AIzaSyAW9QwdMPgIykOFaLdCX5ZJTQOED8FVLfg";
@@ -98,11 +99,15 @@ public class SailController {
 			// c. 항해 시작 메서드 실행(+운항 상태 변경)
 			startSail(session);
 			
-			// e. Weather 데이터를 설정하여 weather 메서드 호출
+			// d. Weather 데이터를 설정하여 weather 메서드 호출
 			Weather weather = new Weather();
 			weather.setSailNum(sail.getSailNum());
 			weather.setSiCode(sail.getSiCode());
 	        weatherController.weather(weather);
+	        
+	        // e. gps 데이터 db 저장
+	        hwGpsController.gpsStartSail(session);
+	        hwGpsController.insertGps();
 			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

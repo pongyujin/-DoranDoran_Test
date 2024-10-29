@@ -110,8 +110,13 @@ public class InfoPanelController {
 	// 6. 속도
 	public String velocity() {
 		
-		String velocity = 30 + " 노트 속도";
-		return velocity;
+		if (latestGpsData.isEmpty()) {
+            return "속도 데이터가 없습니다.";
+        }
+
+		double speed = (double) latestGpsData.get("speed"); // 속도
+
+        return speed + " km/h";
 	}
 
 	// 7. 남은 시간
@@ -126,13 +131,6 @@ public class InfoPanelController {
 		
 		String remainDistance = "남은 거리 " + 10 + "km";
 		return remainDistance;
-	}
-
-	// 9. 현재 위치
-	public String location() {
-		
-		String location = "위도: " + 37.5665 + ", 경도: " + 126.9780;
-		return location;
 	}
 	
 	@RequestMapping(value = "/gps-data", method = RequestMethod.POST)
@@ -154,8 +152,9 @@ public class InfoPanelController {
         return location;
     }
 	
-	// 최신 GPS 데이터를 반환하는 메서드
+	// 9. 최신 GPS 데이터를 반환하는 메서드(현재 위도 경도)
     public String getLatestGpsLocation() {
+    	
         if (latestGpsData.isEmpty()) {
             return "GPS 데이터가 없습니다.";
         }
