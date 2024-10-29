@@ -22,6 +22,14 @@ public class test3 {
 			py.pythonInterpreter(pythonInterpreterPath, python2ScriptPath); // Python 스크립트 실행
 		}).start();
 
+		// GPS
+		String python3ScriptPath = "src/main/java/com/doran/hardware/GPS.py";
+		new Thread(() -> {
+			// py파일 연결
+			PythonConnect py = new PythonConnect();
+			py.pythonInterpreter(pythonInterpreterPath, python3ScriptPath); // Python 스크립트 실행
+		}).start();
+
 	}
 
 }

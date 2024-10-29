@@ -34,7 +34,75 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style type="text/css">
+.control-panel {
+	height: 500px; /* 컨테이너의 높이를 500px로 설정합니다. */
+	background-color: #2a3b4c;
+}
 
+.arrow-buttons {
+	position: absolute; /* 절대 위치로 설정하여 화면에서 고정된 위치에 배치합니다. */
+	top: 75px;
+	left: 45%;
+	width: 300px;
+	height: 300px;
+}
+
+/* 각 방향 버튼의 기본 스타일입니다. 버튼 크기와 색상, 모양을 지정합니다. */
+.control-button {
+	position: absolute; /* 각 버튼을 arrow-buttons 안에서 절대 위치로 배치합니다. */
+	width: 150px; /* 버튼 너비를 70px로 설정합니다. */
+	height: 150px; /* 버튼 높이를 70px로 설정합니다. */
+	border: none; /* 버튼의 기본 테두리를 제거합니다. */
+	border-radius: 10px; /* 버튼 모서리를 10px 반경으로 둥글게 처리합니다. */
+	cursor: pointer; /* 버튼 위에 마우스를 올리면 포인터 모양이 나타나도록 설정합니다. */
+}
+
+/* 위쪽 버튼을 배치하는 클래스입니다. */
+.up-btn {
+	top: 0; /* 컨테이너의 위쪽에 위치시킵니다. */
+	left: 50%; /* 수평 중앙에 위치하도록 합니다. */
+	transform: translate(-50%, -50%); /* 버튼을 -50%씩 이동하여 정확한 중앙에 배치합니다. */
+}
+
+/* 아래쪽 버튼을 배치하는 클래스입니다. */
+.down-btn {
+	bottom: 0; /* 컨테이너의 아래쪽에 위치시킵니다. */
+	left: 50%; /* 수평 중앙에 위치하도록 합니다. */
+	transform: translate(-50%, 50%) rotate(180deg);
+	/* 버튼을 수평 중앙으로 이동하고 180도 회전시킵니다. */
+}
+
+/* 왼쪽 버튼을 배치하는 클래스입니다. */
+.left-btn {
+	left: 0; /* 컨테이너의 왼쪽에 위치시킵니다. */
+	top: 50%; /* 수직 중앙에 위치하도록 합니다. */
+	transform: translate(-50%, -50%) rotate(-90deg);
+	/* 버튼을 수직 중앙으로 이동하고 -90도 회전시킵니다. */
+}
+
+/* 오른쪽 버튼을 배치하는 클래스입니다. */
+.right-btn {
+	right: 0; /* 컨테이너의 오른쪽에 위치시킵니다. */
+	top: 50%; /* 수직 중앙에 위치하도록 합니다. */
+	transform: translate(45%, -50%) rotate(90deg);
+	/* 버튼을 수직 중앙으로 이동하고 90도 회전시킵니다. */
+}
+
+.stop-btn {
+	position: absolute; /* 부모 요소를 기준으로 절대 위치를 설정합니다. */
+	top: 50%; /* 화면의 세로 중앙으로 배치합니다. */
+	left: 50%; /* 화면의 가로 중앙으로 배치합니다. */
+	transform: translate(-50%, -50%); /* 요소의 중심이 정확히 중앙에 오도록 조정합니다. */
+}
+
+/* 각 버튼 안에 들어갈 이미지를 설정하는 스타일입니다. */
+.control-button img {
+	width: 100%; /* 이미지 너비를 버튼 크기에 맞춥니다. */
+	height: 100%; /* 이미지 높이를 버튼 크기에 맞춥니다. */
+	object-fit: cover; /* 이미지 크기 조정 방식으로 cover를 사용하여 버튼에 꽉 차게 만듭니다. */
+}
+</style>
 </head>
 <body>
 	<div id="app">
