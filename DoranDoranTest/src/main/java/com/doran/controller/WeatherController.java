@@ -73,11 +73,10 @@ public class WeatherController {
 		currentWeather.setWTime(currentTime);
 		currentWeather.setWTemp(tideObsAirTemp());
 		// currentWeather.setStatBattery("80"); // 기존꺼 주석처리 - 허재혁
-		
+
 		// HwBatteryController의 전압 값을 가져옴 - 허재혁
 		double voltage = hwBatteryController.getVoltage();
 		currentWeather.setStatBattery(String.valueOf(voltage));
-		
 		currentWeather.setWWindSpeed(tideObsWind());
 		currentWeather.setWWaveHeight(obsWaveHight());
 		currentWeather.setWSeaTemp(tideObsTemp());

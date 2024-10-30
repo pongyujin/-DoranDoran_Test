@@ -219,28 +219,28 @@
 		<!-- 허재혁 -->
 		<div class="control-panel">
 			<div class="arrow-buttons">
-				<button ref="upBtn" onclick="move('up')" class="control-button up-btn">
+				<button onclick="move('up')" class="control-button up-btn">
 					<img
 						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
 						alt="up">
 				</button>
-				<button ref="leftBtn" onclick="moveServo('left')" class="control-button left-btn">
+				<button onclick="moveServo('left')" class="control-button left-btn">
 					<img
 						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
 						alt="left">
 				</button>
-				<button ref="rightBtn" onclick="moveServo('right')"
+				<button onclick="moveServo('right')"
 					class="control-button right-btn">
 					<img
 						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
 						alt="right">
 				</button>
-				<button ref="downBtn" onclick="move('down')" class="control-button down-btn">
+				<button onclick="move('down')" class="control-button down-btn">
 					<img
 						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
 						alt="down">
 				</button>
-				<button ref="stopBtn" onclick="motorStop()" class="control-button stop-btn">
+				<button onclick="motorStop()" class="control-button stop-btn">
 					<img src="<%=request.getContextPath()%>/resources/img/stop.png"
 						alt="STOP">
 				</button>
@@ -386,13 +386,10 @@
 	                startSail: "",
 	                endSail: ""
 	            },
-	            msgType: '<%= (msgType != null) ? msgType : "" %>'
+	            msgType: '<%= msgType %>'
 	        };
 	    },
 	    mounted() {
-	    	// 전역에서 참조 가능하도록 저장
-	        window.appVueInstance = this;
-	    	
 	        this.loadPoly(); // 경로 데이터 받아오기
 	        this.updateLocation(); // 위치 업데이트 시작
 	        this.initSpeedControls(); // 속도 조절 컨트롤 초기화
@@ -774,6 +771,7 @@
 
 	        }, afterStartSail(){
 	        	
+	        	console.log(msgType);
 	        	if (this.msgType === "성공") {
 		    		this.sendWaypoints();
 	            }
@@ -900,16 +898,6 @@
 	        	}else{
 	        		btn.style.opacity = 1;
 	        	}
-	        	
-	        	// #app 인스턴스의 control-panel 버튼 비활성화/활성화
-	            const appInstance = window.appVueInstance;
-	            if (appInstance) {
-	                ["upBtn", "leftBtn", "rightBtn", "downBtn", "stopBtn"].forEach(ref => {
-	                    if (appInstance.$refs[ref]) {
-	                        appInstance.$refs[ref].disabled = (btn.textContent === 'auto "on"');
-	                    }
-	                });
-	            }
 	        	
         	}, checkSailStatus(){
         		
