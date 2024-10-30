@@ -17,13 +17,19 @@ public class GoMapController {
 	@RequestMapping("/map3")
 	public String showController2() {
 		return "Controller2";
-	}	
+	}
+
 	// Controller2.jsp 이동 (지해님 디자인)
 	@RequestMapping("/map4")
 	public String showController3() {
 		return "Controller3";
 	}
 
+	// Controller4.jsp 이동 (a* 연동)
+	@RequestMapping("/Controller4")
+	public String showController4() {
+		return "Controller4";
+	}
 
 	// videoModal.jsp 이동
 	@RequestMapping("/videoModal")
