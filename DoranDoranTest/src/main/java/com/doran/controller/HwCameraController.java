@@ -1,8 +1,10 @@
 package com.doran.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,47 +31,60 @@ public class HwCameraController {
 	@Autowired
 	private CameraMapper cameraMapper;
 
+	@Autowired
+	private AlertController alertController;
+
 	// 멀티파트 데이터를 수신하여 처리
+
 	@PostMapping(consumes = "multipart/form-data")
-	public ResponseEntity<String> receiveData(@RequestParam("json") String jsonData,
-			@RequestParam("image") MultipartFile imageFile) {
-		try {
-			// JSON 데이터를 파싱하여 감지 객체 리스트로 변환
-			ObjectMapper objectMapper = new ObjectMapper();
-			List<Map<String, Object>> detections = objectMapper.readValue(jsonData, List.class);
-			System.out.println("HWCameraController detections : " + detections);
+	public ResponseEntity<Map<String, String>> receiveData(@RequestParam("json") String jsonData,
+	        @RequestParam("image") MultipartFile imageFile) {
+	    Map<String, String> response = new HashMap<>();
+	    try {
+	        // Parse the JSON data (for verification)
+	        ObjectMapper objectMapper = new ObjectMapper();
+	        List<Map<String, Object>> detections = objectMapper.readValue(jsonData, List.class);
+	        System.out.println("HWCameraController detections : " + detections);
 
-			// 이미지 파일이 존재하는지 확인 후 처리
-			if (imageFile != null && !imageFile.isEmpty()) {
-				byte[] imageBytes = imageFile.getBytes(); // 이미지 파일 바이트 데이터
+	        // Check if the image file exists
+	        if (imageFile != null && !imageFile.isEmpty()) {
+	            byte[] imageBytes = imageFile.getBytes(); // Get the byte data of the image file
 
-				// 각 감지된 객체에 대해 데이터베이스에 저장
-				for (Map<String, Object> detection : detections) {
-					String className = (String) detection.get("className"); // 감지된 객체의 클래스 이름
-					if (className != null && !className.isEmpty()) {
-						// 일단 넣어보기
-						Camera camera = new Camera();
-						camera.setSiCode("7"); // siCode 값을 7로 설정
-						camera.setSailNum(1); // sailNum 값을 1로 설정
-						camera.setObsName(className);
-						camera.setObsImg(imageBytes); // 이미지 바이트 데이터를 설정
+	            // Encode the image to a Base64 string
+	            String base64Image = Base64.encodeBase64String(imageBytes);
+	            response.put("status", "success");
+	            response.put("image", "data:image/jpeg;base64," + base64Image); // Include the image data in the JSON response
 
-						// 현재 날짜를 설정 (createdAt은 NOW()로 자동 설정됨)
-						int cnt = cameraMapper.cameraInsert(camera); // DB에 저장
-						if(cnt>0) {
-							System.out.println("HWCameraController DB 저장 성공" + className);
-						}else {
-							System.out.println("HWCameraController DB 저장 실패!!!!!");
-						}
-					}
-				}
-			}
-			return ResponseEntity.ok("Data and image saved successfully in the database");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body("Failed to process the request");
-		}
+	            // Optionally save the image and JSON data to the database
+	            for (Map<String, Object> detection : detections) {
+	                String className = (String) detection.get("className");
+	                if (className != null && !className.isEmpty()) {
+	                    Camera camera = new Camera();
+	                    camera.setSiCode("7");
+	                    camera.setSailNum(1);
+	                    camera.setObsName(className);
+	                    camera.setObsImg(imageBytes); // Save image bytes as BLOB
+	                    cameraMapper.cameraInsert(camera); // Save to the database
+	                }
+	            }
+
+	        } else {
+	            response.put("status", "error");
+	            response.put("message", "No image file provided.");
+	        }
+
+	        // If processing was successful, send an alert to the client
+	        if (response.get("status").equals("success")) {
+	            alertController.sendAlert(response);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        response.put("status", "error");
+	        response.put("message", "Failed to process the request");
+	    }
+	    return ResponseEntity.ok(response);
 	}
+
 
 	// 이미지 파일을 DB에서 불러와 반환하는 엔드포인트 추가
 	@GetMapping("/image/{imgNum}")

@@ -236,6 +236,22 @@
 			<version>2.2.4</version>
 		</dependency>
 
+		<!-- 10-30 정유진 웹소캣 라이브러리 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+			<version>5.0.2.RELEASE</version> <!-- 사용 중인 Spring Framework 버전에 맞게 조정하세요 -->
+		</dependency>
+
+		<!-- 10-30 정유진 웹소캣 라이브러리 -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-messaging</artifactId>
+			<version>5.0.2.RELEASE</version> <!-- 스프링 프레임워크와 동일한 버전 -->
+		</dependency>
+
+
+
 	</dependencies>
 	<build>
 		<plugins>
