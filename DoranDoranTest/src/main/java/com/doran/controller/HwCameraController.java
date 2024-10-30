@@ -37,6 +37,7 @@ public class HwCameraController {
 	// 멀티파트 데이터를 수신하여 처리
 
 	@PostMapping(consumes = "multipart/form-data")
+<<<<<<< HEAD
 	public ResponseEntity<Map<String, String>> receiveData(@RequestParam("json") String jsonData,
 	        @RequestParam("image") MultipartFile imageFile) {
 	    Map<String, String> response = new HashMap<>();
@@ -45,6 +46,15 @@ public class HwCameraController {
 	        ObjectMapper objectMapper = new ObjectMapper();
 	        List<Map<String, Object>> detections = objectMapper.readValue(jsonData, List.class);
 	        System.out.println("HWCameraController detections : " + detections);
+=======
+	public ResponseEntity<String> receiveData(@RequestParam("json") String jsonData,
+			@RequestParam("image") MultipartFile imageFile) {
+		try {
+			// JSON 데이터를 파싱하여 감지 객체 리스트로 변환
+			ObjectMapper objectMapper = new ObjectMapper();
+			List<Map<String, Object>> detections = objectMapper.readValue(jsonData, List.class);
+			System.out.println("Received detections: " + detections);
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
 
 	        // Check if the image file exists
 	        if (imageFile != null && !imageFile.isEmpty()) {
@@ -55,6 +65,7 @@ public class HwCameraController {
 	            response.put("status", "success");
 	            response.put("image", "data:image/jpeg;base64," + base64Image); // Include the image data in the JSON response
 
+<<<<<<< HEAD
 	            // Optionally save the image and JSON data to the database
 	            for (Map<String, Object> detection : detections) {
 	                String className = (String) detection.get("className");
@@ -83,6 +94,19 @@ public class HwCameraController {
 	        response.put("message", "Failed to process the request");
 	    }
 	    return ResponseEntity.ok(response);
+=======
+						// 현재 날짜를 설정 (createdAt은 NOW()로 자동 설정됨)
+						cameraMapper.cameraInsert(camera); // DB에 저장
+						System.out.println("Image data saved in database for class: " + className);
+					}
+				}
+			}
+			return ResponseEntity.ok("Data and image saved successfully in the database");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.status(500).body("Failed to process the request");
+		}
+>>>>>>> branch 'master' of https://github.com/pongyujin/DoranDoran_Test.git
 	}
 
 

@@ -1,5 +1,4 @@
-select * from waypoint;
-
+select * from weather;
 
 INSERT INTO member (memId, memPw, memNick, memEmail, memPhone)
 VALUES ('joy', '1234', '조이', 'joy@gmail.com', '010-1234-5678');
@@ -17,6 +16,8 @@ INSERT INTO authority (authNum, authName, authDesc) VALUES
 ALTER TABLE sail
 ADD COLUMN startSail VARCHAR(100) NOT NULL COMMENT '출발 항해 정보',
 ADD COLUMN endSail VARCHAR(100) NOT NULL COMMENT '목적지 항해 정보';
+
+
 
 
 

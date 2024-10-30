@@ -1,31 +1,19 @@
 package com.doran.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.doran.entity.Coordinate;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.doran.mapper.WaypointMapper;
 
 // 구글 api로 지도 및 경로를 표시하는 controller
 @RestController
@@ -34,12 +22,8 @@ public class GoogleMapController {
 	private final String apiKey = "AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg";
 	private final String placeKey = "AIzaSyAW9QwdMPgIykOFaLdCX5ZJTQOED8FVLfg";
 
-	private final aStartService aStartService;
-	
 	@Autowired
-    public GoogleMapController(aStartService pythonService) {
-        this.aStartService = pythonService;
-    }
+	private WaypointMapper waypointMapper;
 
 	// 1. 구글 마커 표시 api
 	@GetMapping("/marker")
@@ -55,33 +39,9 @@ public class GoogleMapController {
 
 	// 2. a* 경로 좌표 리스트 변환(문자열 정보를 api에 쓸 수 있는 json 형태로)
 	@RequestMapping("/flightPlanCoordinates")
-	public List<Coordinate> flightPlanCoordinates(@RequestBody String waypoints) {
+	public List<Coordinate> flightPlanCoordinates(String coordinateData) {
 
-		try { // 경유지 좌표 python 코드에 맞게 파싱
-	        ObjectMapper objectMapper = new ObjectMapper();
-
-	        List<Coordinate> waypointCoordinates = objectMapper.readValue(waypoints, new TypeReference<List<Coordinate>>(){});
-
-		    StringBuilder waypointBuild = new StringBuilder("[");
-		    for (int i = 0; i < waypointCoordinates.size(); i++) {
-		        Coordinate coordinate = waypointCoordinates.get(i);
-		        waypointBuild.append("(").append(coordinate.getLat()).append(", ").append(coordinate.getLng()).append(")");
-
-		        // 마지막 요소 뒤에는 쉼표를 추가하지 않음
-		        if (i < waypointCoordinates.size() - 1) {
-		        	waypointBuild.append(", ");
-		        }
-		    }
-		    waypointBuild.append("]");
-		    
-		    waypoints = waypointBuild.toString();
-
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		
-		String coordinateData = "위도: 34.500000, 경도: 128.730000\r\n" + "위도: 34.503015, 경도: 128.722764\r\n"
+		coordinateData = "위도: 34.500000, 경도: 128.730000\r\n" + "위도: 34.503015, 경도: 128.722764\r\n"
 				+ "위도: 34.508543, 경도: 128.717588\r\n" + "위도: 34.514070, 경도: 128.712412\r\n"
 				+ "위도: 34.519598, 경도: 128.707236\r\n" + "위도: 34.525126, 경도: 128.702060\r\n"
 				+ "위도: 34.530653, 경도: 128.702060\r\n" + "위도: 34.536181, 경도: 128.702060\r\n"
@@ -165,75 +125,9 @@ public class GoogleMapController {
 		return flightPlanCoordinates;
 	}
 
-	@Autowired
-	private RestTemplate restTemplate;
-	
-	// 3. a* 알고리즘 값 반환 메서드
-	@PostMapping("/aStarConnection")
-    public String processPythonData(@RequestBody String waypoints) throws IOException {
-		
-		try { // 경유지 좌표 python 코드에 맞게 파싱
-	        ObjectMapper objectMapper = new ObjectMapper();
-	        List<Coordinate> waypointCoordinates = objectMapper.readValue(waypoints, new TypeReference<List<Coordinate>>(){});
+	// 3. 경유지 추가
+	@RequestMapping("/saveWaypoints")
+	public void saveWaypoints() {
 
-		    StringBuilder waypointBuild = new StringBuilder("[");
-		    for (int i = 0; i < waypointCoordinates.size(); i++) {
-		        Coordinate coordinate = waypointCoordinates.get(i);
-		        waypointBuild.append("[").append(coordinate.getLat()).append(", ").append(coordinate.getLng()).append("]");
-
-		        if (i < waypointCoordinates.size() - 1) {
-		        	waypointBuild.append(", ");
-		        }
-		    }
-		    waypointBuild.append("]");
-		    
-		    waypoints = waypointBuild.toString();
-		    
-			/*
-			 * waypoints =
-			 * "[[34.7765735, 126.3835188],[34.779772, 126.369231],[34.792125, 126.350674],[34.756450, 126.341209],[34.756450, 126.341209],"
-			 * +"[34.671165, 126.222919],[34.587658, 126.241543],[34.584740, 126.184369],[34.498761, 126.059236],[34.497668, 125.916866],[34.497668, 125.916866]]"
-			 * ;
-			 */
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-
-        String url = "http://127.0.0.1:5000/aStarConnection";
-
-        // 요청 헤더 설정
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-        // 요청 본문 생성
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("waypoints", waypoints);
-        // HTTP 엔티티 생성
-        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        // Flask API에 POST 요청 보내기
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-
-        // 응답 데이터 parsing
-        String responseBody = responseEntity.getBody();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode jsonNode = objectMapper.readTree(responseBody);
-            
-            return jsonNode.toString();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return "{\"error\":\"Failed to parse JSON response\"}";
-        }
-    }
-	
-//	@GetMapping("/aStarConnection")
-//    @ResponseBody
-//    public String processPythonData(@RequestParam("waypoints") String waypoints) {
-//		
-//		waypoints = "[[34.6,128.7],[34.8,128.7],[34.8,128.95],[35,128.85]]";
-//		String result = aStartService.executePythonScript(waypoints);
-//		System.out.println("result : "+result);
-//        return result;
-//    }
+	}
 }

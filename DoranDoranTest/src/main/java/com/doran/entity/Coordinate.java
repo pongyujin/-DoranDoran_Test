@@ -4,9 +4,6 @@ public class Coordinate {
 	private double lat;
 	private double lng;
 
-	// 기본 생성자 (필수)
-    public Coordinate() {}
-	
 	// 생성자
 	public Coordinate(double lat, double lng) {
 		this.lat = lat;
