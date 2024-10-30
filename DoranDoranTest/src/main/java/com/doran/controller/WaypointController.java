@@ -23,7 +23,7 @@ public class WaypointController {
 	private WaypointMapper waypointMapper;
 	
 	// 1. 경유지 정보 db 저장
-	@PostMapping("saveWaypoint")
+	@PostMapping("/saveWaypoint")
 	public void saveWaypoint(@RequestBody List<Coordinate> waypoints, HttpSession session) {
 		
 		waypointSession(waypoints, session);

@@ -404,7 +404,7 @@
 	    	loadPoly() { // 1. 경로 데이터 받아오기(GoogleMapController)
 	    	
 	    		const waypoints = JSON.stringify(this.waypoints);
-	            axios.post("http://localhost:8085/controller/flightPlanCoordinates", waypoints, {
+	            axios.post("http://localhost:8085/controller/aStarConnection", waypoints, {
 	                headers: {
 	                    'Content-Type': 'application/json' // 올바른 Content-Type 헤더 설정
 	                }
@@ -452,7 +452,7 @@
 
 	            // Google Maps 초기화
 	            this.map = new google.maps.Map(document.getElementById('map'), {
-	                center: { lat: 34.500000-0.005032, lng: 128.730000-0.076814 }, // 초기 중심 좌표
+	                center: { lat: 34.804309-0.005032, lng: 126.364591-0.076814 }, // 초기 중심 좌표 설정(북항)
 	                zoom: 13, // 초기 줌 레벨
 	                mapTypeControlOptions: {
 	                    mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain', 'styled_map']
@@ -680,8 +680,8 @@
 	        initSailMap() { // 2. sailModal에 지도를 띄우는 새로운 로직(마커 정보를 변수에 저장하고 좌표 정보도 저장)
 	            
 	            this.sailMap = new google.maps.Map(document.getElementById('sailModalMap'), {
-	                center: { lat: 34.500000, lng: 128.730000}, // 초기 중심 좌표 설정
-	                zoom: 9
+	                center: { lat: 34.804309, lng: 126.364591}, // 초기 중심 좌표 설정(북항)
+	                zoom: 13
 	            });
 	        
 	            // 사용자의 현재 위치 마커 표시
@@ -1061,4 +1061,4 @@
     </script>
 
 </body>
-</html>
+</html>s
