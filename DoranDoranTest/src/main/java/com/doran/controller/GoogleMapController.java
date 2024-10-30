@@ -140,7 +140,7 @@ public class GoogleMapController {
 	private RestTemplate restTemplate;
 	
 	@GetMapping("/aStarConnection")
-    public ResponseEntity<String> processPythonData2(@RequestParam("waypoints") String waypoints) {
+    public ResponseEntity<String> processPythonData(@RequestParam("waypoints") String waypoints) {
 
         String url = "http://127.0.0.1:5000/aStarConnection";
 
@@ -164,13 +164,13 @@ public class GoogleMapController {
     }
 	
 	// 3. a* 알고리즘 값 반환 메서드
-	@GetMapping("/aStar")
-    @ResponseBody
-    public String processPythonData(@RequestParam("waypoints") String waypoints) {
-		
-		waypoints = "[[34.6,128.7],[34.8,128.7],[34.8,128.95],[35,128.85]]";
-		String result = aStartService.executePythonScript(waypoints);
-		System.out.println("result : "+result);
-        return result;
-    }
+//	@GetMapping("/aStarConnection")
+//    @ResponseBody
+//    public String processPythonData(@RequestParam("waypoints") String waypoints) {
+//		
+//		waypoints = "[[34.6,128.7],[34.8,128.7],[34.8,128.95],[35,128.85]]";
+//		String result = aStartService.executePythonScript(waypoints);
+//		System.out.println("result : "+result);
+//        return result;
+//    }
 }
