@@ -37,7 +37,7 @@ public class HwCameraController {
 			// JSON 데이터를 파싱하여 감지 객체 리스트로 변환
 			ObjectMapper objectMapper = new ObjectMapper();
 			List<Map<String, Object>> detections = objectMapper.readValue(jsonData, List.class);
-			System.out.println("Received detections: " + detections);
+			System.out.println("HWCameraController detections : " + detections);
 
 			// 이미지 파일이 존재하는지 확인 후 처리
 			if (imageFile != null && !imageFile.isEmpty()) {
@@ -55,8 +55,12 @@ public class HwCameraController {
 						camera.setObsImg(imageBytes); // 이미지 바이트 데이터를 설정
 
 						// 현재 날짜를 설정 (createdAt은 NOW()로 자동 설정됨)
-						cameraMapper.cameraInsert(camera); // DB에 저장
-						System.out.println("Image data saved in database for class: " + className);
+						int cnt = cameraMapper.cameraInsert(camera); // DB에 저장
+						if(cnt>0) {
+							System.out.println("HWCameraController DB 저장 성공" + className);
+						}else {
+							System.out.println("HWCameraController DB 저장 실패!!!!!");
+						}
 					}
 				}
 			}
