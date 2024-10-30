@@ -1,19 +1,25 @@
 package com.doran.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.doran.entity.Coordinate;
-import com.doran.mapper.WaypointMapper;
 
 // 구글 api로 지도 및 경로를 표시하는 controller
 @RestController
@@ -22,8 +28,12 @@ public class GoogleMapController {
 	private final String apiKey = "AIzaSyDtt1tmfQ-lTeQaCimRBn2PQPTlCLRO6Pg";
 	private final String placeKey = "AIzaSyAW9QwdMPgIykOFaLdCX5ZJTQOED8FVLfg";
 
+	private final aStartService aStartService;
+	
 	@Autowired
-	private WaypointMapper waypointMapper;
+    public GoogleMapController(aStartService pythonService) {
+        this.aStartService = pythonService;
+    }
 
 	// 1. 구글 마커 표시 api
 	@GetMapping("/marker")
@@ -122,12 +132,45 @@ public class GoogleMapController {
 				flightPlanCoordinates.add(new Coordinate(lat, lng));
 			}
 		}
+		System.out.println("flightPlanCoordinates : "+flightPlanCoordinates);
 		return flightPlanCoordinates;
 	}
 
-	// 3. 경유지 추가
-	@RequestMapping("/saveWaypoints")
-	public void saveWaypoints() {
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@GetMapping("/aStarConnection")
+    public ResponseEntity<String> processPythonData2(@RequestParam("waypoints") String waypoints) {
 
-	}
+        String url = "http://127.0.0.1:5000/aStarConnection";
+
+        // 요청 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        // 요청 본문 생성
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("waypoints", waypoints);
+
+        // HTTP 엔티티 생성
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // Flask API에 POST 요청 보내기
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+
+        System.out.println("responseEntity : "+responseEntity);
+        // 응답 반환
+        return responseEntity;
+    }
+	
+	// 3. a* 알고리즘 값 반환 메서드
+	@GetMapping("/aStar")
+    @ResponseBody
+    public String processPythonData(@RequestParam("waypoints") String waypoints) {
+		
+		waypoints = "[[34.6,128.7],[34.8,128.7],[34.8,128.95],[35,128.85]]";
+		String result = aStartService.executePythonScript(waypoints);
+		System.out.println("result : "+result);
+        return result;
+    }
 }
