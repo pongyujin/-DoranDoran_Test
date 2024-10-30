@@ -30,6 +30,8 @@ public class WeatherController {
 	private WeatherMapper weatherMapper;
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private HwBatteryController hwBatteryController; // 배터리전압 - 허재혁
 
 	private final String serviceKey = "bvd0WcsuRPzcUhhu82GPw==";
 
@@ -45,11 +47,11 @@ public class WeatherController {
 	String currentTime = LocalTime.now().format(timeFormatter);
 
 	// 메서드 실행 시 초기값 세팅
-    @PostConstruct
-    public void init() {
-        updateDateTime(); // 초기화 시에도 현재 날짜와 시간 세팅
-    }
-	
+	@PostConstruct
+	public void init() {
+		updateDateTime(); // 초기화 시에도 현재 날짜와 시간 세팅
+	}
+
 	// 날짜와 시간 갱신 메서드
 	private void updateDateTime() {
 		currentDate = LocalDate.now().format(formatter);
@@ -64,13 +66,18 @@ public class WeatherController {
 	@PostMapping("/weather")
 	@Async
 	public void weather(Weather weather) {
-		
+
 		this.currentWeather = weather;
 
 		currentWeather.setWDate(currentDate);
 		currentWeather.setWTime(currentTime);
 		currentWeather.setWTemp(tideObsAirTemp());
-		currentWeather.setStatBattery("80");
+		// currentWeather.setStatBattery("80"); // 기존꺼 주석처리 - 허재혁
+		
+		// HwBatteryController의 전압 값을 가져옴 - 허재혁
+		double voltage = hwBatteryController.getVoltage();
+		currentWeather.setStatBattery(String.valueOf(voltage));
+		
 		currentWeather.setWWindSpeed(tideObsWind());
 		currentWeather.setWWaveHeight(obsWaveHight());
 		currentWeather.setWSeaTemp(tideObsTemp());
@@ -81,7 +88,7 @@ public class WeatherController {
 	}
 
 	private boolean sailingStarted = false; // 항해 시작 여부를 저장하는 변수
-	
+
 	// main-1. 항해 시작 메서드
 	public void startSail() {
 
@@ -110,10 +117,10 @@ public class WeatherController {
 
 		if (sailingStarted) {
 			updateDateTime(); // 현재 날짜와 시간 갱신
-			if (currentWeather != null) { 
+			if (currentWeather != null) {
 				// currentWeather가 null이 아닐 경우에만 실행
-                weather(currentWeather);
-            }
+				weather(currentWeather);
+			}
 		}
 	}
 
@@ -282,7 +289,7 @@ public class WeatherController {
 		// API 요청
 		String response = restTemplate.getForObject(url, String.class);
 		String result = weatherParsing2(response, "air_temp");
-		
+
 		return result;
 	}
 
