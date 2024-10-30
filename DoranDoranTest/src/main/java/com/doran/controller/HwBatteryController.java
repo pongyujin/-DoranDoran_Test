@@ -1,15 +1,15 @@
 package com.doran.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
 
 @RestController
-@RequestMapping("/controller")
 public class HwBatteryController {
 
-	private double voltage;
+	public double voltage;
 
-	@PostMapping("/receive_voltage")
+	@RequestMapping(value = "/receive_voltage", method = RequestMethod.POST)
 	public String receiveVoltage(@RequestBody String jsonData) {
 		try {
 			// JSON 파싱
