@@ -35,24 +35,48 @@
 	href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style type="text/css">
+
+
+
+#controlPanel {
+    display: none; /* 처음에 숨기기 */
+}
+
 .control-panel {
-	height: 500px; /* 컨테이너의 높이를 500px로 설정합니다. */
-	background-color: #2a3b4c;
+    
+    position: absolute; /* 지도 위에 고정 */
+    z-index: 100; /* 지도보다 높은 값으로 설정 */
+    top: 50%; /* 화면 세로 중앙으로 이동 */
+    left: 50%; /* 화면 가로 중앙으로 이동 */
+    transform: translate(-100%, -14%); /* 왼쪽으로 더 이동 */
+    width: auto;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* 컨텐츠 세로 중앙 정렬 */
+    pointer-events: none; /* 버튼이 아닌 지도 상의 클릭 허용 */
 }
 
 .arrow-buttons {
-	position: absolute; /* 절대 위치로 설정하여 화면에서 고정된 위치에 배치합니다. */
-	top: 75px;
-	left: 45%;
-	width: 300px;
-	height: 300px;
+    position: relative; /* 부모 안에서 상대 위치 */
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto; /* 버튼 클릭 허용 */
 }
+
+
+
 
 /* 각 방향 버튼의 기본 스타일입니다. 버튼 크기와 색상, 모양을 지정합니다. */
 .control-button {
 	position: absolute; /* 각 버튼을 arrow-buttons 안에서 절대 위치로 배치합니다. */
 	width: 150px; /* 버튼 너비를 70px로 설정합니다. */
+	pointer-events: auto; /* 버튼 클릭 허용 */
 	height: 150px; /* 버튼 높이를 70px로 설정합니다. */
+	background-color: transparent; /* 배경 투명하게 설정 */
 	border: none; /* 버튼의 기본 테두리를 제거합니다. */
 	border-radius: 10px; /* 버튼 모서리를 10px 반경으로 둥글게 처리합니다. */
 	cursor: pointer; /* 버튼 위에 마우스를 올리면 포인터 모양이 나타나도록 설정합니다. */
@@ -102,12 +126,256 @@
 	height: 100%; /* 이미지 높이를 버튼 크기에 맞춥니다. */
 	object-fit: cover; /* 이미지 크기 조정 방식으로 cover를 사용하여 버튼에 꽉 차게 만듭니다. */
 }
+.status-overlay {
+    position: absolute;
+    z-index: 1000;
+    right: 55px;
+    bottom: 10px; /* 약간 내림 */
+    width: 150px;
+    height: 150px; /* 높이를 자동으로 설정하여 내용에 맞춤 */
+    background-color: rgba(255, 255, 255, 0.85); /* 투명한 배경 */
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(20px);
+}
+.status-btn {
+    display: flex;
+    flex-direction: column; /* 버튼을 세로로 나열 */
+    gap: 6px; /* 버튼 간 간격 설정 */
+    width: 100%; /* 부모 컨테이너에 맞춰서 너비 설정 */
+    margin-top: 0; /* 컨테이너 내에서 상단에 위치 */
+}
+
+
+
+/* 속도 조절 패널 스타일 */
+.speed-control-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Work Sans', sans-serif;
+    text-align: center;
+}
+
+.speed-control-wrapper h1, .speed-control-wrapper h3 {
+    margin: 0;
+    color: #999;
+    font-weight: 500;
+}
+
+.speed-control-wrapper h4 {
+    margin: 0;
+    color: #999;
+    font-weight: 500;
+}
+
+.speed-control-wrapper h4:after {
+    content: "km/h";
+    padding-left: 1px;
+}
+
+/* 슬라이더 스타일 */
+.speed-control-wrapper input[type="range"] {
+    outline: 0;
+    border: 0;
+    border-radius: 500px;
+    width: 400px;
+    max-width: 100%;
+    margin: 24px 0 16px;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Chrome 전용 스타일 */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .speed-control-wrapper input[type="range"] {
+        overflow: hidden;
+        height: 40px;
+        -webkit-appearance: none;
+        background-color: #ddd;
+    }
+    .speed-control-wrapper input[type="range"]::-webkit-slider-runnable-track {
+        height: 40px;
+        -webkit-appearance: none;
+        color: #444;
+        transition: box-shadow 0.2s ease-in-out;
+    }
+    .speed-control-wrapper input[type="range"]::-webkit-slider-thumb {
+        width: 40px;
+        -webkit-appearance: none;
+        height: 40px;
+        cursor: ew-resize;
+        background: #fff;
+        box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 40px #1597ff;
+        border-radius: 50%;
+        transition: box-shadow 0.2s ease-in-out;
+        position: relative;
+    }
+    .speed-control-wrapper input[type="range"]:active::-webkit-slider-thumb {
+        background: #fff;
+        box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 3px #1597ff;
+    }
+}
+
+/* Firefox 전용 스타일 */
+.speed-control-wrapper input[type="range"]::-moz-range-progress {
+    background-color: #43e5f7; 
+}
+.speed-control-wrapper input[type="range"]::-moz-range-track {  
+    background-color: #9a905d;
+}
+
+/* IE 전용 스타일 */
+.speed-control-wrapper input[type="range"]::-ms-fill-lower {
+    background-color: #43e5f7; 
+}
+.speed-control-wrapper input[type="range"]::-ms-fill-upper {  
+    background-color: #9a905d;
+}
+
+/* 슬라이더 값 표시 영역 스타일 */
+#h4-container {
+    width: 400px;
+    max-width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+#h4-subcontainer {
+    width: 100%;
+    position: relative;
+}
+
+#h4-subcontainer h4 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    color: #fff !important;
+    font-size: 12px;
+    transform-origin: center -10px;
+    transform: translateX(-50%);
+    transition: margin-top 0.15s ease-in-out,
+                opacity 0.15s ease-in-out;
+}
+
+#h4-subcontainer h4 span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #1597ff;
+    border-radius: 0 50% 50% 50%;
+    transform: rotate(45deg);
+    z-index: -1;
+}
+
+/* 슬라이더가 활성화되지 않았을 때 값 표시 숨김 */
+.speed-control-wrapper input[type="range"]:not(:active) + #h4-container h4 {
+    opacity: 0;
+    margin-top: -50px;
+    pointer-events: none;
+}
+
+/* 속도 설정 버튼 스타일 */
+.speed-control {
+    margin-top: 20px;
+}
+
+.speed-control button {
+    padding: 10px 20px;
+    background-color: #1597ff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.speed-control button:hover {
+    background-color: #0f7cd0;
+}
+
+.custom-btn {
+  width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5), 7px 7px 20px 0px rgba(0, 0, 0, 0.1), 4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+
+
+.autoSift-btn, .custom-btn {
+    width: 100%; /* 버튼 너비를 status-btn에 맞춰서 전체 너비로 설정 */
+    padding: 10px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0; /* 개별 버튼 상단 여백 제거 */
+   
+
+}
+/* 1 */
+/* 2 */
+.btn-1 {
+  background: #76FF76; /* 밝은 라임 그린 */
+  background: linear-gradient(0deg, #76FF76 0%, #4CAF50 100%); /* 밝은 라임 그린 그라데이션 */
+  border: none;
+}
+
+.btn-2 {
+  background: #ff0000; 
+  background: linear-gradient(0deg, #ff0000 0%, #cc0000 100%); /* 빨간색 그라데이션 */
+  border: none;
+}
+
+.btn-1::before, 
+.btn-2::before {
+  height: 0%;
+  width: 6px;
+}
+.btn-1:hover,
+.btn-2:hover {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.5), -4px -4px 6px 0 rgba(116, 125, 136, 0.5), inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2), inset 4px 4px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+
+
+
+
+
 </style>
 </head>
 <body>
 	<div id="app">
 
 		<div id="map"></div>
+		<!-- 운항 상태 표시 -->
+<div class="sail-status-overlay" id="sailStatusOverlay">
+    <span id="sailStatusText">정박 중</span> <!-- 초기 상태: 정박 중 -->
+</div>
+		
 
 		<!-- 실시간 비디오 모달 -->
 		<div id="videoModal"
@@ -203,49 +471,31 @@
 		<!-- 속도계 -->
 		<div id="speedDisplay" class="speed-display">0</div>
 
-		<!-- 속도 조절 패널 -->
-		<div class="speed-control-wrapper">
-			<div class="speed-control">
-				<label for="speedRange1">속도</label> <input type="range"
-					id="speedRange1" min="0" max="40" value="0"> <span
-					id="speedDisplay1">0</span> KM
-			</div>
-			<div class="speed-control">
-				<button id="setSpeedBtn">속도 조절</button>
-			</div>
-		</div>
+<!-- 속도 조절 패널 -->
+<div class="speed-control-wrapper">
+    <h1>속도 조절</h1>
+    <h3>km를 설정하세요</h3>
+
+    <!-- 슬라이더 -->
+    <input type="range" id="speedRange1" min="0" max="40" value="0" />
+
+    <!-- 슬라이더 값 표시 영역 -->
+    <div id="h4-container">
+        <div id="h4-subcontainer">
+            <h4 id="speedDisplay">0<span></span></h4>
+        </div>
+    </div>
+
+    <!-- 속도 설정 버튼 -->
+    <div class="speed-control">
+        <button id="setSpeedBtn">속도 설정</button>
+    </div>
+</div>
+
 
 		<!-- 수동 제어 패널 -->
 		<!-- 허재혁 -->
-		<div class="control-panel">
-			<div class="arrow-buttons">
-				<button onclick="move('up')" class="control-button up-btn">
-					<img
-						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
-						alt="up">
-				</button>
-				<button onclick="moveServo('left')" class="control-button left-btn">
-					<img
-						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
-						alt="left">
-				</button>
-				<button onclick="moveServo('right')"
-					class="control-button right-btn">
-					<img
-						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
-						alt="right">
-				</button>
-				<button onclick="move('down')" class="control-button down-btn">
-					<img
-						src="<%=request.getContextPath()%>/resources/img/arrowButton.png"
-						alt="down">
-				</button>
-				<button onclick="motorStop()" class="control-button stop-btn">
-					<img src="<%=request.getContextPath()%>/resources/img/stop.png"
-						alt="STOP">
-				</button>
-			</div>
-		</div>
+		
 
 		<!-- 아이콘 패널(우측) -->
 		<div class="icon-panel">
@@ -259,6 +509,24 @@
 			<div class="icon" @click="goMain()">🔙</div>
 			<div class="icon" @click="toggleModal()">📷</div>
 		</div>
+		
+		<div class="control-panel" id="controlPanel">
+    <div class="arrow-buttons">
+        <button onclick="move('up')" class="control-button up-btn">
+            <img src="<%=request.getContextPath()%>/resources/img/arrowButton.png" alt="up">
+        </button>
+        <button onclick="moveServo('left')" class="control-button left-btn">
+            <img src="<%=request.getContextPath()%>/resources/img/arrowButton.png" alt="left">
+        </button>
+        <button onclick="moveServo('right')" class="control-button right-btn">
+            <img src="<%=request.getContextPath()%>/resources/img/arrowButton.png" alt="right">
+        </button>
+        <button onclick="motorStop()" class="control-button stop-btn">
+            <img src="<%=request.getContextPath()%>/resources/img/stop.png" alt="STOP">
+        </button>
+    </div>
+</div>
+
 
 		<!-- 남은 시간 거리 패널 -->
 		<div class="info-overlay">
@@ -284,14 +552,14 @@
 
 	<!-- 자동/수동, 운항중 상태 표시 패널 -->
 	<div class="status-overlay">
-		<div class="status-btn">
-			<button class="autoSift-btn" id="autoSift-btn"
+    <div class="status-btn">
+        <button class="autoSift-btn" id="autoSift-btn"
 				@click="toggleAutopilot()">auto "on"</button>
-			<img class="nowSail-btn" id="nowSail-btn"
-				src="<%=request.getContextPath()%>/resources/img/stop.png"
-				alt="STOP">
-		</div>
-	</div>
+        <button class="custom-btn btn-1">start</button>
+        <button class="custom-btn btn-2">stop</button>
+    </div>
+</div>
+
 
 	<!-- 최초 선박 정보 표시 모달 -->
 	<div id="shipModal" class="modal-overlay">
@@ -877,44 +1145,48 @@
 	});
 	
 	new Vue({
-	    el: '.status-overlay',
-	    data() {
-	        return {
-	            
-	            sailStatus: '<%=String.valueOf(sailStatus)%>'
-	        };
-	    }, mounted () {
-	    	
-	    	this.checkSailStatus(); // 운항 상태 확인
-	    },
-	    methods: {
-	    	toggleAutopilot() { // 자율운항 toggle
+		  el: '.status-overlay',
+		  data() {
+		    return {
+		      sailStatus: '<%=String.valueOf(sailStatus)%>',
+		      isAutopilotOn: true // 초기 상태: Autopilot이 켜져 있다고 가정
+		    };
+		  },
+		  mounted() {
+		    this.checkSailStatus(); // 운항 상태 확인
+		    this.updateControlPanel(); // 초기 상태에 맞게 Control Panel 업데이트
+		  },
+		  methods: {
+		    toggleAutopilot() {
+		      // autoSift-btn의 텍스트와 상태 변경
+		      const btn = document.getElementById("autoSift-btn");
+		      this.isAutopilotOn = !this.isAutopilotOn; // 상태 토글
+		      btn.textContent = this.isAutopilotOn ? 'auto "on"' : 'auto "off"';
 
-	        	var btn = document.getElementById("autoSift-btn");
-	        	btn.textContent = btn.textContent === 'auto "on"' ? 'auto "off"' : 'auto "on"';
-	        	
-	        	if(btn.textContent === 'auto "off"'){
-	        		btn.style.opacity = 0.7;
-	        	}else{
-	        		btn.style.opacity = 1;
-	        	}
-	        	
-        	}, checkSailStatus(){
-        		
-        		var btn = document.getElementById("nowSail-btn");
-        		console.log(this.sailStatus);
-        		
-        		if(this.sailStatus === '1'){
-        			btn.style.opacity = 1;
-        			btn.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.5)';
-        		}else {
-        			btn.style.opacity = 0.5;
-        			btn.style.boxShadow = 'none';
-        		}
-        		
-        	}
-	    }
-	});
+		      // 버튼의 opacity 상태 변경
+		      btn.style.opacity = this.isAutopilotOn ? 1 : 0.7;
+
+		      // Control Panel 업데이트
+		      this.updateControlPanel();
+		    },
+		    updateControlPanel() {
+		      // autopilot 상태에 따라 controlPanel 표시/숨기기
+		      const controlPanel = document.getElementById("controlPanel");
+		      controlPanel.style.display = this.isAutopilotOn ? "none" : "flex";
+		    },
+		    checkSailStatus() {
+		      const btn = document.getElementById("nowSail-btn");
+		      console.log(this.sailStatus);
+		      if (this.sailStatus === '1') {
+		        btn.style.opacity = 1;
+		        btn.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.5)';
+		      } else {
+		        btn.style.opacity = 0.5;
+		        btn.style.boxShadow = 'none';
+		      }
+		    }
+		  }
+		});
 
     </script>
 
@@ -1029,6 +1301,36 @@
                 console.error('Error updating degree:', error);
             });
         }
+        
+        // 속도 조절 js
+       $(function() {
+    var maxVal = $('#speedRange1').attr('max'); // 슬라이더의 최대값을 가져옵니다.
+    var rangePercent = $('#speedRange1').val();
+
+    // 초기 버블 위치 설정
+    var leftPosition = (rangePercent / maxVal) * 100 + '%';
+    $('#h4-subcontainer h4').css('left', leftPosition);
+
+    $('#speedRange1').on('input', function() {
+        rangePercent = $('#speedRange1').val();
+        $('#h4-subcontainer h4').html(rangePercent + '<span></span>');
+
+        // hue-rotate 효과 (선택사항)
+        $('#speedRange1, #h4-subcontainer h4 > span').css('filter', 'hue-rotate(-' + (rangePercent * 9) + 'deg)');
+
+        // 버블 위치 계산
+        var leftPosition = (rangePercent / maxVal) * 100 + '%';
+
+        $('#h4-subcontainer h4').css({
+            'transform': 'translateX(-50%) scale(' + (1 + (rangePercent / 100)) + ')',
+            'left': leftPosition
+        });
+    });
+});
+     
+
+
+
         
     </script>
 
